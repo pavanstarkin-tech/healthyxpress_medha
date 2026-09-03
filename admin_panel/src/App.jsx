@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import AddDoctorModal from './components/AddDoctorModal';
+import LoginView from './views/LoginView';
 
 // Views
 import DashboardView from './views/DashboardView';
@@ -20,6 +21,22 @@ import SettingsView from './views/SettingsView';
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isAddDoctorOpen, setIsAddDoctorOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState({
+    email: 'admin@healthexpress.ai',
+    role: 'Super Admin',
+  });
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+
+  if (!isAuthenticated) {
+    return (
+      <LoginView
+        onLoginSuccess={(user) => {
+          setCurrentUser(user);
+          setIsAuthenticated(true);
+        }}
+      />
+    );
+  }
 
   return (
     <div className="app-container">
@@ -28,7 +45,11 @@ export default function App() {
 
       {/* Main Content Area */}
       <div className="main-wrapper">
-        <Header activeTab={activeTab} />
+        <Header
+          activeTab={activeTab}
+          user={currentUser}
+          onLogout={() => setIsAuthenticated(false)}
+        />
 
         <main className="content-body">
           {activeTab === 'dashboard' && (
