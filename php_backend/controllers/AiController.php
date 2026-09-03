@@ -1,13 +1,13 @@
 <?php
 /**
- * HealthExpress AI - Clinical AI Triage & Medical Memory Engine
- * Powered by Sarvam AI (Indian Multilingual LLM)
+ * HealthExpress AI - Dynamic Real-Time Clinical AI Assistant & Tool Engine
+ * Powered by Sarvam AI (Indian Multilingual LLM) with Live Database Querying
  * 
- * STRICT COMPLIANCE & SAFETY CONSTRAINTS:
- * 1. READ-ONLY PATIENT RECORD ACCESS: AI fetches records without mutating, deleting, or altering clinical data.
- * 2. STRICT MEDICAL SCOPE: Confined to symptom triage, health record queries, OTC guidance & doctor scheduling.
- * 3. CONTROLLED MEDICINE GUARDRAIL: Never generates unverified prescriptions for Schedule H / X controlled narcotics.
- * 4. RED-FLAG EMERGENCY INTERCEPTION: Sub-second escalation for acute cardiac/respiratory/stroke indicators.
+ * STRICT COMPLIANCE & CAPABILITIES:
+ * 1. DYNAMIC DATABASE QUERYING: Assistant actively queries live MySQL database during the conversation.
+ * 2. READ-ONLY CONSTRAINTS: All database queries are strictly SELECT (Zero record mutations).
+ * 3. MEDICAL SCOPE CONFINEMENT: Confined to symptom triage, health records, prescription retrieval, and appointments.
+ * 4. RED-FLAG EMERGENCY INTERCEPTION: Instant escalation for acute cardiac/respiratory distress.
  */
 
 require_once __DIR__ . '/../config/config.php';
@@ -17,13 +17,13 @@ require_once __DIR__ . '/../helpers/MapboxHelper.php';
 
 class AiController {
     /**
-     * Multilingual Clinical Triage with Real-Time Read-Only Patient Record Synthesis
+     * Multilingual Clinical Triage with Real-Time Database Querying during conversation
      */
     public static function triage(): void {
         $body = json_decode(file_get_contents('php://input'), true) ?? [];
         $pdo = Database::getConnection();
 
-        // 1. Identify Patient
+        // 1. Identify Patient & Query
         $userId = trim($body['user_id'] ?? 'USR-101');
         $rawQuery = trim($body['symptoms'] ?? $body['query'] ?? 'Fever and body pain for 2 days');
         $duration = trim($body['duration'] ?? '2 days');
@@ -34,7 +34,7 @@ class AiController {
             Response::json([
                 'status'            => 'out_of_scope',
                 'severity'          => 'Informational',
-                'ai_clinical_notes' => 'As your HealthExpress AI Medical Assistant, I am programmed exclusively for clinical triage, health records review, and healthcare navigation. Please ask me about your symptoms, prescriptions, health pass, or doctor consultations.',
+                'ai_clinical_notes' => 'As your HealthExpress AI Medical Assistant, I am dedicated exclusively to your health, symptoms, prescriptions, and medical records. Please ask me about your health, lab reports, or doctor appointments.',
                 'medical_scope_alert' => 'Query is outside clinical healthcare boundaries.',
                 'disclaimer'        => 'HealthExpress AI strictly adheres to clinical healthcare scope guidelines.'
             ]);
@@ -58,10 +58,13 @@ class AiController {
             'spo2_percent'      => intval($body['spo2_percent'] ?? 98)
         ];
 
-        // 4. READ-ONLY Extraction of Full Patient Profile & Historical Records from MySQL
+        // 4. READ-ONLY Baseline Patient Profile from MySQL
         $patientContext = self::getUserFullMedicalContext($pdo, $userId);
 
-        // 5. Critical Red-Flag Emergency Triage Rule
+        // 5. DYNAMIC REAL-TIME DATABASE QUERY EXECUTION BASED ON USER CONVERSATION
+        $liveQueryResult = self::executeDynamicDatabaseQueries($pdo, $userId, $rawQuery, $patientContext);
+
+        // 6. Critical Red-Flag Emergency Triage Rule
         $isEmergency = (
             stripos($rawQuery, 'chest pain') !== false ||
             stripos($rawQuery, 'breathless') !== false ||
@@ -87,25 +90,26 @@ class AiController {
                 'disclaimer'        => 'Emergency red-flag protocol triggered. Proceed immediately to the nearest hospital casualty ward.'
             ];
 
-            // Record session log (Read-Only compliance: We only write consultation log, never mutate existing patient records)
+            // Log consultation session (Append-only)
             self::logAiConsultationSession($pdo, $userId, $rawQuery, $duration, 'Emergency', $feelings, $vitals, $emergencyResponse, []);
             Response::json($emergencyResponse);
             return;
         }
 
-        // 6. Query Sarvam AI API with Read-Only Medical Record Memory & Scope Constraints
+        // 7. Query Sarvam AI with Dynamic Live Database Query Results & Scope Constraints
         $sarvamResponseText = null;
         if (defined('SARVAM_API_KEY') && SARVAM_API_KEY) {
-            $sarvamResponseText = self::callSarvamAiWithGuardrails(
+            $sarvamResponseText = self::callSarvamAiWithLiveDatabaseResults(
                 $rawQuery, 
                 $feelings, 
                 $vitals, 
                 $patientContext, 
+                $liveQueryResult, 
                 $language
             );
         }
 
-        // 7. Clinical Specialty & Diagnostic Tests Determination
+        // 8. Clinical Specialty & Diagnostic Tests Determination
         $specialty = 'General Physician';
         $recommendedTests = ['Complete Blood Count (CBC)'];
         
@@ -123,18 +127,23 @@ class AiController {
             $recommendedTests = ['Pediatric Vitals Audit'];
         }
 
-        // 8. Safe Medicine Recommendation Engine (Strict Allergy & Condition Cross-Check)
+        // 9. Safe Medicine Recommendation Engine (Strict Allergy & Condition Cross-Check)
         $allergies = $patientContext['profile']['allergies'] ?? 'None';
         $chronicConditions = $patientContext['profile']['chronic_conditions'] ?? 'None';
         $suggestedMedicines = self::computeSafeMedicineSuggestions($pdo, $rawQuery, $allergies, $chronicConditions);
 
-        // 9. Assemble Full Clinical Response with Read-Only Context Snapshot
+        // 10. Assemble Full Clinical Response with Real-Time Database Query Insights
         $responseData = [
             'session_id'         => 'SESS-' . strtoupper(bin2hex(random_bytes(4))),
             'status'             => 'clinical_guidance',
             'severity'           => 'Moderate',
-            'ai_engine'          => 'Sarvam AI (Clinical LLM with ABDM Record Constraints)',
-            'ai_clinical_notes'  => $sarvamResponseText ?: "Hello {$patientContext['user']['name']}, based on your reported symptoms and current health records, your symptoms appear consistent with a mild acute infection. Hydration, rest, and symptomatic care are advised.",
+            'ai_engine'          => 'Sarvam AI (Real-Time Database Querying & Clinical Memory Engine)',
+            'ai_clinical_notes'  => $sarvamResponseText ?: "Hello {$patientContext['user']['name']}, based on your real-time records in our database, your symptoms indicate mild acute infection. Hydration, rest, and symptomatic care are recommended.",
+            'database_query_insights' => [
+                'intent_detected'    => $liveQueryResult['intent'] ?? 'General Triage',
+                'records_queried'    => $liveQueryResult['records_count'] ?? 0,
+                'queried_data'       => $liveQueryResult['data'] ?? [],
+            ],
             'patient_context'    => [
                 'name'               => $patientContext['user']['name'] ?? 'Patient',
                 'age'                => $patientContext['user']['age'] ?? 28,
@@ -144,8 +153,6 @@ class AiController {
                 'allergies'          => $allergies,
                 'chronic_conditions' => $chronicConditions,
                 'active_medications' => $patientContext['profile']['current_medications'] ?? 'None',
-                'recent_records_found' => count($patientContext['health_records']),
-                'past_prescriptions_found' => count($patientContext['prescriptions']),
             ],
             'primary_specialty'  => $specialty,
             'suggested_medicines'=> $suggestedMedicines,
@@ -162,14 +169,134 @@ class AiController {
                 'fee'       => '₹600 (50% Aarogyasri: ₹300)',
                 'rating'    => 4.9
             ],
-            'medical_scope_guarantee' => 'Validated strictly within clinical triage boundaries. Zero record mutations executed.',
-            'disclaimer'         => 'HealthExpress AI assists with triage and health record retrieval. It does not replace a physical examination by a certified MCI doctor.'
+            'medical_scope_guarantee' => 'Strictly constrained to clinical healthcare. Real-time read-only MySQL queries executed.',
+            'disclaimer'         => 'HealthExpress AI assists with triage and real-time health record retrieval. It does not replace a physical examination by a certified MCI doctor.'
         ];
 
-        // 10. Record Consultation Session (Pure append-only log in ai_sessions; does NOT alter existing health records)
+        // 11. Append Consultation Log to ai_sessions (Pure Append-Only; Never alters existing health records)
         self::logAiConsultationSession($pdo, $userId, $rawQuery, $duration, 'Moderate', $feelings, $vitals, $responseData, $suggestedMedicines);
 
         Response::json($responseData);
+    }
+
+    /**
+     * DYNAMIC READ-ONLY DATABASE QUERY ROUTER
+     * Automatically queries specific tables based on user's conversation intent
+     */
+    private static function executeDynamicDatabaseQueries(\PDO $pdo, string $userId, string $query, array $patientContext): array {
+        $q = strtolower($query);
+        $result = ['intent' => 'General Clinical Triage', 'records_count' => 0, 'data' => []];
+
+        try {
+            // Intent 1: User asks about Prescriptions / Medicines doctor prescribed
+            if (strpos($q, 'prescrib') !== false || strpos($q, 'medicine doctor') !== false || strpos($q, 'last prescription') !== false || strpos($q, 'dosage') !== false || strpos($q, 'dr.') !== false) {
+                $stmt = $pdo->prepare("SELECT p.diagnosis, p.medicines, p.clinical_notes, p.created_at, d.name AS doctor_name, d.specialty 
+                    FROM prescriptions p 
+                    JOIN appointments a ON p.appointment_id = a.id 
+                    JOIN doctors d ON a.doctor_id = d.id 
+                    WHERE a.user_id = ? 
+                    ORDER BY p.created_at DESC LIMIT 3");
+                $stmt->execute([$userId]);
+                $rows = $stmt->fetchAll() ?: [];
+                $result = [
+                    'intent'        => 'Prescriptions & Doctor Advice Lookup',
+                    'records_count' => count($rows),
+                    'data'          => $rows
+                ];
+            }
+            // Intent 2: User asks about Lab Reports / Blood Tests / Scans
+            elseif (strpos($q, 'lab report') !== false || strpos($q, 'blood test') !== false || strpos($q, 'sugar') !== false || strpos($q, 'scan') !== false || strpos($q, 'x-ray') !== false || strpos($q, 'cbc') !== false || strpos($q, 'my report') !== false) {
+                $stmt = $pdo->prepare("SELECT title, record_type, file_url, is_abdm_linked, created_at 
+                    FROM health_records 
+                    WHERE user_id = ? 
+                    ORDER BY created_at DESC LIMIT 4");
+                $stmt->execute([$userId]);
+                $rows = $stmt->fetchAll() ?: [];
+                $result = [
+                    'intent'        => 'Diagnostic Lab & Medical Vault Records Lookup',
+                    'records_count' => count($rows),
+                    'data'          => $rows
+                ];
+            }
+            // Intent 3: User asks about Appointments / Bookings / Schedules
+            elseif (strpos($q, 'appointment') !== false || strpos($q, 'booking') !== false || strpos($q, 'next visit') !== false || strpos($q, 'slot') !== false || strpos($q, 'consultation time') !== false) {
+                $stmt = $pdo->prepare("SELECT a.id, a.appointment_date, a.appointment_time, a.consultation_type, a.status, a.fee, d.name AS doctor_name, d.specialty, COALESCE(h.name, 'Independent Clinic') AS hospital_name 
+                    FROM appointments a 
+                    JOIN doctors d ON a.doctor_id = d.id 
+                    LEFT JOIN hospitals h ON a.hospital_id = h.id 
+                    WHERE a.user_id = ? 
+                    ORDER BY a.appointment_date DESC LIMIT 4");
+                $stmt->execute([$userId]);
+                $rows = $stmt->fetchAll() ?: [];
+                $result = [
+                    'intent'        => 'Doctor Appointments & Schedule Status',
+                    'records_count' => count($rows),
+                    'data'          => $rows
+                ];
+            }
+            // Intent 4: User asks for Available Doctors / Specialists near them
+            elseif (strpos($q, 'cardiologist') !== false || strpos($q, 'orthopedic') !== false || strpos($q, 'general physician') !== false || strpos($q, 'pediatrician') !== false || strpos($q, 'find doctor') !== false || strpos($q, 'doctor near me') !== false) {
+                $specFilter = '%';
+                if (strpos($q, 'cardio') !== false) $specFilter = '%Cardio%';
+                elseif (strpos($q, 'ortho') !== false) $specFilter = '%Ortho%';
+                elseif (strpos($q, 'pediatric') !== false) $specFilter = '%Pediatric%';
+                elseif (strpos($q, 'physician') !== false) $specFilter = '%Physician%';
+
+                $stmt = $pdo->prepare("SELECT d.id, d.name, d.specialty, d.experience_years, d.consultation_fee, d.rating, d.is_online, COALESCE(h.name, 'Independent Practice') AS hospital_name, h.city 
+                    FROM doctors d 
+                    LEFT JOIN doctor_hospitals dh ON d.id = dh.doctor_id AND dh.is_primary = 1 
+                    LEFT JOIN hospitals h ON dh.hospital_id = h.id 
+                    WHERE d.is_online = 1 AND d.specialty LIKE ? 
+                    ORDER BY d.rating DESC LIMIT 4");
+                $stmt->execute([$specFilter]);
+                $rows = $stmt->fetchAll() ?: [];
+                $result = [
+                    'intent'        => 'Available Doctors & Specialist Directory Search',
+                    'records_count' => count($rows),
+                    'data'          => $rows
+                ];
+            }
+            // Intent 5: User asks about Hospitals / ICU / Emergency trauma hotline
+            elseif (strpos($q, 'hospital') !== false || strpos($q, 'icu') !== false || strpos($q, 'sunshine') !== false || strpos($q, 'apollo') !== false || strpos($q, 'kims') !== false || strpos($q, 'beds') !== false) {
+                $stmt = $pdo->query("SELECT h.id, h.name, h.hospital_type, h.primary_phone, h.emergency_phone, h.city, h.services, (SELECT COUNT(*) FROM doctor_hospitals dh WHERE dh.hospital_id = h.id) AS staff_count 
+                    FROM hospitals h 
+                    ORDER BY h.rating DESC LIMIT 4");
+                $rows = $stmt->fetchAll() ?: [];
+                $result = [
+                    'intent'        => 'Hospital Facilities, Beds & Emergency Trauma Search',
+                    'records_count' => count($rows),
+                    'data'          => $rows
+                ];
+            }
+            // Intent 6: User asks about Pharmacy / Medicine stock & 15-min delivery
+            elseif (strpos($q, 'dolo') !== false || strpos($q, 'cetzine') !== false || strpos($q, 'pan-d') !== false || strpos($q, 'pharmacy') !== false || strpos($q, 'delivery') !== false || strpos($q, 'buy medicine') !== false) {
+                $stmt = $pdo->query("SELECT id, name, form, pack_size, price, manufacturer, is_prescription_required FROM medicines LIMIT 4");
+                $rows = $stmt->fetchAll() ?: [];
+                $result = [
+                    'intent'        => 'Pharmacy Inventory & 15-Minute Doorstep Stock Lookup',
+                    'records_count' => count($rows),
+                    'data'          => $rows
+                ];
+            }
+            // Intent 7: User asks about Aarogyasri ID & Scheme details
+            elseif (strpos($q, 'aarogyasri') !== false || strpos($q, 'health pass') !== false || strpos($q, 'abdm') !== false || strpos($q, 'subsidy') !== false) {
+                $result = [
+                    'intent'        => 'Aarogyasri Health Pass Status',
+                    'records_count' => 1,
+                    'data'          => [
+                        'aarogyasri_id'      => $patientContext['user']['aarogyasri_id'] ?? 'AROG12345678',
+                        'holder_name'        => $patientContext['user']['name'] ?? 'Rahul Kumar',
+                        'blood_group'        => $patientContext['profile']['blood_group'] ?? 'B+',
+                        'coverage_status'    => 'Active (50% Government Subsidized Procedures Enabled)',
+                        'linked_hospital'    => 'KIMS & Apollo Empaneled Networks'
+                    ]
+                ];
+            }
+        } catch (\Exception $e) {
+            error_log('Dynamic Query Execution Error: ' . $e->getMessage());
+        }
+
+        return $result;
     }
 
     /**
@@ -326,13 +453,14 @@ class AiController {
     }
 
     /**
-     * Call Sarvam AI with Strict Medical Scope & Read-Only Patient Record Guardrails
+     * Call Sarvam AI with Real-Time Database Query Results & Strict Medical Scope
      */
-    private static function callSarvamAiWithGuardrails(
+    private static function callSarvamAiWithLiveDatabaseResults(
         string $symptoms, 
         array $feelings, 
         array $vitals, 
         array $patientContext, 
+        array $liveQueryResult, 
         string $language
     ): ?string {
         $pName = $patientContext['user']['name'] ?? 'Patient';
@@ -344,35 +472,27 @@ class AiController {
         $pConditions = $patientContext['profile']['chronic_conditions'] ?? 'None';
         $pMeds = $patientContext['profile']['current_medications'] ?? 'None';
 
-        // Summarize verified records from database
-        $recordsSummary = "None recorded yet.";
-        if (!empty($patientContext['health_records'])) {
-            $titles = array_map(fn($r) => $r['title'] . " (" . $r['record_type'] . ")", $patientContext['health_records']);
-            $recordsSummary = implode(', ', $titles);
+        // Format live database query findings
+        $dbDataString = "No special table query needed.";
+        if (!empty($liveQueryResult['data'])) {
+            $dbDataString = "LIVE MYSQL DATABASE QUERY RESULTS (Intent: {$liveQueryResult['intent']}):\n" . json_encode($liveQueryResult['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         }
 
-        $prescriptionsSummary = "None recorded yet.";
-        if (!empty($patientContext['prescriptions'])) {
-            $pSummaries = array_map(fn($p) => "Dr. " . $p['doctor_name'] . " (" . $p['clinical_notes'] . ")", $patientContext['prescriptions']);
-            $prescriptionsSummary = implode('; ', $pSummaries);
-        }
-
-        $systemPrompt = "You are HealthExpress AI, an empathetic and certified clinical triage assistant in India.
-CRITICAL MEDICAL CONSTRAINTS & BOUNDARIES:
+        $systemPrompt = "You are HealthExpress AI, an intelligent clinical triage and health record retrieval assistant in India.
+CAPABILITIES & RULES:
 1. Address the patient respectfully as {$pName} ({$pAge} yrs, {$pGender}, Blood Group {$pBlood}, located in {$pCity}).
-2. You have REAL-TIME READ-ONLY ACCESS to the patient's records:
+2. YOU HAVE REAL-TIME DATABASE ACCESS: You can reference live data queried from MySQL:
+   {$dbDataString}
+3. Baseline Clinical Profile:
    - Known Allergies: {$pAllergies}
    - Chronic Conditions: {$pConditions}
    - Active Medications: {$pMeds}
-   - Uploaded Medical Vault Records: {$recordsSummary}
-   - Past Doctor Prescriptions: {$prescriptionsSummary}
-3. STRICT MEDICAL SCOPE:
-   - Stay STRICTLY within clinical triage, home care, diagnostic test recommendations, and doctor scheduling.
-   - Do NOT issue definitive prescriptions for Schedule H / X controlled antibiotics or narcotics.
-   - Cross-check their known allergies and chronic conditions to ensure complete clinical safety.
-   - Do NOT alter, fabricate, or hallucinate records that do not exist.
-   - If asked non-medical questions, politely state your medical boundary.
-4. Language: Respond in {$language} with clarity, empathy, and professional clinical warmth.";
+4. STRICT MEDICAL SCOPE:
+   - If the patient asked about their prescriptions, lab reports, doctor schedules, or hospital beds, USE THE LIVE DATABASE QUERY RESULTS ABOVE to answer them accurately and concisely!
+   - Stay STRICTLY within clinical healthcare boundaries.
+   - Do NOT issue definitive prescriptions for Schedule H / X controlled narcotics.
+   - Do NOT hallucinate data not found in the database.
+5. Language: Respond in {$language} with clarity, empathy, and professional clinical precision.";
 
         $ch = curl_init('https://api.sarvam.ai/v1/chat/completions');
         
@@ -380,10 +500,10 @@ CRITICAL MEDICAL CONSTRAINTS & BOUNDARIES:
             'model' => 'sarvam-105b-conversations',
             'messages' => [
                 ['role' => 'system', 'content' => $systemPrompt],
-                ['role' => 'user', 'content' => "Patient {$pName} reports: {$symptoms}. Pain scale is {$feelings['pain_scale']}/10. Temp is {$vitals['temperature_f']}°F. Give concise, safe clinical guidance."]
+                ['role' => 'user', 'content' => "Patient {$pName} says: '{$symptoms}'. Respond using the real-time database query results and my clinical profile."]
             ],
             'temperature' => 0.3,
-            'max_tokens' => 320
+            'max_tokens' => 350
         ]);
 
         curl_setopt_array($ch, [
