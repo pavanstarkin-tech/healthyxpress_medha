@@ -188,9 +188,12 @@ if ($path === '/api/tickets' && $method === 'POST') {
     TicketController::create();
 }
 
-// 13. AI Triage
+// 13. AI Triage & Clinical Memory
 if ($path === '/api/ai/triage' && $method === 'POST') {
     AiController::triage();
+}
+if (preg_match('#^/api/ai/sessions/user/([^/]+)$#', $path, $matches) && $method === 'GET') {
+    AiController::getUserSessions($matches[1]);
 }
 
 // Fallback: 404 Route Not Found

@@ -208,6 +208,40 @@ class ApiService {
         body: jsonEncode({'consent_token': qrToken, 'doctor_id': doctorId}),
       ).timeout(const Duration(seconds: 8));
 
+  // 8. Run Multilingual Clinical AI Triage with Key-Value Patient Memory & Safe Medicine Suggestions
+  static Future<Map<String, dynamic>?> runAiTriageWithMemory({
+    required String userId,
+    required String symptoms,
+    String duration = '2 days',
+    Map<String, dynamic>? feelings,
+    Map<String, dynamic>? vitals,
+    String language = 'en-IN',
+  }) async {
+    try {
+      final res = await http.post(
+        Uri.parse('$baseUrl/ai/triage'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'user_id': userId,
+          'symptoms': symptoms,
+          'duration': duration,
+          'feelings': feelings ?? {
+            'pain_scale': 6,
+            'pain_character': 'Dull throbbing pain',
+            'fatigue_level': 'Moderate fatigue',
+            'sleep_quality': 'Disturbed',
+            'appetite': 'Reduced'
+          },
+          'vitals': vitals ?? {
+            'temperature_f': 101.2,
+            'blood_pressure': '120/80',
+            'heart_rate_bpm': 84,
+            'spo2_percent': 98
+          },
+          'language': language,
+        }),
+      ).timeout(const Duration(seconds: 10));
+
       if (res.statusCode == 200) {
         final data = _unpackData(res.body);
         return data is Map<String, dynamic> ? data : jsonDecode(res.body);
@@ -216,5 +250,19 @@ class ApiService {
       // ignore
     }
     return null;
+  }
+
+  // 9. Fetch Historical AI Sessions & Key-Value Memory for User
+  static Future<List<dynamic>> fetchUserAiSessions(String userId) async {
+    try {
+      final res = await http.get(Uri.parse('$baseUrl/ai/sessions/user/$userId')).timeout(const Duration(seconds: 8));
+      if (res.statusCode == 200) {
+        final data = _unpackData(res.body);
+        if (data is List) return data;
+      }
+    } catch (e) {
+      // ignore
+    }
+    return [];
   }
 }
