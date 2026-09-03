@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../core/config/app_config.dart';
+import '../core/constants/app_constants.dart';
 import '../models/hospital_model.dart';
 import '../models/doctor_model.dart';
 import '../models/medicine_model.dart';
@@ -8,49 +9,66 @@ import '../models/medicine_model.dart';
 class ApiService {
   static const String baseUrl = AppConfig.apiBaseUrl;
 
-  // Helper to unpack PHP Response::json wrapper
-  static dynamic _unpackData(String body) {
-    final decoded = json.decode(body);
-    if (decoded is Map<String, dynamic> && decoded.containsKey('data')) {
-      return decoded['data'];
+  static dynamic _unpackData(String responseBody) {
+    try {
+      final decoded = jsonDecode(responseBody);
+      if (decoded is Map<String, dynamic>) {
+        if (decoded.containsKey('data')) {
+          return decoded['data'];
+        }
+      }
+      return decoded;
+    } catch (_) {
+      return null;
     }
-    return decoded;
   }
 
-  // 1. Fetch Real Hospitals from MySQL
-  static Future<List<HospitalModel>> fetchHospitals() async {
+  // 1. Fetch Real Hospitals from Hostinger MySQL with Location Proximity
+  static Future<List<HospitalModel>> fetchHospitals({double? latitude, double? longitude, String? city}) async {
     try {
-      final res = await http.get(Uri.parse('$baseUrl/hospitals')).timeout(const Duration(seconds: 8));
+      String url = '$baseUrl/hospitals';
+      if (latitude != null && longitude != null) {
+        url += '?lat=$latitude&lng=$longitude';
+        if (city != null && city.isNotEmpty) url += '&city=$city';
+      }
+      final res = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 8));
       if (res.statusCode == 200) {
         final rawData = _unpackData(res.body);
         if (rawData is List) {
-          return rawData.map((json) {
-            final List<String> services = json['services'] != null && json['services'] is String
-                ? List<String>.from(jsonDecode(json['services']))
-                : (json['services'] is List ? List<String>.from(json['services']) : ['24/7 Emergency', 'ICU', 'Pathology Lab', 'Pharmacy']);
-            final List<String> facilities = json['facilities'] != null && json['facilities'] is String
-                ? List<String>.from(jsonDecode(json['facilities']))
-                : ['24x7 Emergency', 'Advanced ICU', 'Pathology Lab', 'Ambulance'];
-
+          return rawData.map<HospitalModel>((json) {
+            final deptRaw = json['departments'];
+            List<String> depts = ['General Medicine', 'Cardiology', 'Emergency & Trauma'];
+            if (deptRaw is List) {
+              depts = deptRaw.map((d) => d is Map ? (d['name']?.toString() ?? '') : d.toString()).toList();
+            }
             return HospitalModel(
               id: json['id'] ?? 'HOSP-01',
-              name: json['name'] ?? '',
-              logoUrl: json['logo_url'] ?? 'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=80&w=400',
-              bannerUrl: 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&q=80&w=800',
-              location: json['location'] ?? 'Hyderabad, Telangana',
+              name: json['name'] ?? 'Partner Hospital',
+              logoUrl: json['logo_url'] ?? 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&q=80&w=400',
+              bannerUrl: json['cover_image_url'] ?? 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&q=80&w=600',
+              hospitalType: json['hospital_type'] ?? 'Super Specialty Hospital',
+              location: json['city'] ?? 'Hyderabad',
               address: json['address'] ?? 'Hyderabad, Telangana',
-              rating: double.tryParse(json['rating'].toString()) ?? 4.8,
-              reviewCount: int.tryParse(json['reviews_count'].toString()) ?? 1200,
-              distanceKm: 2.3,
-              doctorCount: int.tryParse(json['staff_count'].toString()) ?? 150,
-              specialtyCount: 25,
-              bedCount: 500,
-              departments: ['Cardiology', 'Neurology', 'Orthopedics', 'Gynecology', 'Pediatrics', 'General Medicine'],
-              services: services,
-              facilities: facilities,
+              city: json['city'] ?? 'Hyderabad',
+              state: json['state'] ?? 'Telangana',
+              pincode: json['pincode'] ?? '500081',
+              latitude: double.tryParse(json['latitude']?.toString() ?? '') ?? 17.4265,
+              longitude: double.tryParse(json['longitude']?.toString() ?? '') ?? 78.4124,
+              rating: double.tryParse(json['rating']?.toString() ?? '') ?? 4.8,
+              reviewCount: int.tryParse(json['reviews_count']?.toString() ?? '') ?? 120,
+              distanceKm: double.tryParse(json['distance_km']?.toString() ?? '') ?? 2.5,
+              doctorCount: int.tryParse(json['staff_count']?.toString() ?? '') ?? 45,
+              specialtyCount: depts.length,
+              bedCount: int.tryParse(json['total_beds']?.toString() ?? '') ?? 150,
+              departments: depts,
+              services: const ['Emergency', 'ICU', 'Pharmacy', 'Lab', 'Radiology'],
+              facilities: const ['Emergency 24x7', 'Blood Bank', 'Pharmacy', 'Ambulance'],
               phone: json['primary_phone'] ?? '+91 40 4488 5000',
               emergencyPhone: json['emergency_phone'] ?? '1066',
-              description: json['description'] ?? '',
+              email: json['email'] ?? 'contact@hospital.in',
+              website: 'https://healthexpress.ai',
+              description: 'Premier tertiary care partner hospital empaneled for Aarogyasri benefits.',
+              workingHours: '24 Hours Open',
             );
           }).toList();
         }
@@ -61,43 +79,39 @@ class ApiService {
     return [];
   }
 
-  // 2. Fetch Real Doctors from MySQL
-  static Future<List<DoctorModel>> fetchDoctors({String? specialty, String? hospitalId, bool? isRmp}) async {
+  // 2. Fetch Real Doctors from Hostinger MySQL with Location Proximity
+  static Future<List<DoctorModel>> fetchDoctors({double? latitude, double? longitude, String? specialty}) async {
     try {
-      final queryParams = <String, String>{};
-      if (specialty != null && specialty != 'All') queryParams['specialty'] = specialty;
-      if (hospitalId != null) queryParams['hospitalId'] = hospitalId;
-      if (isRmp == true) queryParams['isRmp'] = 'true';
-
-      final uri = Uri.parse('$baseUrl/doctors').replace(queryParameters: queryParams);
-      final res = await http.get(uri).timeout(const Duration(seconds: 8));
-
+      String url = '$baseUrl/doctors';
+      if (latitude != null && longitude != null) {
+        url += '?lat=$latitude&lng=$longitude';
+        if (specialty != null && specialty.isNotEmpty) url += '&specialty=$specialty';
+      }
+      final res = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 8));
       if (res.statusCode == 200) {
         final rawData = _unpackData(res.body);
         if (rawData is List) {
-          return rawData.map((json) {
+          return rawData.map<DoctorModel>((json) {
+            final fee = double.tryParse(json['consultation_fee']?.toString() ?? '') ?? 500.0;
             return DoctorModel(
-              id: json['id'] ?? 'DOC-1024',
-              name: json['name'] ?? '',
-              email: json['email'] ?? '',
-              phone: json['mobile'] ?? json['phone'] ?? '',
-              photoUrl: json['photo_url'] ?? 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=400',
+              id: json['id'] ?? 'DOC-01',
+              name: json['name'] ?? 'Doctor',
+              email: json['email'] ?? 'doctor@healthexpress.ai',
+              phone: json['phone'] ?? '+91 98480 12345',
+              photoUrl: json['photo_url'] ?? 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300',
               specialty: json['specialty'] ?? 'General Physician',
-              subSpecialty: json['sub_specialty'] ?? 'Internal Medicine',
-              qualifications: json['qualifications'] ?? 'MBBS, MD',
-              experienceYears: int.tryParse(json['experience_years'].toString()) ?? 10,
-              registrationNumber: json['registration_number'] ?? 'MCI-TS-2012-88421',
-              practiceType: json['practice_type'] == 'Independent' ? PracticeType.independent : PracticeType.hospital,
-              rating: double.tryParse(json['rating'].toString()) ?? 4.8,
-              reviewCount: int.tryParse(json['reviews_count'].toString()) ?? 350,
+              qualifications: 'MBBS, MD (General Medicine)',
+              experienceYears: int.tryParse(json['experience_years']?.toString() ?? '') ?? 5,
+              rating: double.tryParse(json['rating']?.toString() ?? '') ?? 4.9,
+              reviewCount: int.tryParse(json['reviews_count']?.toString() ?? '') ?? 85,
               hospitalId: json['hospital_id'] ?? 'HOSP-01',
-              hospitalName: json['hospital_name'] ?? 'KIMS Hospitals',
-              location: 'Hyderabad, Telangana',
-              distanceKm: 2.1,
-              clinicFee: double.tryParse(json['consultation_fee'].toString()) ?? 800.0,
-              videoFee: double.tryParse(json['consultation_fee'].toString()) ?? 800.0,
-              homeVisitFee: double.tryParse(json['consultation_fee'].toString()) ?? 1200.0,
-              supportedTypes: const [],
+              hospitalName: json['hospital_name'] ?? 'Independent Practice',
+              location: json['hospital_city'] ?? 'Hyderabad',
+              distanceKm: double.tryParse(json['distance_km']?.toString() ?? '') ?? 2.8,
+              clinicFee: fee,
+              videoFee: fee * 0.8,
+              homeVisitFee: fee * 1.5,
+              supportedTypes: const [ConsultationType.clinicVisit, ConsultationType.videoConsult, ConsultationType.homeVisitRMP],
               bio: 'Senior Clinical Specialist with extensive hospital and telemedicine experience.',
               isOnline: json['is_online'] == 1 || json['is_online'] == true,
               isRmpDoctor: json['is_rmp_doctor'] == 1 || json['is_rmp_doctor'] == true,
@@ -117,20 +131,27 @@ class ApiService {
       final res = await http.get(Uri.parse('$baseUrl/pharmacy/medicines')).timeout(const Duration(seconds: 8));
       if (res.statusCode == 200) {
         final rawData = _unpackData(res.body);
+        List<dynamic> list = [];
         if (rawData is List) {
-          return rawData.map((m) {
-            return MedicineModel(
-              id: m['id'] ?? 'MED-01',
-              name: m['name'] ?? '',
-              genericName: m['generic_name'] ?? m['name'] ?? '',
-              category: m['category'] ?? 'General',
-              price: double.tryParse(m['price'].toString()) ?? 30.0,
-              originalPrice: double.tryParse(m['original_price']?.toString() ?? '') ?? 40.0,
-              packSize: m['pack_size'] ?? 'Pack',
-              requiresPrescription: m['is_prescription_required'] == 1 || m['is_prescription_required'] == true,
-            );
-          }).toList();
+          list = rawData;
+        } else if (rawData is Map<String, dynamic>) {
+          list = (rawData['medicines'] as List?) ?? [];
         }
+        return list.map<MedicineModel>((m) {
+          return MedicineModel(
+            id: m['id'] ?? 'MED-01',
+            name: m['name'] ?? '',
+            genericName: m['generic_name'] ?? m['name'] ?? '',
+            category: m['category'] ?? 'General',
+            price: double.tryParse(m['price'].toString()) ?? 30.0,
+            originalPrice: double.tryParse(m['original_price']?.toString() ?? '') ?? 40.0,
+            packSize: m['pack_size'] ?? 'Pack',
+            requiresPrescription: m['is_prescription_required'] == 1 || m['is_prescription_required'] == true,
+            imageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=200',
+            description: 'Authentic formulation with 15-minute quick dispatch guarantee.',
+            manufacturer: m['manufacturer'] ?? 'HealthExpress Pharmacy',
+          );
+        }).toList();
       }
     } catch (e) {
       // Return empty list
@@ -207,6 +228,16 @@ class ApiService {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'consent_token': qrToken, 'doctor_id': doctorId}),
       ).timeout(const Duration(seconds: 8));
+
+      if (res.statusCode == 200) {
+        final data = _unpackData(res.body);
+        return data is Map<String, dynamic> ? data : jsonDecode(res.body);
+      }
+    } catch (e) {
+      // ignore
+    }
+    return null;
+  }
 
   // 8. Run Multilingual Clinical AI Triage with Key-Value Patient Memory & Safe Medicine Suggestions
   static Future<Map<String, dynamic>?> runAiTriageWithMemory({

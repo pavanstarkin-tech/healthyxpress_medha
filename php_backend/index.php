@@ -79,9 +79,12 @@ if ($path === '/api/payments' && $method === 'GET') {
     AdminController::getPayments();
 }
 
-// 2. Authentication & Aarogyasri
+// 2. Authentication & Aarogyasri & Onboarding
 if ($path === '/api/auth/register' && $method === 'POST') {
     AuthController::register();
+}
+if ($path === '/api/auth/update-onboarding' && $method === 'POST') {
+    AuthController::updateOnboarding();
 }
 if (preg_match('#^/api/auth/aarogyasri/([^/]+)$#', $path, $matches) && $method === 'GET') {
     AuthController::getAarogyasriProfile($matches[1]);
@@ -90,6 +93,9 @@ if (preg_match('#^/api/auth/aarogyasri/([^/]+)$#', $path, $matches) && $method =
 // 3. Hospitals
 if ($path === '/api/hospitals' && $method === 'GET') {
     HospitalController::getAll();
+}
+if ($path === '/api/hospitals/nearby' && $method === 'GET') {
+    HospitalController::getNearby();
 }
 if ($path === '/api/hospitals' && $method === 'POST') {
     HospitalController::create();
@@ -101,6 +107,9 @@ if (preg_match('#^/api/hospitals/([^/]+)$#', $path, $matches) && $method === 'GE
 // 4. Doctors
 if ($path === '/api/doctors' && $method === 'GET') {
     DoctorController::getAll();
+}
+if ($path === '/api/doctors/nearby' && $method === 'GET') {
+    DoctorController::getNearby();
 }
 if (preg_match('#^/api/doctors/([^/]+)/status$#', $path, $matches) && $method === 'PUT') {
     DoctorController::toggleStatus($matches[1]);
