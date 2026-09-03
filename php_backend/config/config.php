@@ -24,6 +24,9 @@ define('RAZORPAY_KEY_SECRET', getenv('RAZORPAY_KEY_SECRET') ?: 'M76UWnmNsVE7hU5Q
 define('AGORA_APP_ID', getenv('AGORA_APP_ID') ?: '7c9641fb497543d2b01fe6fe5fe0af15');
 define('AGORA_APP_CERTIFICATE', getenv('AGORA_APP_CERTIFICATE') ?: '29afb318421747818086445f230f3c61');
 
+// Sarvam AI API Key (Multilingual Indian LLM & Triage)
+define('SARVAM_API_KEY', getenv('SARVAM_API_KEY') ?: 'sk_n4tzuy3c_JIUK6l5ExNHHGoiiAGwvroYh');
+
 // Gemini AI API Key
 define('GEMINI_API_KEY', getenv('GEMINI_API_KEY') ?: '');
 
