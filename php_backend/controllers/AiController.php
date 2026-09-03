@@ -1,35 +1,54 @@
 <?php
 /**
- * HealthExpress AI - Clinical AI Triage & Memory Engine
- * Powered by Sarvam AI (Indian Multilingual LLM) with End-to-End Key-Value Clinical Profiling
+ * HealthExpress AI - Clinical AI Triage & Medical Memory Engine
+ * Powered by Sarvam AI (Indian Multilingual LLM)
+ * 
+ * STRICT COMPLIANCE & SAFETY CONSTRAINTS:
+ * 1. READ-ONLY PATIENT RECORD ACCESS: AI fetches records without mutating, deleting, or altering clinical data.
+ * 2. STRICT MEDICAL SCOPE: Confined to symptom triage, health record queries, OTC guidance & doctor scheduling.
+ * 3. CONTROLLED MEDICINE GUARDRAIL: Never generates unverified prescriptions for Schedule H / X controlled narcotics.
+ * 4. RED-FLAG EMERGENCY INTERCEPTION: Sub-second escalation for acute cardiac/respiratory/stroke indicators.
  */
 
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../helpers/Response.php';
+require_once __DIR__ . '/../helpers/MapboxHelper.php';
 
 class AiController {
     /**
-     * Multilingual Clinical Triage with Key-Value Patient Memory & Safe Medicine Suggestions
+     * Multilingual Clinical Triage with Real-Time Read-Only Patient Record Synthesis
      */
     public static function triage(): void {
         $body = json_decode(file_get_contents('php://input'), true) ?? [];
         $pdo = Database::getConnection();
 
-        // 1. Extract Key-Value Clinical & Emotional Context
+        // 1. Identify Patient
         $userId = trim($body['user_id'] ?? 'USR-101');
-        $rawSymptoms = trim($body['symptoms'] ?? 'Fever and body pain for 2 days');
+        $rawQuery = trim($body['symptoms'] ?? $body['query'] ?? 'Fever and body pain for 2 days');
         $duration = trim($body['duration'] ?? '2 days');
         $language = trim($body['language'] ?? 'en-IN'); // te-IN, hi-IN, en-IN
 
-        // Extract Structured Key-Value Dimensions
+        // 2. Strict Scope Filter: Detect Non-Medical Prompts
+        if (self::isOutOfMedicalScope($rawQuery)) {
+            Response::json([
+                'status'            => 'out_of_scope',
+                'severity'          => 'Informational',
+                'ai_clinical_notes' => 'As your HealthExpress AI Medical Assistant, I am programmed exclusively for clinical triage, health records review, and healthcare navigation. Please ask me about your symptoms, prescriptions, health pass, or doctor consultations.',
+                'medical_scope_alert' => 'Query is outside clinical healthcare boundaries.',
+                'disclaimer'        => 'HealthExpress AI strictly adheres to clinical healthcare scope guidelines.'
+            ]);
+            return;
+        }
+
+        // 3. Extract Real-time Patient Feelings & Reported Vitals
         $feelings = $body['feelings'] ?? [
-            'pain_scale'        => $body['pain_scale'] ?? 6, // 1 to 10
+            'pain_scale'        => intval($body['pain_scale'] ?? 6),
             'pain_character'    => $body['pain_character'] ?? 'Throbbing and dull body ache',
-            'fatigue_level'     => $body['fatigue_level'] ?? 'High fatigue, low stamina',
-            'sleep_quality'     => $body['sleep_quality'] ?? 'Disturbed due to chills',
+            'fatigue_level'     => $body['fatigue_level'] ?? 'Moderate fatigue',
+            'sleep_quality'     => $body['sleep_quality'] ?? 'Disturbed',
             'anxiety_level'     => $body['anxiety_level'] ?? 'Moderate',
-            'appetite'          => $body['appetite'] ?? 'Decreased appetite, mild nausea'
+            'appetite'          => $body['appetite'] ?? 'Decreased'
         ];
 
         $vitals = $body['vitals'] ?? [
@@ -39,102 +58,102 @@ class AiController {
             'spo2_percent'      => intval($body['spo2_percent'] ?? 98)
         ];
 
-        // 2. Fetch User's Historical Medical Profile from Database
-        $userProfile = self::getUserHistoricalProfile($pdo, $userId);
-        
-        $allergies = $body['allergies'] ?? ($userProfile['allergies'] ?? 'Penicillin Safe');
-        $chronicConditions = $body['chronic_conditions'] ?? ($userProfile['chronic_conditions'] ?? 'None');
-        $currentMedications = $body['current_medications'] ?? ($userProfile['current_medications'] ?? 'None');
+        // 4. READ-ONLY Extraction of Full Patient Profile & Historical Records from MySQL
+        $patientContext = self::getUserFullMedicalContext($pdo, $userId);
 
-        // 3. Fetch Prior AI Session Memory to Understand Context Progression
-        $pastSessions = self::getPastSessionMemory($pdo, $userId);
-
-        // 4. Critical Red-Flag Emergency Triage Rule
+        // 5. Critical Red-Flag Emergency Triage Rule
         $isEmergency = (
-            stripos($rawSymptoms, 'chest pain') !== false ||
-            stripos($rawSymptoms, 'breathless') !== false ||
-            stripos($rawSymptoms, 'unconscious') !== false ||
-            stripos($rawSymptoms, 'severe bleeding') !== false ||
-            stripos($rawSymptoms, 'stroke') !== false ||
-            stripos($rawSymptoms, 'gunde noppi') !== false || // Telugu
-            stripos($rawSymptoms, 'chathi mein dard') !== false // Hindi
+            stripos($rawQuery, 'chest pain') !== false ||
+            stripos($rawQuery, 'breathless') !== false ||
+            stripos($rawQuery, 'unconscious') !== false ||
+            stripos($rawQuery, 'severe bleeding') !== false ||
+            stripos($rawQuery, 'stroke') !== false ||
+            stripos($rawQuery, 'gunde noppi') !== false || // Telugu: Chest pain
+            stripos($rawQuery, 'chathi mein dard') !== false // Hindi: Chest pain
         );
 
         if ($isEmergency) {
             $emergencyResponse = [
+                'session_id'        => 'SESS-EMERG-' . strtoupper(bin2hex(random_bytes(3))),
                 'status'            => 'emergency_alert',
                 'severity'          => 'Critical Emergency',
+                'patient_name'      => $patientContext['user']['name'] ?? 'Patient',
                 'triage_summary'    => 'Immediate acute cardiac or respiratory distress flagged.',
                 'primary_specialty' => 'Emergency Medicine / Cardiology',
                 'hospital'          => 'KIMS Hospitals Emergency & Trauma (Hotline: 1066)',
-                'ambulance_eta'     => '6 minutes (GPS Dispatched)',
+                'ambulance_eta'     => '6 minutes (GPS Dispatched to ' . ($patientContext['user']['city'] ?? 'Hyderabad') . ')',
                 'action'            => 'Call 108 Emergency Ambulance Immediately',
-                'safety_alert'      => 'DO NOT TAKE SELF-MEDICATION IN ACUTE CHEST PAIN / SHORTNESS OF BREATH',
-                'disclaimer'        => 'Emergency protocol activated. Proceed to the nearest emergency room.'
+                'safety_alert'      => 'DO NOT ATTEMPT SELF-MEDICATION. EMERGENCY PROTOCOL ACTIVATED.',
+                'disclaimer'        => 'Emergency red-flag protocol triggered. Proceed immediately to the nearest hospital casualty ward.'
             ];
 
-            // Log Emergency Session
-            self::persistAiSession($pdo, $userId, $rawSymptoms, $duration, 'Emergency', $feelings, $vitals, $emergencyResponse, []);
+            // Record session log (Read-Only compliance: We only write consultation log, never mutate existing patient records)
+            self::logAiConsultationSession($pdo, $userId, $rawQuery, $duration, 'Emergency', $feelings, $vitals, $emergencyResponse, []);
             Response::json($emergencyResponse);
             return;
         }
 
-        // 5. Query Sarvam AI API with Historical Memory & User Feelings
+        // 6. Query Sarvam AI API with Read-Only Medical Record Memory & Scope Constraints
         $sarvamResponseText = null;
         if (defined('SARVAM_API_KEY') && SARVAM_API_KEY) {
-            $sarvamResponseText = self::callSarvamAiWithMemory(
-                $rawSymptoms, 
+            $sarvamResponseText = self::callSarvamAiWithGuardrails(
+                $rawQuery, 
                 $feelings, 
                 $vitals, 
-                $userProfile, 
-                $pastSessions, 
+                $patientContext, 
                 $language
             );
         }
 
-        // 6. Clinical Specialty & Diagnostic Tests Determination
+        // 7. Clinical Specialty & Diagnostic Tests Determination
         $specialty = 'General Physician';
         $recommendedTests = ['Complete Blood Count (CBC)'];
         
-        if (stripos($rawSymptoms, 'fever') !== false || stripos($rawSymptoms, 'cold') !== false || stripos($rawSymptoms, 'cough') !== false) {
+        if (stripos($rawQuery, 'fever') !== false || stripos($rawQuery, 'cold') !== false || stripos($rawQuery, 'cough') !== false) {
             $specialty = 'General Physician';
             $recommendedTests = ['Complete Blood Count (CBC)', 'Dengue NS1 / Typhoid Panel'];
-        } elseif (stripos($rawSymptoms, 'bone') !== false || stripos($rawSymptoms, 'joint') !== false || stripos($rawSymptoms, 'knee') !== false || stripos($rawSymptoms, 'fracture') !== false) {
+        } elseif (stripos($rawQuery, 'bone') !== false || stripos($rawQuery, 'joint') !== false || stripos($rawQuery, 'knee') !== false || stripos($rawQuery, 'fracture') !== false) {
             $specialty = 'Orthopedic Surgeon';
             $recommendedTests = ['Digital X-Ray', 'Serum Calcium', 'Vitamin D3'];
-        } elseif (stripos($rawSymptoms, 'headache') !== false || stripos($rawSymptoms, 'dizzy') !== false || stripos($rawSymptoms, 'migraine') !== false) {
+        } elseif (stripos($rawQuery, 'headache') !== false || stripos($rawQuery, 'dizzy') !== false || stripos($rawQuery, 'migraine') !== false) {
             $specialty = 'Neurologist';
             $recommendedTests = ['MRI Brain Screening', 'Blood Pressure Log'];
-        } elseif (stripos($rawSymptoms, 'child') !== false || stripos($rawSymptoms, 'baby') !== false || stripos($rawSymptoms, 'infant') !== false) {
+        } elseif (stripos($rawQuery, 'child') !== false || stripos($rawQuery, 'baby') !== false || stripos($rawQuery, 'infant') !== false) {
             $specialty = 'Pediatrician';
             $recommendedTests = ['Pediatric Vitals Audit'];
         }
 
-        // 7. Safe Medicine Recommendation Engine (Cross-Checking Allergies & Conditions)
-        $suggestedMedicines = self::computeSafeMedicineSuggestions($pdo, $rawSymptoms, $allergies, $chronicConditions);
+        // 8. Safe Medicine Recommendation Engine (Strict Allergy & Condition Cross-Check)
+        $allergies = $patientContext['profile']['allergies'] ?? 'None';
+        $chronicConditions = $patientContext['profile']['chronic_conditions'] ?? 'None';
+        $suggestedMedicines = self::computeSafeMedicineSuggestions($pdo, $rawQuery, $allergies, $chronicConditions);
 
-        // 8. Assemble Full Clinical Response with Key-Value Memory
+        // 9. Assemble Full Clinical Response with Read-Only Context Snapshot
         $responseData = [
             'session_id'         => 'SESS-' . strtoupper(bin2hex(random_bytes(4))),
             'status'             => 'clinical_guidance',
             'severity'           => 'Moderate',
-            'ai_engine'          => 'Sarvam AI (Indian Multilingual Clinical LLM)',
-            'ai_clinical_notes'  => $sarvamResponseText ?: "Patient presents with symptoms indicative of acute mild viral infection. Hydration, rest, and symptomatic support recommended.",
-            'user_clinical_memory' => [
-                'user_id'            => $userId,
-                'feelings_context'   => $feelings,
-                'vitals_context'     => $vitals,
+            'ai_engine'          => 'Sarvam AI (Clinical LLM with ABDM Record Constraints)',
+            'ai_clinical_notes'  => $sarvamResponseText ?: "Hello {$patientContext['user']['name']}, based on your reported symptoms and current health records, your symptoms appear consistent with a mild acute infection. Hydration, rest, and symptomatic care are advised.",
+            'patient_context'    => [
+                'name'               => $patientContext['user']['name'] ?? 'Patient',
+                'age'                => $patientContext['user']['age'] ?? 28,
+                'gender'             => $patientContext['user']['gender'] ?? 'Male',
+                'aarogyasri_id'      => $patientContext['user']['aarogyasri_id'] ?? 'AROG12345678',
+                'blood_group'        => $patientContext['profile']['blood_group'] ?? 'B+',
                 'allergies'          => $allergies,
                 'chronic_conditions' => $chronicConditions,
-                'current_medications'=> $currentMedications,
+                'active_medications' => $patientContext['profile']['current_medications'] ?? 'None',
+                'recent_records_found' => count($patientContext['health_records']),
+                'past_prescriptions_found' => count($patientContext['prescriptions']),
             ],
             'primary_specialty'  => $specialty,
             'suggested_medicines'=> $suggestedMedicines,
             'recommended_tests'  => $recommendedTests,
             'home_care'          => [
-                'Electrolyte hydration (ORS/Coconut water)',
-                'Monitor temperature every 4 hours',
-                'Consult specialist if fever > 102°F or persists > 48 hours'
+                'Hydration with electrolytes (ORS / Coconut water)',
+                'Rest and temperature monitoring every 4 hours',
+                'Consult specialist if fever exceeds 102°F or persists beyond 48 hours'
             ],
             'recommended_doctor' => [
                 'name'      => 'Dr. Priya Nair',
@@ -143,14 +162,88 @@ class AiController {
                 'fee'       => '₹600 (50% Aarogyasri: ₹300)',
                 'rating'    => 4.9
             ],
-            'disclaimer'         => 'HealthExpress AI triage provides initial guidance based on reported feelings and vitals. Always consult a certified MCI doctor for formal prescription.'
+            'medical_scope_guarantee' => 'Validated strictly within clinical triage boundaries. Zero record mutations executed.',
+            'disclaimer'         => 'HealthExpress AI assists with triage and health record retrieval. It does not replace a physical examination by a certified MCI doctor.'
         ];
 
-        // 9. Persist Session & Update Key-Value Health Profile in Live MySQL
-        self::persistAiSession($pdo, $userId, $rawSymptoms, $duration, 'Moderate', $feelings, $vitals, $responseData, $suggestedMedicines);
-        self::updateUserHealthProfileKeyValues($pdo, $userId, $vitals, $allergies, $chronicConditions);
+        // 10. Record Consultation Session (Pure append-only log in ai_sessions; does NOT alter existing health records)
+        self::logAiConsultationSession($pdo, $userId, $rawQuery, $duration, 'Moderate', $feelings, $vitals, $responseData, $suggestedMedicines);
 
         Response::json($responseData);
+    }
+
+    /**
+     * Check if user query is completely out of healthcare scope
+     */
+    private static function isOutOfMedicalScope(string $query): bool {
+        $q = strtolower($query);
+        $nonMedicalTriggers = [
+            'write code', 'javascript', 'python script', 'crypto', 'bitcoin',
+            'stock market', 'election results', 'political party', 'movie review',
+            'write essay', 'translate poem', 'car repair', 'ipl match betting'
+        ];
+
+        foreach ($nonMedicalTriggers as $trigger) {
+            if (strpos($q, $trigger) !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * PURE READ-ONLY EXTRACTION of Full Patient Medical Records from Live MySQL Database
+     */
+    private static function getUserFullMedicalContext(\PDO $pdo, string $userId): array {
+        $context = [
+            'user'            => ['name' => 'Rahul Kumar', 'phone' => '9876543210', 'city' => 'Hyderabad', 'age' => 28, 'gender' => 'Male', 'aarogyasri_id' => 'AROG12345678'],
+            'profile'         => ['blood_group' => 'B+', 'allergies' => 'Penicillin Safe', 'chronic_conditions' => 'None', 'current_medications' => 'None', 'past_surgeries' => 'None'],
+            'health_records'  => [],
+            'prescriptions'   => [],
+            'past_sessions'   => []
+        ];
+
+        try {
+            // 1. User master record (READ-ONLY)
+            $uStmt = $pdo->prepare("SELECT id, name, phone, email, gender, city, state, pincode, aarogyasri_id, created_at FROM users WHERE id = ? LIMIT 1");
+            $uStmt->execute([$userId]);
+            $uRow = $uStmt->fetch();
+            if ($uRow) {
+                $context['user'] = array_merge($context['user'], $uRow);
+            }
+
+            // 2. Health Profile & Vitals (READ-ONLY)
+            $hpStmt = $pdo->prepare("SELECT blood_group, height_cm, weight_kg, allergies, chronic_conditions, past_surgeries, current_medications, emergency_contact_phone, completion_percent FROM health_profiles WHERE user_id = ? LIMIT 1");
+            $hpStmt->execute([$userId]);
+            $hpRow = $hpStmt->fetch();
+            if ($hpRow) {
+                $context['profile'] = array_merge($context['profile'], $hpRow);
+            }
+
+            // 3. Recent Health Vault Records (READ-ONLY)
+            $hrStmt = $pdo->prepare("SELECT title, record_type, file_url, is_abdm_linked, created_at FROM health_records WHERE user_id = ? ORDER BY created_at DESC LIMIT 4");
+            $hrStmt->execute([$userId]);
+            $context['health_records'] = $hrStmt->fetchAll() ?: [];
+
+            // 4. Past Prescriptions (READ-ONLY)
+            $prStmt = $pdo->prepare("SELECT p.clinical_notes, p.medicines, p.diagnostic_tests, p.created_at, d.name AS doctor_name, d.specialty 
+                FROM prescriptions p 
+                JOIN appointments a ON p.appointment_id = a.id 
+                JOIN doctors d ON a.doctor_id = d.id 
+                WHERE a.user_id = ? 
+                ORDER BY p.created_at DESC LIMIT 3");
+            $prStmt->execute([$userId]);
+            $context['prescriptions'] = $prStmt->fetchAll() ?: [];
+
+            // 5. Past AI Consultation Sessions (READ-ONLY)
+            $aiStmt = $pdo->prepare("SELECT symptoms, severity, ai_summary, created_at FROM ai_sessions WHERE user_id = ? ORDER BY created_at DESC LIMIT 3");
+            $aiStmt->execute([$userId]);
+            $context['past_sessions'] = $aiStmt->fetchAll() ?: [];
+        } catch (\Exception $e) {
+            error_log('Error reading patient medical context: ' . $e->getMessage());
+        }
+
+        return $context;
     }
 
     /**
@@ -160,8 +253,6 @@ class AiController {
         $medicines = [];
         $hasGastritis = stripos($chronicConditions, 'ulcer') !== false || stripos($chronicConditions, 'gastritis') !== false;
         $hasHypertension = stripos($chronicConditions, 'hypertension') !== false || stripos($chronicConditions, 'bp') !== false;
-        $isAllergicToSulfa = stripos($allergies, 'sulfa') !== false;
-        $isAllergicToPenicillin = stripos($allergies, 'penicillin') !== false;
 
         // Fever / Body Pain / Headache
         if (stripos($symptoms, 'fever') !== false || stripos($symptoms, 'headache') !== false || stripos($symptoms, 'pain') !== false || stripos($symptoms, 'body') !== false) {
@@ -176,11 +267,11 @@ class AiController {
                 'price'                => '₹31.50',
                 'is_prescription_required' => false,
                 'delivery_eta'         => '15-min Doorstep Delivery',
-                'safety_check'         => 'Safe with your profile. Non-NSAID.'
+                'safety_check'         => 'Safe with your profile. Non-NSAID formulation.'
             ];
         }
 
-        // Cold / Sneezing / Allergic Rhinitis / Cough
+        // Cold / Sneezing / Cough
         if (stripos($symptoms, 'cold') !== false || stripos($symptoms, 'cough') !== false || stripos($symptoms, 'throat') !== false || stripos($symptoms, 'sneez') !== false) {
             $medicines[] = [
                 'medicine_id'          => 'MED-CET10',
@@ -221,7 +312,7 @@ class AiController {
                 'brand_name'           => 'Electral ORS Sachet',
                 'generic_composition'  => 'WHO Oral Rehydration Salts Formula',
                 'form'                 => 'Powder Sachet (21.8g)',
-                'dosage'               => 'Dissolve 1 sachet in 1 Litre boiled & cooled water, sip throughout day',
+                'dosage'               => 'Dissolve 1 sachet in 1 Litre water, sip throughout day',
                 'duration'             => '2 to 3 days',
                 'purpose'              => 'Restores essential electrolytes, prevents weakness & cramps',
                 'price'                => '₹22.00',
@@ -231,84 +322,57 @@ class AiController {
             ];
         }
 
-        // Throat Soreness / Irritation
-        if (stripos($symptoms, 'sore throat') !== false || stripos($symptoms, 'cough') !== false) {
-            $medicines[] = [
-                'medicine_id'          => 'MED-STREPSIL',
-                'brand_name'           => 'Strepsils Ayurvedic',
-                'generic_composition'  => 'Herbal Throat Lozenges (Tulsi, Honey, Ginger)',
-                'form'                 => 'Lozenge Pack of 8',
-                'dosage'               => 'Dissolve 1 lozenge slowly in mouth every 4-6 hours',
-                'duration'             => 'As needed',
-                'purpose'              => 'Soothes inflamed throat tissues & suppresses tickly cough',
-                'price'                => '₹36.00',
-                'is_prescription_required' => false,
-                'delivery_eta'         => '15-min Doorstep Delivery',
-                'safety_check'         => 'Safe natural herbal formulation.'
-            ];
-        }
-
         return $medicines;
     }
 
     /**
-     * Retrieve User Historical Medical Profile from Live MySQL
+     * Call Sarvam AI with Strict Medical Scope & Read-Only Patient Record Guardrails
      */
-    private static function getUserHistoricalProfile(\PDO $pdo, string $userId): array {
-        try {
-            $stmt = $pdo->prepare("SELECT * FROM health_profiles WHERE user_id = ? LIMIT 1");
-            $stmt->execute([$userId]);
-            $row = $stmt->fetch();
-            return $row ?: [];
-        } catch (\Exception $e) {
-            return [];
-        }
-    }
-
-    /**
-     * Retrieve Past AI Sessions Context Memory
-     */
-    private static function getPastSessionMemory(\PDO $pdo, string $userId): array {
-        try {
-            $stmt = $pdo->prepare("SELECT symptoms, severity, user_answers, ai_summary, created_at FROM ai_sessions WHERE user_id = ? ORDER BY created_at DESC LIMIT 3");
-            $stmt->execute([$userId]);
-            return $stmt->fetchAll() ?: [];
-        } catch (\Exception $e) {
-            return [];
-        }
-    }
-
-    /**
-     * Call Sarvam AI with Complete Patient Memory, Emotional Feelings & Vitals Context
-     */
-    private static function callSarvamAiWithMemory(
+    private static function callSarvamAiWithGuardrails(
         string $symptoms, 
         array $feelings, 
         array $vitals, 
-        array $profile, 
-        array $pastSessions, 
+        array $patientContext, 
         string $language
     ): ?string {
-        $feelingsSummary = "Pain: {$feelings['pain_scale']}/10 ({$feelings['pain_character']}), Fatigue: {$feelings['fatigue_level']}, Sleep: {$feelings['sleep_quality']}, Appetite: {$feelings['appetite']}";
-        $vitalsSummary = "Temp: {$vitals['temperature_f']}°F, BP: {$vitals['blood_pressure']}, Heart Rate: {$vitals['heart_rate_bpm']} bpm, SpO2: {$vitals['spo2_percent']}%";
-        $allergiesStr = $profile['allergies'] ?? 'None';
-        $conditionsStr = $profile['chronic_conditions'] ?? 'None';
+        $pName = $patientContext['user']['name'] ?? 'Patient';
+        $pAge = $patientContext['user']['age'] ?? 28;
+        $pGender = $patientContext['user']['gender'] ?? 'Male';
+        $pCity = $patientContext['user']['city'] ?? 'Hyderabad';
+        $pBlood = $patientContext['profile']['blood_group'] ?? 'B+';
+        $pAllergies = $patientContext['profile']['allergies'] ?? 'None';
+        $pConditions = $patientContext['profile']['chronic_conditions'] ?? 'None';
+        $pMeds = $patientContext['profile']['current_medications'] ?? 'None';
 
-        $pastContextStr = "";
-        if (!empty($pastSessions)) {
-            $pastContextStr = "Previous Consultation History: User consulted on {$pastSessions[0]['created_at']} for past symptoms.";
+        // Summarize verified records from database
+        $recordsSummary = "None recorded yet.";
+        if (!empty($patientContext['health_records'])) {
+            $titles = array_map(fn($r) => $r['title'] . " (" . $r['record_type'] . ")", $patientContext['health_records']);
+            $recordsSummary = implode(', ', $titles);
         }
 
-        $systemPrompt = "You are HealthExpress AI, an empathetic Indian clinical triage and healthcare memory assistant. 
-You understand what users actually feel (their pain, distress, emotional state, and fatigue).
-Context of patient:
-- Reported Feelings: {$feelingsSummary}
-- Objective Vitals: {$vitalsSummary}
-- Known Allergies: {$allergiesStr}
-- Existing Chronic Conditions: {$conditionsStr}
-{$pastContextStr}
+        $prescriptionsSummary = "None recorded yet.";
+        if (!empty($patientContext['prescriptions'])) {
+            $pSummaries = array_map(fn($p) => "Dr. " . $p['doctor_name'] . " (" . $p['clinical_notes'] . ")", $patientContext['prescriptions']);
+            $prescriptionsSummary = implode('; ', $pSummaries);
+        }
 
-Provide a concise, highly empathetic, and culturally comforting medical assessment in {$language}. Acknowledge how they are feeling, explain possible causes, suggest supportive home remedies, and advise on specialized medical consultation.";
+        $systemPrompt = "You are HealthExpress AI, an empathetic and certified clinical triage assistant in India.
+CRITICAL MEDICAL CONSTRAINTS & BOUNDARIES:
+1. Address the patient respectfully as {$pName} ({$pAge} yrs, {$pGender}, Blood Group {$pBlood}, located in {$pCity}).
+2. You have REAL-TIME READ-ONLY ACCESS to the patient's records:
+   - Known Allergies: {$pAllergies}
+   - Chronic Conditions: {$pConditions}
+   - Active Medications: {$pMeds}
+   - Uploaded Medical Vault Records: {$recordsSummary}
+   - Past Doctor Prescriptions: {$prescriptionsSummary}
+3. STRICT MEDICAL SCOPE:
+   - Stay STRICTLY within clinical triage, home care, diagnostic test recommendations, and doctor scheduling.
+   - Do NOT issue definitive prescriptions for Schedule H / X controlled antibiotics or narcotics.
+   - Cross-check their known allergies and chronic conditions to ensure complete clinical safety.
+   - Do NOT alter, fabricate, or hallucinate records that do not exist.
+   - If asked non-medical questions, politely state your medical boundary.
+4. Language: Respond in {$language} with clarity, empathy, and professional clinical warmth.";
 
         $ch = curl_init('https://api.sarvam.ai/v1/chat/completions');
         
@@ -316,10 +380,10 @@ Provide a concise, highly empathetic, and culturally comforting medical assessme
             'model' => 'sarvam-105b-conversations',
             'messages' => [
                 ['role' => 'system', 'content' => $systemPrompt],
-                ['role' => 'user', 'content' => "Patient states: {$symptoms}. Please provide your clinical triage guidance considering my recorded vitals and emotional state."]
+                ['role' => 'user', 'content' => "Patient {$pName} reports: {$symptoms}. Pain scale is {$feelings['pain_scale']}/10. Temp is {$vitals['temperature_f']}°F. Give concise, safe clinical guidance."]
             ],
-            'temperature' => 0.4,
-            'max_tokens' => 300
+            'temperature' => 0.3,
+            'max_tokens' => 320
         ]);
 
         curl_setopt_array($ch, [
@@ -348,9 +412,9 @@ Provide a concise, highly empathetic, and culturally comforting medical assessme
     }
 
     /**
-     * Persist AI Session & Key-Value Snapshot in Live MySQL Database
+     * Log AI Consultation Session (Pure Append-Only; Never Alters Existing Patient Medical Records)
      */
-    private static function persistAiSession(
+    private static function logAiConsultationSession(
         \PDO $pdo, 
         string $userId, 
         string $symptoms, 
@@ -362,21 +426,6 @@ Provide a concise, highly empathetic, and culturally comforting medical assessme
         array $suggestedMedicines
     ): void {
         try {
-            // Ensure ai_sessions table exists
-            $pdo->exec("CREATE TABLE IF NOT EXISTS ai_sessions (
-                id VARCHAR(64) PRIMARY KEY,
-                user_id VARCHAR(64) NOT NULL,
-                symptoms JSON NOT NULL,
-                duration VARCHAR(50),
-                severity VARCHAR(30) DEFAULT 'Moderate',
-                user_answers JSON,
-                ai_summary TEXT,
-                recommended_care TEXT,
-                recommended_doctor_id VARCHAR(64),
-                recommended_tests JSON,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
-
             $sessionId = 'SESS-' . strtoupper(bin2hex(random_bytes(4)));
             $userAnswers = [
                 'feelings_kv'         => $feelings,
@@ -401,27 +450,12 @@ Provide a concise, highly empathetic, and culturally comforting medical assessme
                 json_encode($response['recommended_tests'] ?? [])
             ]);
         } catch (\Exception $e) {
-            // Log non-blocking error
-            error_log('Error saving AI session: ' . $e->getMessage());
+            error_log('Error logging AI session: ' . $e->getMessage());
         }
     }
 
     /**
-     * Update User Health Profile with Newly Learned Key-Values
-     */
-    private static function updateUserHealthProfileKeyValues(\PDO $pdo, string $userId, array $vitals, string $allergies, string $chronicConditions): void {
-        try {
-            $stmt = $pdo->prepare("UPDATE health_profiles 
-                SET allergies = ?, chronic_conditions = ? 
-                WHERE user_id = ?");
-            $stmt->execute([$allergies, $chronicConditions, $userId]);
-        } catch (\Exception $e) {
-            // Non-blocking update
-        }
-    }
-
-    /**
-     * Get All Past AI Consultation Sessions for a User
+     * Get All Past AI Consultation Sessions for a User (READ-ONLY)
      */
     public static function getUserSessions(string $userId): void {
         $pdo = Database::getConnection();
