@@ -1,21 +1,18 @@
 class AppConfig {
   // Backend API URL
-  static const String apiBaseUrl = String.fromEnvironment(
-    'API_BASE_URL',
-    defaultValue: 'http://localhost:5000/api',
-  );
+  static const String apiBaseUrl = 'http://localhost:5000/api';
 
-  // Mapbox Public Access Token
-  static const String mapboxAccessToken = String.fromEnvironment(
-    'MAPBOX_TOKEN',
-    defaultValue: 'pk.eyJ1IjoicGF2YW5rdW1hcnN3YW15IiwiYSI6ImNtNnc1c3ZpdTBkdGgyanM5b25rN2ZqcncifQ',
-  );
+  // Mapbox Access Token
+  static const String mapboxAccessToken =
+      'pk.eyJ1IjoicGF2YW5rdW1hcnN3YW15IiwiYSI6ImNtNnc1c3ZpdTBkdGgyanM5b25rN2ZqcncifQ.Ls1e2W6rx3apoBsStWa5Ow';
 
-  // Razorpay Key
+  // Razorpay Live Credentials
   static const String razorpayKeyId = 'rzp_live_StBUehIpeULYuL';
+  static const String razorpayKeySecret = 'M76UWnmNsVE7hU5QrkriZuor';
 
-  // Agora WebRTC App ID
+  // Agora WebRTC Credentials
   static const String agoraAppId = '7c9641fb497543d2b01fe6fe5fe0af15';
+  static const String agoraPrimaryCertificate = '29afb318421747818086445f230f3c61';
 
   // Firebase Configuration (Web & Mobile)
   static const String firebaseApiKey = 'AIzaSyCU7Psyt8Rl5kQScIDAavvleuyNjkhVFxo';
