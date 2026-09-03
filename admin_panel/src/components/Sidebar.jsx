@@ -22,12 +22,12 @@ const NAV_SECTIONS = [
     title: 'OPERATIONS',
     items: [
       { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-      { id: 'hospitals', label: 'Hospitals', icon: Building2, badge: '8' },
-      { id: 'doctors', label: 'Doctors', icon: UserRound, badge: '32' },
+      { id: 'hospitals', label: 'Hospitals', icon: Building2 },
+      { id: 'doctors', label: 'Doctors', icon: UserRound },
       { id: 'users', label: 'Users & Patients', icon: Users },
       { id: 'appointments', label: 'Appointments', icon: CalendarCheck },
       { id: 'payments', label: 'Payments & Ledger', icon: CreditCard },
-      { id: 'tickets', label: 'Support Tickets', icon: LifeBuoy, badge: '17' },
+      { id: 'tickets', label: 'Support Tickets', icon: LifeBuoy },
     ]
   },
   {
@@ -86,18 +86,6 @@ export default function Sidebar({ activeTab, setActiveTab }) {
                 >
                   <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
                   <span style={{ flex: 1, textAlign: 'left' }}>{item.label}</span>
-                  {item.badge && (
-                    <span style={{
-                      fontSize: '0.7rem',
-                      fontWeight: 800,
-                      padding: '2px 7px',
-                      borderRadius: '10px',
-                      background: isActive ? 'rgba(255,255,255,0.25)' : 'var(--primary-light)',
-                      color: isActive ? 'white' : 'var(--primary)'
-                    }}>
-                      {item.badge}
-                    </span>
-                  )}
                 </button>
               );
             })}

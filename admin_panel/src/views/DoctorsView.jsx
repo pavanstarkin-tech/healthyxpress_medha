@@ -1,60 +1,83 @@
-import React, { useState } from 'react';
-import { Plus, Search, Eye, ShieldCheck, Trash2, CheckCircle, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Search, Eye, ShieldCheck, CheckCircle, AlertCircle } from 'lucide-react';
 import DoctorVerificationModal from '../components/DoctorVerificationModal';
+import { healthApi } from '../services/api';
 
-export default function DoctorsView({ doctors, onOpenAddDoctor }) {
+export default function DoctorsView({ onOpenAddDoctor }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [specialtyFilter, setSpecialtyFilter] = useState('All');
   const [selectedDoctorForVerify, setSelectedDoctorForVerify] = useState(null);
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const defaultDoctors = [
-    { id: 'DOC-1024', name: 'Dr. Sandeep Attawar', hospital: 'KIMS Hospitals', specialty: 'Cardiologist', exp: '15+ Years', status: 'Verified', registrationNumber: 'MCI-TS-1999-44812', avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200' },
-    { id: 'DOC-1025', name: 'Dr. Priya Nair', hospital: 'Apollo Hospitals', specialty: 'General Physician', exp: '8+ Years', status: 'Verified', registrationNumber: 'MCI-TS-2011-33219', avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=200' },
-    { id: 'DOC-1026', name: 'Dr. Naveen Thota', hospital: 'Yashoda Hospitals', specialty: 'Orthopedic Surgeon', exp: '10+ Years', status: 'Verified', registrationNumber: 'MCI-TS-2008-11290', avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200' },
-    { id: 'DOC-1027', name: 'Dr. Madhavi Latha', hospital: 'CARE Hospitals', specialty: 'Gynecologist', exp: '11+ Years', status: 'Verified', registrationNumber: 'MCI-TS-2005-77341', avatar: 'https://images.unsplash.com/photo-1594824813680-77a83d739824?auto=format&fit=crop&q=80&w=200' },
-    { id: 'DOC-1028', name: 'Dr. Suresh RMP', hospital: 'Independent Practice', specialty: 'RMP Doctor (Home Visit)', exp: '14+ Years', status: 'Verified', registrationNumber: 'RMP-TS-2010-9941', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200' },
-    { id: 'DOC-1029', name: 'Dr. Anil Kumar', hospital: 'Apollo Hospitals', specialty: 'General Physician', exp: '5+ Years', status: 'Pending', registrationNumber: 'MCI-TS-2019-11029', avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200' },
-    { id: 'DOC-1030', name: 'Dr. Kavya S', hospital: 'CARE Hospitals', specialty: 'Pediatrician', exp: '6+ Years', status: 'Pending', registrationNumber: 'MCI-TS-2018-44912', avatar: 'https://images.unsplash.com/photo-1594824813680-77a83d739824?auto=format&fit=crop&q=80&w=200' },
-  ];
-
-  const [docList, setDocList] = useState(doctors && doctors.length > 0 ? doctors : defaultDoctors);
-
-  const handleVerified = (docIdentifier, newStatus) => {
-    setDocList(docList.map(d => (d.id === docIdentifier || d.name === docIdentifier) ? { ...d, status: newStatus } : d));
+  const loadDoctors = async () => {
+    try {
+      const res = await healthApi.getDoctors();
+      const list = res?.data?.data || res?.data || [];
+      if (Array.isArray(list)) {
+        setDoctors(list.map(d => ({
+          id: d.id,
+          name: d.name,
+          hospital: d.hospital_name || 'Independent Practice',
+          specialty: d.specialty || 'General Physician',
+          exp: `${d.experience_years || 5}+ Years`,
+          registrationNumber: d.registration_number || 'MCI-TS-PENDING',
+          status: d.verification_status === 'verified' ? 'Verified' : 'Pending',
+          avatar: d.photo_url || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200',
+        })));
+      }
+    } catch (e) {
+      console.warn('Live doctors fetch note:', e);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const filtered = docList.filter(d => {
-    const matchSearch = d.name.toLowerCase().includes(searchTerm.toLowerCase()) || d.hospital.toLowerCase().includes(searchTerm.toLowerCase());
+  useEffect(() => {
+    loadDoctors();
+  }, []);
+
+  const handleVerified = (docIdentifier, newStatus) => {
+    setDoctors(doctors.map(d => (d.id === docIdentifier || d.name === docIdentifier) ? { ...d, status: newStatus } : d));
+  };
+
+  const filtered = doctors.filter(d => {
+    const matchSearch = d.name.toLowerCase().includes(searchTerm.toLowerCase()) || (d.hospital && d.hospital.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchSpecialty = specialtyFilter === 'All' || d.specialty === specialtyFilter;
     return matchSearch && matchSpecialty;
   });
 
+  const verifiedCount = doctors.filter(d => d.status === 'Verified').length;
+  const pendingCount = doctors.filter(d => d.status === 'Pending').length;
+
   return (
     <div>
-      {/* 4 Doctor Summary Stat Cards */}
+      {/* 4 Doctor Summary Stat Cards (Calculated directly from Live MySQL) */}
       <div className="metrics-grid" style={{ marginBottom: 20 }}>
         <div className="metric-card" style={{ padding: '16px' }}>
           <div className="metric-info">
             <h3>Total Registered</h3>
-            <div className="metric-value">1,284</div>
+            <div className="metric-value">{doctors.length}</div>
           </div>
         </div>
         <div className="metric-card" style={{ padding: '16px' }}>
           <div className="metric-info">
             <h3>Verified Doctors</h3>
-            <div className="metric-value" style={{ color: 'var(--success-text)' }}>1,252</div>
+            <div className="metric-value" style={{ color: 'var(--success-text)' }}>{verifiedCount}</div>
           </div>
         </div>
         <div className="metric-card" style={{ padding: '16px' }}>
           <div className="metric-info">
             <h3>Pending KYC Review</h3>
-            <div className="metric-value" style={{ color: 'var(--warning-text)' }}>32</div>
+            <div className="metric-value" style={{ color: 'var(--warning-text)' }}>{pendingCount}</div>
           </div>
         </div>
         <div className="metric-card" style={{ padding: '16px' }}>
           <div className="metric-info">
-            <h3>Independent Practice</h3>
-            <div className="metric-value" style={{ color: 'var(--primary)' }}>240</div>
+            <h3>Verification Rate</h3>
+            <div className="metric-value" style={{ color: 'var(--primary)' }}>
+              {doctors.length > 0 ? `${Math.round((verifiedCount / doctors.length) * 100)}%` : '0%'}
+            </div>
           </div>
         </div>
       </div>
@@ -63,7 +86,7 @@ export default function DoctorsView({ doctors, onOpenAddDoctor }) {
         <div className="table-header">
           <div className="table-title">
             <h3>Doctors Directory & Credentialing</h3>
-            <p>MCI Council verification and hospital practice affiliations</p>
+            <p>Live doctors roster from Hostinger MySQL</p>
           </div>
 
           <div className="table-actions">
@@ -109,50 +132,64 @@ export default function DoctorsView({ doctors, onOpenAddDoctor }) {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((d, i) => (
-              <tr key={i}>
-                <td>
-                  <div className="table-user-cell">
-                    <img src={d.avatar} className="table-avatar" alt={d.name} />
-                    <div>
-                      <strong>{d.name}</strong>
-                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                        {d.registrationNumber || 'MCI-TS-2012-88421'}
+            {filtered.length > 0 ? (
+              filtered.map((d, i) => (
+                <tr key={d.id || i}>
+                  <td>
+                    <div className="table-user-cell">
+                      <img src={d.avatar} className="table-avatar" alt={d.name} />
+                      <div>
+                        <strong>{d.name}</strong>
+                        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{d.registrationNumber}</div>
                       </div>
                     </div>
-                  </div>
-                </td>
-                <td><strong>{d.specialty}</strong></td>
-                <td>
-                  <span style={{ fontWeight: d.hospital === 'Independent Practice' ? 600 : 700, color: d.hospital === 'Independent Practice' ? 'var(--text-muted)' : 'var(--text-main)' }}>
-                    {d.hospital}
-                  </span>
-                </td>
-                <td>{d.exp}</td>
-                <td>
-                  <span className={`status-badge ${d.status === 'Verified' ? 'active' : d.status === 'Pending' ? 'pending' : 'inactive'}`}>
-                    {d.status === 'Verified' ? '✓ Verified' : d.status === 'Pending' ? '● Pending KYC' : 'Rejected'}
-                  </span>
-                </td>
-                <td>
-                  <div className="action-btn-group">
-                    <button className="action-btn" title="Verify Credentials" onClick={() => setSelectedDoctorForVerify(d)}>
-                      <ShieldCheck size={16} color="var(--primary)" />
-                    </button>
-                  </div>
+                  </td>
+                  <td>
+                    <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>{d.specialty}</span>
+                  </td>
+                  <td>
+                    <span style={{ fontSize: '0.85rem' }}>{d.hospital}</span>
+                  </td>
+                  <td>{d.exp}</td>
+                  <td>
+                    <span className={`status-badge ${d.status === 'Verified' ? 'active' : 'pending'}`}>
+                      {d.status}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="action-btn-group">
+                      <button className="action-btn" title="View Credentials" onClick={() => setSelectedDoctorForVerify(d)}>
+                        <Eye size={15} />
+                      </button>
+                      {d.status === 'Pending' && (
+                        <button className="action-btn" title="Approve Verification" onClick={() => handleVerified(d.id, 'Verified')}>
+                          <CheckCircle size={15} color="var(--success)" />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
+                  {loading ? 'Loading live doctors from MySQL...' : 'No doctors found in the database.'}
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
 
-      <DoctorVerificationModal
-        isOpen={!!selectedDoctorForVerify}
-        onClose={() => setSelectedDoctorForVerify(null)}
-        doctor={selectedDoctorForVerify}
-        onVerified={handleVerified}
-      />
+      {/* Doctor Verification Modal */}
+      {selectedDoctorForVerify && (
+        <DoctorVerificationModal
+          isOpen={!!selectedDoctorForVerify}
+          onClose={() => setSelectedDoctorForVerify(null)}
+          doctor={selectedDoctorForVerify}
+          onVerified={handleVerified}
+        />
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import AddDoctorModal from './components/AddDoctorModal';
@@ -17,63 +17,9 @@ import ReportsView from './views/ReportsView';
 import AuditLogsView from './views/AuditLogsView';
 import SettingsView from './views/SettingsView';
 
-import { healthApi } from './services/api';
-
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isAddDoctorOpen, setIsAddDoctorOpen] = useState(false);
-
-  // Live data states
-  const [hospitals, setHospitals] = useState([]);
-  const [doctors, setDoctors] = useState([]);
-
-  // Fetch live hospitals and doctors from Node.js / MySQL backend
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const [hospRes, docRes] = await Promise.all([
-          healthApi.getHospitals().catch(() => null),
-          healthApi.getDoctors().catch(() => null),
-        ]);
-
-        if (hospRes?.data && hospRes.data.length > 0) {
-          setHospitals(hospRes.data.map(h => ({
-            name: h.name,
-            location: h.location || h.city || 'Hyderabad, TS',
-            address: h.address || 'Hyderabad, TS',
-            type: h.hospital_type || 'Super Specialty',
-            license: h.license_number || 'TS-HYD-HOSP-1995-0012',
-            doctors: h.staff_count || 120,
-            beds: '500 (60 ICU)',
-            departments: ['Cardiology', 'Neurology', 'Orthopedics', 'Gynecology', 'Pediatrics', 'General Medicine'],
-            users: (h.reviews_count ? h.reviews_count * 5 : 4500).toLocaleString(),
-            status: h.status || 'Active',
-            phone: h.primary_phone || '+91 40 4488 5000'
-          })));
-        }
-
-        if (docRes?.data && docRes.data.length > 0) {
-          setDoctors(docRes.data.map(d => ({
-            id: d.id,
-            name: d.name,
-            hospital: d.hospital_name || 'KIMS Hospitals',
-            specialty: d.specialty,
-            exp: `${d.experience_years || 10}+ Years`,
-            registrationNumber: d.registration_number || 'MCI-TS-2012-88421',
-            status: d.verification_status || 'Verified',
-            avatar: d.photo_url || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200',
-          })));
-        }
-      } catch (e) {
-        console.warn('Backend live loading note:', e);
-      }
-    }
-    loadData();
-  }, []);
-
-  const handleDoctorAdded = (newDoc) => {
-    setDoctors([newDoc, ...doctors]);
-  };
 
   return (
     <div className="app-container">
@@ -93,17 +39,10 @@ export default function App() {
             />
           )}
 
-          {activeTab === 'hospitals' && (
-            <HospitalsView
-              hospitals={hospitals}
-            />
-          )}
+          {activeTab === 'hospitals' && <HospitalsView />}
 
           {activeTab === 'doctors' && (
-            <DoctorsView
-              doctors={doctors}
-              onOpenAddDoctor={() => setIsAddDoctorOpen(true)}
-            />
+            <DoctorsView onOpenAddDoctor={() => setIsAddDoctorOpen(true)} />
           )}
 
           {activeTab === 'users' && <UsersView />}
@@ -153,7 +92,6 @@ export default function App() {
       <AddDoctorModal
         isOpen={isAddDoctorOpen}
         onClose={() => setIsAddDoctorOpen(false)}
-        onDoctorAdded={handleDoctorAdded}
       />
     </div>
   );
