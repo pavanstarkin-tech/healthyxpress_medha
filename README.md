@@ -125,20 +125,20 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    D1[🩺 Doctor Login & Profile] --> D2{MCI Verification Status}
-    D2 -->|Pending| D3[Upload Medical Registration & Degree Certs]
-    D3 --> D4[Admin Reviews & Approves in Workspace]
-    D2 -->|Verified| D5[Live Daily Queue & Patient Telemetry]
+    D1["🩺 Doctor Login & Profile"] --> D2{"MCI Verification Status"}
+    D2 -->|"Pending"| D3["Upload Medical Registration & Degree Certs"]
+    D3 --> D4["Admin Reviews & Approves in Workspace"]
+    D2 -->|"Verified"| D5["Live Daily Queue & Patient Telemetry"]
     
-    D5 --> D6[In-Clinic / Video Appointments]
-    D5 --> D7[Doctor Scans Patient ABDM QR Pass]
+    D5 --> D6["In-Clinic / Video Appointments"]
+    D5 --> D7["Doctor Scans Patient ABDM QR Pass"]
     
-    D7 --> D8[API Validates 15-Min Token & Logs Audit Trail]
-    D8 --> D9[Unlocks Patient Medical History & Surgeries]
+    D7 --> D8["API Validates 15-Min Token & Logs Audit Trail"]
+    D8 --> D9["Unlocks Patient Medical History & Surgeries"]
     
-    D6 --> D10[Issue Digital Prescription with Timed Dosages]
-    D10 --> D11[Prescription Synced to Patient Aarogyasri Health Vault]
-    D11 --> D12[Earnings & Payout Ledger Updated (80% Doctor Payout)]
+    D6 --> D10["Issue Digital Prescription with Timed Dosages"]
+    D10 --> D11["Prescription Synced to Patient Aarogyasri Health Vault"]
+    D11 --> D12["Earnings & Payout Ledger Updated (80% Doctor Payout)"]
 ```
 
 ---
@@ -147,14 +147,14 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    H1[🏥 Hospital Empanelment Wizard] --> H2[Step 1: Basic Facility Details & License]
-    H2 --> H3[Step 2: 24/7 Hotline & Contact]
-    H3 --> H4[Step 3: Mapbox Location & GPS Coordinates]
-    H4 --> H5[Step 4: Emergency, ICU, Lab & Radiology Services]
-    H5 --> H6[Step 5: Clinical Departments: Cardiology, Ortho, etc.]
-    H6 --> H7[Step 6: Bed Capacity & OTs]
-    H7 --> H8[Step 7: Medical Director Administration]
-    H8 --> H9[Step 8: Review & Activate Facility in MySQL]
+    H1["🏥 Hospital Empanelment Wizard"] --> H2["Step 1: Basic Facility Details & License"]
+    H2 --> H3["Step 2: 24/7 Hotline & Contact"]
+    H3 --> H4["Step 3: Mapbox Location & GPS Coordinates"]
+    H4 --> H5["Step 4: Emergency, ICU, Lab & Radiology Services"]
+    H5 --> H6["Step 5: Clinical Departments: Cardiology, Ortho, etc."]
+    H6 --> H7["Step 6: Bed Capacity & OTs"]
+    H7 --> H8["Step 7: Medical Director Administration"]
+    H8 --> H9["Step 8: Review & Activate Facility in MySQL"]
 ```
 
 ---
@@ -163,25 +163,25 @@ flowchart LR
 
 ```mermaid
 graph TD
-    SA[👑 Super Admin Control Center] --> Ops[Operations Management]
-    SA --> AICont[AI Engine & Content]
-    SA --> SecSys[Security & Analytics]
+    SA["👑 Super Admin Control Center"] --> Ops["Operations Management"]
+    SA --> AICont["AI Engine & Content"]
+    SA --> SecSys["Security & Analytics"]
 
-    Ops --> M1[Dashboard - 8 Real-time KPI Metric Cards]
-    Ops --> M2[Hospitals - Empaneled facilities & Bed hierarchy]
-    Ops --> M3[Doctors - Credentialing checklist & status toggles]
-    Ops --> M4[Users - Patient registry & Aarogyasri ID passes]
-    Ops --> M5[Appointments - Central lifecycle tracker]
-    Ops --> M6[Payments - Razorpay gross revenue & doctor payouts]
-    Ops --> M7[Tickets - 2-column helpdesk resolution board]
+    Ops --> M1["Dashboard - 8 Real-time KPI Metric Cards"]
+    Ops --> M2["Hospitals - Empaneled facilities & Bed hierarchy"]
+    Ops --> M3["Doctors - Credentialing checklist & status toggles"]
+    Ops --> M4["Users - Patient registry & Aarogyasri ID passes"]
+    Ops --> M5["Appointments - Central lifecycle tracker"]
+    Ops --> M6["Payments - Razorpay gross revenue & doctor payouts"]
+    Ops --> M7["Tickets - 2-column helpdesk resolution board"]
 
-    AICont --> M8[Visual Clinical AI Rule Builder]
-    AICont --> M9[CMS & Outbreak Health Protocols]
-    AICont --> M10[FCM Push & In-App Notification Broadcast]
+    AICont --> M8["Visual Clinical AI Rule Builder"]
+    AICont --> M9["CMS & Outbreak Health Protocols"]
+    AICont --> M10["FCM Push & In-App Notification Broadcast"]
 
-    SecSys --> M11[Volume Curves & Daily Booking Trends]
-    SecSys --> M12[Immutable ABDM & Clinical Audit Trails]
-    SecSys --> M13[System Settings & Security Config]
+    SecSys --> M11["Volume Curves & Daily Booking Trends"]
+    SecSys --> M12["Immutable ABDM & Clinical Audit Trails"]
+    SecSys --> M13["System Settings & Security Config"]
 ```
 
 ---
