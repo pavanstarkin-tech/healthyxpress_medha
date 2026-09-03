@@ -105,6 +105,9 @@ if ($path === '/api/doctors' && $method === 'GET') {
 if (preg_match('#^/api/doctors/([^/]+)/status$#', $path, $matches) && $method === 'PUT') {
     DoctorController::toggleStatus($matches[1]);
 }
+if (preg_match('#^/api/doctors/([^/]+)/verify$#', $path, $matches) && $method === 'PUT') {
+    DoctorController::updateVerificationStatus($matches[1]);
+}
 if (preg_match('#^/api/doctors/([^/]+)$#', $path, $matches) && $method === 'GET') {
     DoctorController::getById($matches[1]);
 }

@@ -30,6 +30,7 @@ export const healthApi = {
   getDoctors: (params) => api.get('/doctors', { params }),
   getDoctorDetail: (id) => api.get(`/doctors/${id}`),
   toggleDoctorStatus: (id, isOnline) => api.put(`/doctors/${id}/status`, { isOnline }),
+  verifyDoctor: (id, status, notes) => api.put(`/doctors/${id}/verify`, { status, notes }),
 
   // Appointments
   getAllAppointments: () => api.get('/appointments'),
