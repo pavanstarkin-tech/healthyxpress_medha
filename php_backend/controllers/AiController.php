@@ -675,7 +675,7 @@ CAPABILITIES & RULES:
                 'original_price' => 1999,
                 'discount_percent' => 40,
                 'badge' => 'Bestseller',
-                'image_url' => 'https://images.unsplash.com/photo-1631556097152-c39479cbfeab?auto=format&fit=crop&q=80&w=400',
+                'image_url' => 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&q=80&w=400',
                 'cta_label' => 'Order with Free Home Delivery',
                 'features' => ['Auto Sync with App', '50 Free Lancets & Strips', '5-Sec Fast Reading']
             ],

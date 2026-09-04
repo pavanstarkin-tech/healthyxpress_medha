@@ -658,7 +658,7 @@ class MockDatabase {
       originalPrice: 1999.0,
       discountPercent: 40,
       badge: 'Bestseller',
-      imageUrl: 'https://images.unsplash.com/photo-1631556097152-c39479cbfeab?auto=format&fit=crop&q=80&w=400',
+      imageUrl: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&q=80&w=400',
       ctaLabel: 'Order with Free Delivery',
       features: ['Auto Sync with App', '50 Free Lancets & Strips', '5-Sec Fast Blood Reading', 'ABDM Verified'],
       rating: 4.8,

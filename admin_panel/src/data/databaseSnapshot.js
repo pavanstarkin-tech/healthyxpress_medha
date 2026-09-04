@@ -514,7 +514,7 @@ export const DB_SNAPSHOT = {
       stockCount: 145,
       rating: 4.8,
       reviewCount: 312,
-      imageUrl: 'https://images.unsplash.com/photo-1631556097152-c39479cbfeab?auto=format&fit=crop&q=80&w=400',
+      imageUrl: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&q=80&w=400',
       badge: 'Bestseller',
       features: ['Auto Sync with HealthExpress App', '50 Free Lancets & Strips', '5-Sec Fast Blood Reading', 'ABDM Verified']
     },

@@ -35,8 +35,7 @@ const NAV_SECTIONS = [
   {
     title: 'BUSINESS & MONETIZATION',
     items: [
-      { id: 'business', label: 'AI Business Wing & Leads', icon: TrendingUp },
-      { id: 'products', label: 'Health Products & Packages', icon: ShoppingBag },
+      { id: 'business', label: 'AI Business & Products', icon: TrendingUp },
     ]
   },
   {
