@@ -3,6 +3,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../data/production_database.dart';
 import '../../models/doctor_model.dart';
+import '../../services/api_service.dart';
 import 'doctor_detail_screen.dart';
 
 class DoctorSearchScreen extends StatefulWidget {
@@ -17,6 +18,8 @@ class _DoctorSearchScreenState extends State<DoctorSearchScreen> {
   final _searchController = TextEditingController();
   String _selectedSpecialty = 'All';
   String _selectedFilter = 'All';
+  List<DoctorModel> _doctorsList = List.from(ProductionDatabase.doctors);
+  bool _isLoading = false;
 
   final List<String> _specialties = [
     'All',
@@ -37,6 +40,18 @@ class _DoctorSearchScreenState extends State<DoctorSearchScreen> {
     if (widget.initialSpecialty != null) {
       _selectedSpecialty = widget.initialSpecialty!;
     }
+    _fetchLiveDoctors();
+  }
+
+  Future<void> _fetchLiveDoctors() async {
+    try {
+      final remoteDoctors = await ApiService.fetchDoctors();
+      if (remoteDoctors.isNotEmpty && mounted) {
+        setState(() {
+          _doctorsList = remoteDoctors;
+        });
+      }
+    } catch (_) {}
   }
 
   @override
@@ -46,7 +61,7 @@ class _DoctorSearchScreenState extends State<DoctorSearchScreen> {
   }
 
   List<DoctorModel> get _filteredDoctors {
-    return ProductionDatabase.doctors.where((doc) {
+    return _doctorsList.where((doc) {
       final matchesSearch = _searchController.text.isEmpty ||
           doc.name.toLowerCase().contains(_searchController.text.toLowerCase()) ||
           doc.specialty.toLowerCase().contains(_searchController.text.toLowerCase()) ||

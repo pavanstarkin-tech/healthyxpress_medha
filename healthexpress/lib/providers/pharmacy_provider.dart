@@ -3,6 +3,7 @@ import '../core/constants/app_constants.dart';
 import '../models/medicine_model.dart';
 import '../models/medical_store_model.dart';
 import '../data/production_database.dart';
+import '../services/api_service.dart';
 
 class ActiveOrder {
   final String orderId;
@@ -36,6 +37,7 @@ class PharmacyProvider extends ChangeNotifier {
   final List<MedicineModel> _medicines = List.from(ProductionDatabase.medicines);
   final List<MedicalStoreModel> _medicalStores = List.from(ProductionDatabase.medicalStores);
   MedicalStoreModel? _selectedStore;
+  bool _isLoading = false;
 
   final List<CartItemModel> _cart = [
     CartItemModel(medicine: ProductionDatabase.medicines[0], quantity: 1), // Paracetamol
@@ -48,7 +50,7 @@ class PharmacyProvider extends ChangeNotifier {
   ActiveOrder? _activeOrder;
 
   PharmacyProvider() {
-    // Initialize default active order for demonstration
+    // Initialize active order
     _activeOrder = ActiveOrder(
       orderId: '#HE12345678',
       items: [
@@ -57,12 +59,31 @@ class PharmacyProvider extends ChangeNotifier {
         CartItemModel(medicine: ProductionDatabase.medicines[2], quantity: 1),
       ],
       subtotal: 150.0,
-      deliveryFee: 0.0, // Free quick delivery on > ₹99
+      deliveryFee: 0.0,
       total: 150.0,
       deliveryAddress: _selectedAddress,
       status: DeliveryStatus.outForDelivery,
       orderTime: DateTime.now().subtract(const Duration(minutes: 12)),
     );
+
+    // Fetch real live inventory from MySQL backend
+    loadFromLiveBackend();
+  }
+
+  bool get isLoading => _isLoading;
+
+  Future<void> loadFromLiveBackend() async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final remoteMeds = await ApiService.fetchMedicines();
+      if (remoteMeds.isNotEmpty) {
+        _medicines.clear();
+        _medicines.addAll(remoteMeds);
+      }
+    } catch (_) {}
+    _isLoading = false;
+    notifyListeners();
   }
 
   List<MedicineModel> get medicines => _medicines;

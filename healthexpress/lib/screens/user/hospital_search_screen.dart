@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../data/production_database.dart';
 import '../../models/hospital_model.dart';
+import '../../services/api_service.dart';
 import 'hospital_detail_screen.dart';
 
 class HospitalSearchScreen extends StatefulWidget {
@@ -14,8 +15,26 @@ class HospitalSearchScreen extends StatefulWidget {
 class _HospitalSearchScreenState extends State<HospitalSearchScreen> {
   final _searchController = TextEditingController();
   String _selectedCategory = 'All';
+  List<HospitalModel> _hospitalsList = List.from(ProductionDatabase.hospitals);
 
   final List<String> _categories = ['All', 'Multi Speciality', 'Cardiac', 'Ortho', 'Neurology', 'Gynecology'];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchLiveHospitals();
+  }
+
+  Future<void> _fetchLiveHospitals() async {
+    try {
+      final remoteHospitals = await ApiService.fetchHospitals();
+      if (remoteHospitals.isNotEmpty && mounted) {
+        setState(() {
+          _hospitalsList = remoteHospitals;
+        });
+      }
+    } catch (_) {}
+  }
 
   @override
   void dispose() {
@@ -24,7 +43,7 @@ class _HospitalSearchScreenState extends State<HospitalSearchScreen> {
   }
 
   List<HospitalModel> get _filteredHospitals {
-    return ProductionDatabase.hospitals.where((h) {
+    return _hospitalsList.where((h) {
       final matchesSearch = _searchController.text.isEmpty ||
           h.name.toLowerCase().contains(_searchController.text.toLowerCase()) ||
           h.location.toLowerCase().contains(_searchController.text.toLowerCase()) ||
