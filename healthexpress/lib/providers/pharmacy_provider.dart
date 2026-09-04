@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../core/constants/app_constants.dart';
 import '../models/medicine_model.dart';
+import '../models/medical_store_model.dart';
 import '../data/production_database.dart';
 
 class ActiveOrder {
@@ -33,6 +34,9 @@ class ActiveOrder {
 
 class PharmacyProvider extends ChangeNotifier {
   final List<MedicineModel> _medicines = List.from(ProductionDatabase.medicines);
+  final List<MedicalStoreModel> _medicalStores = List.from(ProductionDatabase.medicalStores);
+  MedicalStoreModel? _selectedStore;
+
   final List<CartItemModel> _cart = [
     CartItemModel(medicine: ProductionDatabase.medicines[0], quantity: 1), // Paracetamol
     CartItemModel(medicine: ProductionDatabase.medicines[1], quantity: 1), // Cetirizine
@@ -62,10 +66,28 @@ class PharmacyProvider extends ChangeNotifier {
   }
 
   List<MedicineModel> get medicines => _medicines;
+  List<MedicalStoreModel> get medicalStores => _medicalStores;
+  MedicalStoreModel? get selectedStore => _selectedStore;
   List<CartItemModel> get cart => _cart;
   String get selectedAddress => _selectedAddress;
   String? get uploadedPrescriptionPath => _uploadedPrescriptionPath;
   ActiveOrder? get activeOrder => _activeOrder;
+
+  void selectStore(MedicalStoreModel? store) {
+    if (_selectedStore?.id == store?.id) {
+      _selectedStore = null; // Toggle off to show all
+    } else {
+      _selectedStore = store;
+    }
+    notifyListeners();
+  }
+
+  List<MedicineModel> getMedicinesForStore() {
+    if (_selectedStore == null) {
+      return _medicines;
+    }
+    return _medicines.where((m) => _selectedStore!.availableMedicineIds.contains(m.id)).toList();
+  }
 
   int get totalCartCount => _cart.fold(0, (sum, item) => sum + item.quantity);
   double get cartSubtotal => _cart.fold(0.0, (sum, item) => sum + item.totalPrice);

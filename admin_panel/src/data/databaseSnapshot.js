@@ -742,6 +742,82 @@ export const DB_SNAPSHOT = {
       lastInteraction: '03 Sep 2026, 02:30 PM',
       aiTrigger: 'User requested comprehensive diagnostic checkup for parents'
     }
+  ],
+
+  medicalStores: [
+    {
+      id: 'STORE-01',
+      name: 'Apollo Pharmacy 24x7',
+      address: 'Plot 12, Phase 2, Hitech City Main Rd, Hyderabad',
+      area: 'Hitech City',
+      city: 'Hyderabad',
+      rating: 4.8,
+      reviews: 420,
+      distanceKm: 0.8,
+      etaMinutes: 12,
+      is24x7: true,
+      isOpen: true,
+      phone: '+91 40 2360 8888',
+      license: 'TS-HYD-PHARM-2024-8801',
+      imageUrl: 'https://images.unsplash.com/photo-1576602976047-174e57a47881?auto=format&fit=crop&q=80&w=400',
+      availableMedicinesCount: 240,
+      monthlyFulfillments: 1280
+    },
+    {
+      id: 'STORE-02',
+      name: 'MedPlus Chemist & Superstore',
+      address: 'Road No 36, Opp. Metro Pillar 1400, Jubilee Hills, Hyderabad',
+      area: 'Jubilee Hills',
+      city: 'Hyderabad',
+      rating: 4.7,
+      reviews: 310,
+      distanceKm: 1.5,
+      etaMinutes: 15,
+      is24x7: true,
+      isOpen: true,
+      phone: '+91 40 4455 6677',
+      license: 'TS-HYD-PHARM-2024-4421',
+      imageUrl: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&q=80&w=400',
+      availableMedicinesCount: 195,
+      monthlyFulfillments: 940
+    },
+    {
+      id: 'STORE-03',
+      name: 'Wellness Forever 15-Min Dark Store',
+      address: 'Near Inorbit Mall, Mindspace Junction, Madhapur, Hyderabad',
+      area: 'Madhapur',
+      city: 'Hyderabad',
+      rating: 4.9,
+      reviews: 540,
+      distanceKm: 2.1,
+      etaMinutes: 14,
+      is24x7: true,
+      isOpen: true,
+      phone: '+91 40 6789 0011',
+      license: 'TS-HYD-PHARM-2024-9904',
+      imageUrl: 'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?auto=format&fit=crop&q=80&w=400',
+      availableMedicinesCount: 310,
+      monthlyFulfillments: 1650
+    },
+    {
+      id: 'STORE-04',
+      name: 'Sri Balaji Medical & General Store',
+      address: 'Old Mumbai Highway, Gachibowli, Hyderabad',
+      area: 'Gachibowli',
+      city: 'Hyderabad',
+      rating: 4.5,
+      reviews: 180,
+      distanceKm: 2.8,
+      etaMinutes: 20,
+      is24x7: false,
+      isOpen: true,
+      phone: '+91 40 2300 1122',
+      license: 'TS-HYD-PHARM-2023-1129',
+      imageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=400',
+      availableMedicinesCount: 145,
+      monthlyFulfillments: 620
+    }
   ]
 };
+
 

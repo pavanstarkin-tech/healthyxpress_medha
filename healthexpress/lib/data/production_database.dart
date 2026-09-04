@@ -4,6 +4,7 @@ import '../models/doctor_model.dart';
 import '../models/hospital_model.dart';
 import '../models/appointment_model.dart';
 import '../models/medicine_model.dart';
+import '../models/medical_store_model.dart';
 import '../models/lab_test_model.dart';
 import '../models/emergency_model.dart';
 import '../models/ticket_model.dart';
@@ -343,6 +344,73 @@ class ProductionDatabase {
       bio: 'Child health expert specializing in newborn care, vaccination, pediatric nutrition, and seasonal flu management.',
       isVerified: true,
       isOnline: true,
+    ),
+  ];
+
+  static final List<MedicalStoreModel> medicalStores = [
+    MedicalStoreModel(
+      id: 'STORE-01',
+      name: 'Apollo Pharmacy 24x7',
+      address: 'Plot 12, Phase 2, Hitech City Main Rd, Hyderabad',
+      area: 'Hitech City',
+      rating: 4.8,
+      reviewCount: 420,
+      distanceKm: 0.8,
+      etaMinutes: 12,
+      is24x7: true,
+      isOpen: true,
+      phone: '+91 40 2360 8888',
+      licenseNumber: 'TS-HYD-PHARM-2024-8801',
+      imageUrl: 'https://images.unsplash.com/photo-1576602976047-174e57a47881?auto=format&fit=crop&q=80&w=400',
+      availableMedicineIds: ['MED-01', 'MED-02', 'MED-03', 'MED-04', 'MED-05', 'MED-06', 'MED-07', 'MED-08'],
+    ),
+    MedicalStoreModel(
+      id: 'STORE-02',
+      name: 'MedPlus Chemist & Superstore',
+      address: 'Road No 36, Opp. Metro Pillar 1400, Jubilee Hills, Hyderabad',
+      area: 'Jubilee Hills',
+      rating: 4.7,
+      reviewCount: 310,
+      distanceKm: 1.5,
+      etaMinutes: 15,
+      is24x7: true,
+      isOpen: true,
+      phone: '+91 40 4455 6677',
+      licenseNumber: 'TS-HYD-PHARM-2024-4421',
+      imageUrl: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&q=80&w=400',
+      availableMedicineIds: ['MED-01', 'MED-02', 'MED-04', 'MED-05', 'MED-08'],
+    ),
+    MedicalStoreModel(
+      id: 'STORE-03',
+      name: 'Wellness Forever 15-Min Dark Store',
+      address: 'Near Inorbit Mall, Mindspace Junction, Madhapur, Hyderabad',
+      area: 'Madhapur',
+      rating: 4.9,
+      reviewCount: 540,
+      distanceKm: 2.1,
+      etaMinutes: 14,
+      is24x7: true,
+      isOpen: true,
+      phone: '+91 40 6789 0011',
+      licenseNumber: 'TS-HYD-PHARM-2024-9904',
+      imageUrl: 'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?auto=format&fit=crop&q=80&w=400',
+      availableMedicineIds: ['MED-01', 'MED-02', 'MED-03', 'MED-05', 'MED-06', 'MED-07'],
+    ),
+    MedicalStoreModel(
+      id: 'STORE-04',
+      name: 'Sri Balaji Medical & General Store',
+      address: 'Old Mumbai Highway, Gachibowli, Hyderabad',
+      area: 'Gachibowli',
+      rating: 4.5,
+      reviewCount: 180,
+      distanceKm: 2.8,
+      etaMinutes: 20,
+      is24x7: false,
+      isOpen: true,
+      phone: '+91 40 2300 1122',
+      licenseNumber: 'TS-HYD-PHARM-2023-1129',
+      imageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=400',
+      availableMedicineIds: ['MED-01', 'MED-03', 'MED-04', 'MED-06', 'MED-08'],
     ),
   ];
 

@@ -36,8 +36,10 @@ class _PharmacyScreenState extends State<PharmacyScreen> {
   Widget build(BuildContext context) {
     final pharmacyProv = context.watch<PharmacyProvider>();
     final activeOrder = pharmacyProv.activeOrder;
+    final selectedStore = pharmacyProv.selectedStore;
 
-    final filteredMedicines = pharmacyProv.medicines.where((m) {
+    final storeMedicines = pharmacyProv.getMedicinesForStore();
+    final filteredMedicines = storeMedicines.where((m) {
       final matchesSearch = _searchController.text.isEmpty ||
           m.name.toLowerCase().contains(_searchController.text.toLowerCase()) ||
           m.genericName.toLowerCase().contains(_searchController.text.toLowerCase());
@@ -102,7 +104,7 @@ class _PharmacyScreenState extends State<PharmacyScreen> {
             ),
             const SizedBox(height: 16),
 
-            // 15-Minute Blinkit-style Delivery Banner (Matching Reference Image 2 & 3)
+            // 15-Minute Blinkit-style Delivery Banner
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
@@ -125,14 +127,16 @@ class _PharmacyScreenState extends State<PharmacyScreen> {
                           child: const Text('Flat 20% OFF', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
-                          'Quick Delivery in 15 mins',
-                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                        Text(
+                          selectedStore != null ? 'Fulfilling from ${selectedStore.name}' : 'Quick Delivery in 12-15 mins',
+                          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
-                          'Doorstep dispatch from nearest verified pharmacy.',
-                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                        Text(
+                          selectedStore != null
+                              ? '${selectedStore.address} (${selectedStore.distanceKm} km)'
+                              : 'Doorstep dispatch from verified nearby dark store pharmacies.',
+                          style: const TextStyle(color: Colors.white70, fontSize: 12),
                         ),
                       ],
                     ),
@@ -144,6 +148,117 @@ class _PharmacyScreenState extends State<PharmacyScreen> {
                     child: const Icon(Icons.delivery_dining_rounded, color: Colors.white, size: 40),
                   ),
                 ],
+              ),
+            ),
+            const SizedBox(height: 18),
+
+            // Nearby Medical Stores & Local Pharmacies Carousel
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Nearby Medical Stores & Chemists', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                if (selectedStore != null)
+                  GestureDetector(
+                    onTap: () => pharmacyProv.selectStore(null),
+                    child: const Text('View All Stores', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: pharmacyProv.medicalStores.map((store) {
+                  final isSelected = selectedStore?.id == store.id;
+                  return GestureDetector(
+                    onTap: () => pharmacyProv.selectStore(store),
+                    child: Container(
+                      width: 230,
+                      margin: const EdgeInsets.only(right: 12),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isSelected ? AppColors.primary : AppColors.border,
+                          width: isSelected ? 2 : 1,
+                        ),
+                        boxShadow: isSelected
+                            ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.15), blurRadius: 8, offset: const Offset(0, 4))]
+                            : null,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  store.imageUrl,
+                                  width: 44,
+                                  height: 44,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Container(
+                                    width: 44,
+                                    height: 44,
+                                    color: AppColors.primaryLight,
+                                    child: const Icon(Icons.local_pharmacy_rounded, color: AppColors.primary, size: 22),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      store.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.textPrimary),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.star_rounded, size: 13, color: Color(0xFFF59E0B)),
+                                        const SizedBox(width: 2),
+                                        Text('${store.rating}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+                                        const SizedBox(width: 4),
+                                        Text('(${store.reviewCount})', style: TextStyle(fontSize: 10, color: Colors.grey.shade600)),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFDCFCE7),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  '⚡ ${store.etaMinutes} MINS',
+                                  style: const TextStyle(color: Color(0xFF166534), fontWeight: FontWeight.bold, fontSize: 10),
+                                ),
+                              ),
+                              Text(
+                                '${store.distanceKm} km • ${store.area}',
+                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
             ),
             const SizedBox(height: 18),
@@ -223,8 +338,30 @@ class _PharmacyScreenState extends State<PharmacyScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Medicines List
-            const Text('Available Medicines', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+            // Medicines List Header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  selectedStore != null
+                      ? 'Stock at ${selectedStore.name} (${filteredMedicines.length})'
+                      : 'Available Medicines (${filteredMedicines.length})',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                ),
+                if (selectedStore != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryLight,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Text(
+                      'Store Filtered',
+                      style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 11),
+                    ),
+                  ),
+              ],
+            ),
             const SizedBox(height: 12),
             ListView.builder(
               shrinkWrap: true,

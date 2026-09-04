@@ -28,13 +28,18 @@ import {
   Check,
   Image as ImageIcon,
   Tag,
-  AlertCircle
+  AlertCircle,
+  Store,
+  MapPin,
+  Clock,
+  Phone,
+  FileText
 } from 'lucide-react';
 import MetricCard from '../components/MetricCard';
 import { DB_SNAPSHOT } from '../data/databaseSnapshot';
 
 export default function BusinessWingView() {
-  const [activeSubTab, setActiveSubTab] = useState('segments'); // 'segments' | 'products' | 'leads' | 'rules'
+  const [activeSubTab, setActiveSubTab] = useState('segments'); // 'segments' | 'products' | 'stores' | 'leads' | 'rules'
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSegment, setSelectedSegment] = useState('ALL');
   const [promoCode, setPromoCode] = useState('HEALTHEXPRESS20');
@@ -45,6 +50,78 @@ export default function BusinessWingView() {
   const [productsList, setProductsList] = useState(DB_SNAPSHOT.businessProducts || []);
   const [showAddModal, setShowAddModal] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+
+  // Live medical stores state initialized from DB_SNAPSHOT
+  const [medicalStoresList, setMedicalStoresList] = useState(DB_SNAPSHOT.medicalStores || []);
+  const [showAddStoreModal, setShowAddStoreModal] = useState(false);
+
+  const verifiedStorePresets = [
+    { label: 'Apollo Pharmacy Store', url: 'https://images.unsplash.com/photo-1576602976047-174e57a47881?auto=format&fit=crop&q=80&w=400' },
+    { label: 'MedPlus Modern Chemist', url: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&q=80&w=400' },
+    { label: 'Wellness Forever Dark Store', url: 'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?auto=format&fit=crop&q=80&w=400' },
+    { label: 'Balaji Healthcare Superstore', url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=400' },
+  ];
+
+  const [newStore, setNewStore] = useState({
+    name: '',
+    area: 'Hitech City',
+    city: 'Hyderabad',
+    address: '',
+    phone: '',
+    license: '',
+    etaMinutes: '15',
+    distanceKm: '1.2',
+    is24x7: true,
+    imageUrl: verifiedStorePresets[0].url
+  });
+
+  const handleAddStore = (e) => {
+    e.preventDefault();
+    if (!newStore.name.trim() || !newStore.address.trim()) {
+      alert('Please fill in Store Name and Address.');
+      return;
+    }
+
+    const createdStore = {
+      id: `STORE-0${medicalStoresList.length + 1}`,
+      name: newStore.name.trim(),
+      address: newStore.address.trim(),
+      area: newStore.area || 'Hyderabad',
+      city: newStore.city || 'Hyderabad',
+      rating: 4.8,
+      reviews: 1,
+      distanceKm: parseFloat(newStore.distanceKm) || 1.5,
+      etaMinutes: parseInt(newStore.etaMinutes) || 15,
+      is24x7: newStore.is24x7,
+      isOpen: true,
+      phone: newStore.phone || '+91 40 2300 0000',
+      license: newStore.license || `TS-HYD-PHARM-2026-${Date.now().toString().slice(-4)}`,
+      imageUrl: newStore.imageUrl || verifiedStorePresets[0].url,
+      availableMedicinesCount: 200,
+      monthlyFulfillments: 0
+    };
+
+    const updatedStores = [createdStore, ...medicalStoresList];
+    setMedicalStoresList(updatedStores);
+    DB_SNAPSHOT.medicalStores = updatedStores;
+
+    setShowAddStoreModal(false);
+    setToastMessage(`Medical Store "${createdStore.name}" registered & live for 15-min delivery!`);
+    setTimeout(() => setToastMessage(''), 4000);
+
+    setNewStore({
+      name: '',
+      area: 'Hitech City',
+      city: 'Hyderabad',
+      address: '',
+      phone: '',
+      license: '',
+      etaMinutes: '15',
+      distanceKm: '1.2',
+      is24x7: true,
+      imageUrl: verifiedStorePresets[0].url
+    });
+  };
 
   const verifiedImagePresets = [
     { label: 'Glucometer / Diabetes Kit', url: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&q=80&w=600' },
@@ -324,7 +401,29 @@ export default function BusinessWingView() {
             transition: 'all 0.2s'
           }}
         >
-          <Package size={16} /> Products & Packages Catalog ({products.length})
+          <Package size={16} /> Products Catalog ({productsList.length})
+        </button>
+
+        <button
+          onClick={() => setActiveSubTab('stores')}
+          style={{
+            flex: 1,
+            padding: '10px 16px',
+            fontSize: '0.85rem',
+            fontWeight: 800,
+            borderRadius: 8,
+            border: 'none',
+            color: activeSubTab === 'stores' ? '#FFFFFF' : 'var(--text-muted)',
+            background: activeSubTab === 'stores' ? 'var(--primary)' : 'transparent',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+        >
+          <Store size={16} /> Nearby Medical Stores ({medicalStoresList.length})
         </button>
 
         <button
@@ -1125,7 +1224,368 @@ export default function BusinessWingView() {
         </div>
       )}
 
-      {/* SUB-TAB 3: LIVE AI LEAD STREAM */}
+      {/* SUB-TAB 3: NEARBY MEDICAL STORES & CHEMISTS */}
+      {activeSubTab === 'stores' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          {/* Header Action Bar */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 14,
+            padding: '16px 20px',
+            background: 'var(--bg-card)',
+            borderRadius: 12,
+            border: '1px solid var(--border)'
+          }}>
+            <div>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
+                Nearby Medical Stores & Hyperlocal Dark Stores ({medicalStoresList.length})
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
+                Powers 12-15 minute doorstep medicine delivery & live stock lookup in the patient mobile app.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <button
+                onClick={() => setShowAddStoreModal(true)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '9px 18px',
+                  borderRadius: 8,
+                  background: 'linear-gradient(135deg, #10B981 0%, #0D9488 100%)',
+                  color: 'white',
+                  fontWeight: 800,
+                  fontSize: '0.85rem',
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)'
+                }}
+              >
+                <Plus size={16} /> Register New Medical Store
+              </button>
+            </div>
+          </div>
+
+          {/* Stores Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
+            {medicalStoresList.map((store) => (
+              <div
+                key={store.id}
+                className="chart-card"
+                style={{
+                  padding: 0,
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  border: '1px solid var(--border)',
+                  borderRadius: 14
+                }}
+              >
+                <div style={{ position: 'relative', height: 150, background: '#F8FAFC' }}>
+                  <img
+                    src={store.imageUrl}
+                    alt={store.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                  <span style={{
+                    position: 'absolute',
+                    top: 12,
+                    left: 12,
+                    padding: '4px 10px',
+                    borderRadius: 20,
+                    background: store.is24x7 ? 'rgba(16, 185, 129, 0.9)' : 'rgba(15, 23, 42, 0.85)',
+                    color: 'white',
+                    fontSize: '0.72rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.4px'
+                  }}>
+                    {store.is24x7 ? '24x7 OPEN' : 'OPEN NOW'}
+                  </span>
+                  <span style={{
+                    position: 'absolute',
+                    top: 12,
+                    right: 12,
+                    padding: '4px 10px',
+                    borderRadius: 20,
+                    background: 'rgba(15, 23, 42, 0.85)',
+                    backdropFilter: 'blur(4px)',
+                    color: '#F59E0B',
+                    fontSize: '0.72rem',
+                    fontWeight: 800
+                  }}>
+                    ★ {store.rating} ({store.reviews})
+                  </span>
+                </div>
+
+                <div style={{ padding: 18, display: 'flex', flexDirection: 'column', flex: 1 }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase', marginBottom: 4 }}>
+                    {store.area} • {store.city}
+                  </div>
+                  <h4 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: 6 }}>
+                    {store.name}
+                  </h4>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: 12, lineHeight: 1.4 }}>
+                    {store.address}
+                  </p>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: 14 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Phone size={13} color="var(--primary)" /> {store.phone}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <FileText size={13} color="#10B981" /> License: <strong>{store.license}</strong>
+                    </div>
+                  </div>
+
+                  {/* Metrics Footer */}
+                  <div style={{ marginTop: 'auto', paddingTop: 12, borderTop: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{
+                      padding: '4px 8px',
+                      background: '#DCFCE7',
+                      color: '#166534',
+                      borderRadius: 6,
+                      fontSize: '0.72rem',
+                      fontWeight: 800
+                    }}>
+                      ⚡ {store.etaMinutes} MINS ETA
+                    </span>
+                    <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                      {store.availableMedicinesCount}+ Medicines in Stock
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ADD MEDICAL STORE MODAL */}
+          {showAddStoreModal && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(15, 23, 42, 0.65)',
+              backdropFilter: 'blur(6px)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 20
+            }}>
+              <div style={{
+                background: 'var(--bg-card)',
+                borderRadius: 16,
+                border: '1px solid var(--border)',
+                width: '100%',
+                maxWidth: 600,
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                <div style={{
+                  padding: '20px 24px',
+                  borderBottom: '1px solid var(--border)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Store size={20} color="var(--primary)" /> Register Nearby Medical Store / Dark Store
+                    </h3>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                      Enables 15-min delivery dispatch and store inventory synchronization in user app.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowAddStoreModal(false)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <form onSubmit={handleAddStore} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-main)' }}>
+                      Store / Pharmacy Name *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Apollo Pharmacy 24x7"
+                      value={newStore.name}
+                      onChange={(e) => setNewStore({ ...newStore, name: e.target.value })}
+                      required
+                      style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-main)', fontSize: '0.88rem' }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-main)' }}>
+                        Area / Suburb *
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Hitech City / Jubilee Hills"
+                        value={newStore.area}
+                        onChange={(e) => setNewStore({ ...newStore, area: e.target.value })}
+                        required
+                        style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-main)', fontSize: '0.88rem' }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-main)' }}>
+                        City *
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Hyderabad"
+                        value={newStore.city}
+                        onChange={(e) => setNewStore({ ...newStore, city: e.target.value })}
+                        required
+                        style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-main)', fontSize: '0.88rem' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-main)' }}>
+                      Full Street Address *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Plot 12, Phase 2, Hitech City Main Rd, Hyderabad"
+                      value={newStore.address}
+                      onChange={(e) => setNewStore({ ...newStore, address: e.target.value })}
+                      required
+                      style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-main)', fontSize: '0.88rem' }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-main)' }}>
+                        Phone / Dispatch Contact
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="+91 40 2360 8888"
+                        value={newStore.phone}
+                        onChange={(e) => setNewStore({ ...newStore, phone: e.target.value })}
+                        style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-main)', fontSize: '0.88rem' }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-main)' }}>
+                        Drug License Number
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="TS-HYD-PHARM-2024-XXXX"
+                        value={newStore.license}
+                        onChange={(e) => setNewStore({ ...newStore, license: e.target.value })}
+                        style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-main)', fontSize: '0.88rem' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-main)' }}>
+                        Average Delivery ETA (Mins)
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="15"
+                        value={newStore.etaMinutes}
+                        onChange={(e) => setNewStore({ ...newStore, etaMinutes: e.target.value })}
+                        style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-main)', fontSize: '0.88rem' }}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', marginTop: 18 }}>
+                        <input
+                          type="checkbox"
+                          checked={newStore.is24x7}
+                          onChange={(e) => setNewStore({ ...newStore, is24x7: e.target.checked })}
+                          style={{ width: 18, height: 18, accentColor: 'var(--primary)' }}
+                        />
+                        Open 24x7 Day & Night
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Preset Image Picker */}
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-main)' }}>
+                      Store Front Image (100% 200 OK Verified)
+                    </label>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
+                      {verifiedStorePresets.map((preset, pIdx) => {
+                        const isChosen = newStore.imageUrl === preset.url;
+                        return (
+                          <div
+                            key={pIdx}
+                            onClick={() => setNewStore({ ...newStore, imageUrl: preset.url })}
+                            style={{
+                              padding: '8px 10px',
+                              borderRadius: 8,
+                              border: isChosen ? '2px solid var(--primary)' : '1px solid var(--border)',
+                              background: isChosen ? 'var(--primary-light)' : 'var(--bg-main)',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 8,
+                              fontSize: '0.78rem',
+                              fontWeight: isChosen ? 800 : 600,
+                              color: isChosen ? 'var(--primary)' : 'var(--text-main)'
+                            }}
+                          >
+                            <img
+                              src={preset.url}
+                              alt={preset.label}
+                              style={{ width: 32, height: 32, borderRadius: 6, objectFit: 'cover' }}
+                            />
+                            <span>{preset.label}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 10, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddStoreModal(false)}
+                      style={{ padding: '10px 18px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-main)', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 24px', borderRadius: 8, background: 'linear-gradient(135deg, #10B981 0%, #0D9488 100%)', color: 'white', fontWeight: 800, fontSize: '0.88rem', border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)' }}
+                    >
+                      <Check size={16} /> Register & Connect Store
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* SUB-TAB 4: LIVE AI LEAD STREAM */}
       {activeSubTab === 'leads' && (
         <div className="chart-card" style={{ padding: 22 }}>
           <h3 style={{ fontSize: '1.05rem', fontWeight: 800, marginBottom: 16, color: 'var(--text-main)' }}>
