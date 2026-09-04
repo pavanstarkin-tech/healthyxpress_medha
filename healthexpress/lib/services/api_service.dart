@@ -296,4 +296,85 @@ class ApiService {
     }
     return [];
   }
+
+  // 10. Fetch User Appointments from MySQL
+  static Future<List<dynamic>> fetchUserAppointments(String userId) async {
+    try {
+      final res = await http.get(Uri.parse('$baseUrl/appointments/user/$userId')).timeout(const Duration(seconds: 8));
+      if (res.statusCode == 200) {
+        final data = _unpackData(res.body);
+        if (data is List) return data;
+      }
+    } catch (e) {
+      // ignore
+    }
+    return [];
+  }
+
+  // 11. Book New Appointment into MySQL
+  static Future<Map<String, dynamic>?> bookAppointment({
+    required String userId,
+    required String doctorId,
+    required String hospitalId,
+    required String appointmentDate,
+    required String timeSlot,
+    required String type,
+    required double fee,
+    String? symptomsSummary,
+    bool isAarogyasri = false,
+  }) async {
+    try {
+      final res = await http.post(
+        Uri.parse('$baseUrl/appointments/book'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'user_id': userId,
+          'doctor_id': doctorId,
+          'hospital_id': hospitalId,
+          'appointment_date': appointmentDate,
+          'time_slot': timeSlot,
+          'type': type,
+          'fee': fee,
+          'symptoms_summary': symptomsSummary ?? 'General Consultation',
+          'is_aarogyasri_applied': isAarogyasri ? 1 : 0,
+        }),
+      ).timeout(const Duration(seconds: 8));
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        final data = _unpackData(res.body);
+        return data is Map<String, dynamic> ? data : jsonDecode(res.body);
+      }
+    } catch (e) {
+      // ignore
+    }
+    return null;
+  }
+
+  // 12. Fetch User Health Records & Lab Vault from MySQL
+  static Future<List<dynamic>> fetchUserHealthRecords(String userId) async {
+    try {
+      final res = await http.get(Uri.parse('$baseUrl/health-records/user/$userId')).timeout(const Duration(seconds: 8));
+      if (res.statusCode == 200) {
+        final data = _unpackData(res.body);
+        if (data is List) return data;
+      }
+    } catch (e) {
+      // ignore
+    }
+    return [];
+  }
+
+  // 13. Fetch Aarogyasri Health Pass Profile from MySQL
+  static Future<Map<String, dynamic>?> fetchAarogyasriProfile(String aarogyasriId) async {
+    try {
+      final res = await http.get(Uri.parse('$baseUrl/auth/aarogyasri/$aarogyasriId')).timeout(const Duration(seconds: 8));
+      if (res.statusCode == 200) {
+        final data = _unpackData(res.body);
+        return data is Map<String, dynamic> ? data : jsonDecode(res.body);
+      }
+    } catch (e) {
+      // ignore
+    }
+    return null;
+  }
 }

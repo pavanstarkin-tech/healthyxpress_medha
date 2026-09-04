@@ -22,17 +22,17 @@ export default function AppointmentsView() {
               doctor: a.doctor_name || 'Dr. Specialist',
               hospital: a.hospital_name || 'Independent Practice',
               date: a.appointment_date,
-              time: a.appointment_time,
-              type: a.consultation_type ? (a.consultation_type === 'in_clinic' ? 'In-Clinic' : a.consultation_type.charAt(0).toUpperCase() + a.consultation_type.slice(1)) : 'In-Clinic',
-              fee: `₹${parseFloat(a.fee || 800).toFixed(0)}`,
-              status: a.status ? a.status.charAt(0).toUpperCase() + a.status.slice(1) : 'Confirmed',
-              payment: 'Paid',
+              time: a.time_slot || a.appointment_time || '10:00 AM',
+              type: a.type || a.consultation_type || 'In-Clinic',
+              fee: `₹${parseFloat(a.fee || 600).toFixed(0)}`,
+              status: (a.booking_status || a.status || 'Confirmed').charAt(0).toUpperCase() + (a.booking_status || a.status || 'Confirmed').slice(1),
+              payment: a.payment_status ? (a.payment_status.charAt(0).toUpperCase() + a.payment_status.slice(1)) : 'Paid',
               timeline: [
                 { label: 'Booking Created & Subsidy Verified', time: `${a.appointment_date}, 08:30 AM`, done: true },
                 { label: 'Payment Completed via Gateway', time: `${a.appointment_date}, 08:31 AM`, done: true },
                 { label: `Doctor ${a.doctor_name || ''} Accepted Slot`, time: `${a.appointment_date}, 08:45 AM`, done: true },
-                { label: 'Consultation In Progress / Ready', time: `${a.appointment_date}, ${a.appointment_time}`, done: true },
-                { label: 'Digital Rx Issued & Record Updated', time: 'Vault Synced', done: a.status === 'completed' },
+                { label: 'Consultation Ready', time: `${a.appointment_date}, ${a.time_slot || a.appointment_time || '10:00 AM'}`, done: true },
+                { label: 'Digital Rx Issued & Record Updated', time: 'Vault Synced', done: a.booking_status === 'completed' || a.status === 'completed' },
               ]
             })));
           }
