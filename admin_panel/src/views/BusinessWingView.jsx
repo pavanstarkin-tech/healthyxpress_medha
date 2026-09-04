@@ -23,7 +23,12 @@ import {
   Filter,
   Layers,
   ArrowRight,
-  ChevronRight
+  ChevronRight,
+  X,
+  Check,
+  Image as ImageIcon,
+  Tag,
+  AlertCircle
 } from 'lucide-react';
 import MetricCard from '../components/MetricCard';
 import { DB_SNAPSHOT } from '../data/databaseSnapshot';
@@ -36,8 +41,94 @@ export default function BusinessWingView() {
   const [maxProducts, setMaxProducts] = useState('2');
   const [inChatEnabled, setInChatEnabled] = useState(true);
 
-  // Live state seeded from DB_SNAPSHOT
-  const products = DB_SNAPSHOT.businessProducts || [];
+  // Live product state initialized from DB_SNAPSHOT
+  const [productsList, setProductsList] = useState(DB_SNAPSHOT.businessProducts || []);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+
+  const verifiedImagePresets = [
+    { label: 'Glucometer / Diabetes Kit', url: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&q=80&w=600' },
+    { label: 'BP Monitor / Cardiac', url: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=600' },
+    { label: 'Ortho Support / Joint Relief', url: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&q=80&w=600' },
+    { label: 'Supplements / Nutrition', url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=600' },
+    { label: 'Maternal & Pregnancy Care', url: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&fit=crop&q=80&w=600' },
+    { label: 'Lab Full Body Package', url: 'https://images.unsplash.com/photo-1581594693702-fbdc51b2763b?auto=format&fit=crop&q=80&w=600' },
+  ];
+
+  const [newProduct, setNewProduct] = useState({
+    title: '',
+    category: 'Medical Devices & Diagnostics',
+    price: '',
+    originalPrice: '',
+    marginPercent: '25',
+    badge: 'AI Recommended',
+    targetSegments: ['Diabetes & Endocrine Care'],
+    targetConditions: '',
+    imageUrl: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&q=80&w=600'
+  });
+
+  const availableSegments = [
+    'Diabetes & Endocrine Care',
+    'Cardiac & Hypertension',
+    'Orthopedics & Joint Health',
+    'Maternal & Child Health',
+    'Respiratory & Pulmonology',
+    'General Preventive Wellness'
+  ];
+
+  const handleAddProduct = (e) => {
+    e.preventDefault();
+    if (!newProduct.title.trim() || !newProduct.price) {
+      alert('Please enter a product title and price.');
+      return;
+    }
+
+    const priceNum = parseFloat(newProduct.price) || 0;
+    const origPriceNum = parseFloat(newProduct.originalPrice) || priceNum;
+    const discount = origPriceNum > priceNum ? Math.round(((origPriceNum - priceNum) / origPriceNum) * 100) : 0;
+    
+    const conditionsArray = typeof newProduct.targetConditions === 'string'
+      ? newProduct.targetConditions.split(',').map(s => s.trim()).filter(Boolean)
+      : newProduct.targetConditions;
+
+    const createdProduct = {
+      id: `PRD-${Date.now().toString().slice(-4)}`,
+      title: newProduct.title.trim(),
+      category: newProduct.category,
+      price: priceNum,
+      originalPrice: origPriceNum,
+      discountPercent: discount,
+      badge: newProduct.badge || 'AI Recommended',
+      marginPercent: parseInt(newProduct.marginPercent) || 25,
+      targetSegments: newProduct.targetSegments.length > 0 ? newProduct.targetSegments : ['General Preventive Wellness'],
+      targetConditions: conditionsArray.length > 0 ? conditionsArray : ['Preventive Care', 'Routine Monitoring'],
+      imageUrl: newProduct.imageUrl || verifiedImagePresets[0].url,
+      conversionRate: '0.0%',
+      salesCount: 0,
+      revenueGenerated: 0
+    };
+
+    const updated = [createdProduct, ...productsList];
+    setProductsList(updated);
+    DB_SNAPSHOT.businessProducts = updated;
+
+    setShowAddModal(false);
+    setToastMessage(`Product "${createdProduct.title}" created & activated for AI recommendations!`);
+    setTimeout(() => setToastMessage(''), 4000);
+
+    setNewProduct({
+      title: '',
+      category: 'Medical Devices & Diagnostics',
+      price: '',
+      originalPrice: '',
+      marginPercent: '25',
+      badge: 'AI Recommended',
+      targetSegments: ['Diabetes & Endocrine Care'],
+      targetConditions: '',
+      imageUrl: verifiedImagePresets[0].url
+    });
+  };
+
   const leads = DB_SNAPSHOT.userLeadSegments || [];
   const stats = DB_SNAPSHOT.businessStats || {
     total_leads_generated: 1240,
@@ -59,8 +150,8 @@ export default function BusinessWingView() {
     return matchesSearch && matchesSegment;
   });
 
-  // Filtered products
-  const filteredProducts = products.filter(p => {
+  // Filtered products using dynamic productsList
+  const filteredProducts = productsList.filter(p => {
     const matchesSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.targetConditions.some(c => c.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -501,6 +592,89 @@ export default function BusinessWingView() {
       {/* SUB-TAB 2: PRODUCTS & PACKAGES CATALOG */}
       {activeSubTab === 'products' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          {/* Header Action Bar */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 14,
+            padding: '16px 20px',
+            background: 'var(--bg-card)',
+            borderRadius: 12,
+            border: '1px solid var(--border)'
+          }}>
+            <div>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
+                Commercial Products, Devices & Health Packages ({filteredProducts.length})
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
+                AI engine automatically recommends these products during patient triage and consultation sessions.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <div style={{ position: 'relative' }}>
+                <Search size={15} color="var(--text-muted)" style={{ position: 'absolute', left: 10, top: 10 }} />
+                <input
+                  type="text"
+                  placeholder="Search products, conditions..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{
+                    padding: '8px 12px 8px 32px',
+                    borderRadius: 8,
+                    border: '1px solid var(--border)',
+                    fontSize: '0.85rem',
+                    background: 'var(--bg-main)',
+                    width: 220
+                  }}
+                />
+              </div>
+
+              <button
+                onClick={() => setShowAddModal(true)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '9px 18px',
+                  borderRadius: 8,
+                  background: 'linear-gradient(135deg, #1E60F6 0%, #0D9488 100%)',
+                  color: 'white',
+                  fontWeight: 800,
+                  fontSize: '0.85rem',
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(30, 96, 246, 0.25)',
+                  transition: 'transform 0.15s'
+                }}
+              >
+                <Plus size={16} /> Add New Product / Package
+              </button>
+            </div>
+          </div>
+
+          {/* Toast Notification */}
+          {toastMessage && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '12px 20px',
+              borderRadius: 10,
+              background: '#DCFCE7',
+              color: '#166534',
+              border: '1px solid #86EFAC',
+              fontWeight: 700,
+              fontSize: '0.88rem'
+            }}>
+              <CheckCircle2 size={18} color="#166534" />
+              {toastMessage}
+            </div>
+          )}
+
+          {/* Product Cards Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
             {filteredProducts.map((product) => (
               <div
@@ -537,19 +711,21 @@ export default function BusinessWingView() {
                   }}>
                     {product.badge}
                   </span>
-                  <span style={{
-                    position: 'absolute',
-                    top: 12,
-                    right: 12,
-                    padding: '4px 8px',
-                    borderRadius: 6,
-                    background: '#10B981',
-                    color: 'white',
-                    fontSize: '0.72rem',
-                    fontWeight: 800
-                  }}>
-                    {product.discountPercent}% OFF
-                  </span>
+                  {product.discountPercent > 0 && (
+                    <span style={{
+                      position: 'absolute',
+                      top: 12,
+                      right: 12,
+                      padding: '4px 8px',
+                      borderRadius: 6,
+                      background: '#10B981',
+                      color: 'white',
+                      fontSize: '0.72rem',
+                      fontWeight: 800
+                    }}>
+                      {product.discountPercent}% OFF
+                    </span>
+                  )}
                 </div>
 
                 <div style={{ padding: 18, display: 'flex', flexDirection: 'column', flex: 1 }}>
@@ -586,9 +762,11 @@ export default function BusinessWingView() {
                         <span style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--text-main)' }}>
                           ₹{product.price.toLocaleString('en-IN')}
                         </span>
-                        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textDecoration: 'line-through', marginLeft: 6 }}>
-                          ₹{product.originalPrice.toLocaleString('en-IN')}
-                        </span>
+                        {product.originalPrice > product.price && (
+                          <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textDecoration: 'line-through', marginLeft: 6 }}>
+                            ₹{product.originalPrice.toLocaleString('en-IN')}
+                          </span>
+                        )}
                       </div>
                       <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#10B981' }}>
                         {product.marginPercent}% Profit Margin
@@ -605,6 +783,345 @@ export default function BusinessWingView() {
               </div>
             ))}
           </div>
+
+          {/* ADD PRODUCT MODAL */}
+          {showAddModal && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(15, 23, 42, 0.65)',
+              backdropFilter: 'blur(6px)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 20
+            }}>
+              <div style={{
+                background: 'var(--bg-card)',
+                borderRadius: 16,
+                border: '1px solid var(--border)',
+                width: '100%',
+                maxWidth: 640,
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                {/* Modal Header */}
+                <div style={{
+                  padding: '20px 24px',
+                  borderBottom: '1px solid var(--border)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Package size={20} color="var(--primary)" /> Add New Commercial Product / Package
+                    </h3>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                      Integrates automatically with AI symptom analysis & live recommendation stream.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowAddModal(false)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* Modal Form */}
+                <form onSubmit={handleAddProduct} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  {/* Title & Category */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 14 }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-main)' }}>
+                        Product / Package Name *
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Smart ECG Monitor 6-Lead"
+                        value={newProduct.title}
+                        onChange={(e) => setNewProduct({ ...newProduct, title: e.target.value })}
+                        required
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px',
+                          borderRadius: 8,
+                          border: '1px solid var(--border)',
+                          background: 'var(--bg-main)',
+                          fontSize: '0.88rem'
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-main)' }}>
+                        Category
+                      </label>
+                      <select
+                        value={newProduct.category}
+                        onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px',
+                          borderRadius: 8,
+                          border: '1px solid var(--border)',
+                          background: 'var(--bg-main)',
+                          fontSize: '0.88rem'
+                        }}
+                      >
+                        <option value="Medical Devices & Diagnostics">Medical Devices</option>
+                        <option value="Diagnostics & Lab Tests">Lab Test Packages</option>
+                        <option value="Chronic Disease Kits">Chronic Disease Kits</option>
+                        <option value="Supplements & Nutrition">Supplements & Nutrition</option>
+                        <option value="Orthopedics & Joint Support">Ortho & Joint Care</option>
+                        <option value="Maternal & Child Health">Maternal & Child Care</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Pricing Row */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-main)' }}>
+                        Special Price (₹) *
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="e.g. 1499"
+                        value={newProduct.price}
+                        onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                        required
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px',
+                          borderRadius: 8,
+                          border: '1px solid var(--border)',
+                          background: 'var(--bg-main)',
+                          fontSize: '0.88rem'
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-main)' }}>
+                        MRP / Original (₹)
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="e.g. 2499"
+                        value={newProduct.originalPrice}
+                        onChange={(e) => setNewProduct({ ...newProduct, originalPrice: e.target.value })}
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px',
+                          borderRadius: 8,
+                          border: '1px solid var(--border)',
+                          background: 'var(--bg-main)',
+                          fontSize: '0.88rem'
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-main)' }}>
+                        Profit Margin %
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="e.g. 30"
+                        value={newProduct.marginPercent}
+                        onChange={(e) => setNewProduct({ ...newProduct, marginPercent: e.target.value })}
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px',
+                          borderRadius: 8,
+                          border: '1px solid var(--border)',
+                          background: 'var(--bg-main)',
+                          fontSize: '0.88rem'
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Badge & Target Segment */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-main)' }}>
+                        Promo Badge
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. AI Recommended / Bestseller"
+                        value={newProduct.badge}
+                        onChange={(e) => setNewProduct({ ...newProduct, badge: e.target.value })}
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px',
+                          borderRadius: 8,
+                          border: '1px solid var(--border)',
+                          background: 'var(--bg-main)',
+                          fontSize: '0.88rem'
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-main)' }}>
+                        Primary Target Health Segment
+                      </label>
+                      <select
+                        value={newProduct.targetSegments[0] || 'Diabetes & Endocrine Care'}
+                        onChange={(e) => setNewProduct({ ...newProduct, targetSegments: [e.target.value] })}
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px',
+                          borderRadius: 8,
+                          border: '1px solid var(--border)',
+                          background: 'var(--bg-main)',
+                          fontSize: '0.88rem'
+                        }}
+                      >
+                        {availableSegments.map((seg, sIdx) => (
+                          <option key={sIdx} value={seg}>{seg}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Detected Problem Keywords */}
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-main)' }}>
+                      AI Problem Trigger Keywords (Comma separated)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. chest pain, hypertension, palpitations, high bp, irregular pulse"
+                      value={newProduct.targetConditions}
+                      onChange={(e) => setNewProduct({ ...newProduct, targetConditions: e.target.value })}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: 8,
+                        border: '1px solid var(--border)',
+                        background: 'var(--bg-main)',
+                        fontSize: '0.88rem'
+                      }}
+                    />
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 4, display: 'block' }}>
+                      When AI chatbot detects these keywords in patient conversation, it highlights this product.
+                    </span>
+                  </div>
+
+                  {/* Image URL & Preset Picker */}
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-main)' }}>
+                      Product Image URL (100% 200 OK Verified)
+                    </label>
+                    <input
+                      type="url"
+                      placeholder="https://images.unsplash.com/..."
+                      value={newProduct.imageUrl}
+                      onChange={(e) => setNewProduct({ ...newProduct, imageUrl: e.target.value })}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: 8,
+                        border: '1px solid var(--border)',
+                        background: 'var(--bg-main)',
+                        fontSize: '0.88rem',
+                        marginBottom: 8
+                      }}
+                    />
+
+                    {/* Quick Presets Picker */}
+                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6 }}>
+                      Or choose from verified medical asset presets:
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                      {verifiedImagePresets.map((preset, pIdx) => {
+                        const isChosen = newProduct.imageUrl === preset.url;
+                        return (
+                          <div
+                            key={pIdx}
+                            onClick={() => setNewProduct({ ...newProduct, imageUrl: preset.url })}
+                            style={{
+                              padding: '6px 8px',
+                              borderRadius: 6,
+                              border: isChosen ? '2px solid var(--primary)' : '1px solid var(--border)',
+                              background: isChosen ? 'var(--primary-light)' : 'var(--bg-main)',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              fontSize: '0.72rem',
+                              fontWeight: isChosen ? 800 : 600,
+                              color: isChosen ? 'var(--primary)' : 'var(--text-main)'
+                            }}
+                          >
+                            <img
+                              src={preset.url}
+                              alt={preset.label}
+                              style={{ width: 28, height: 28, borderRadius: 4, objectFit: 'cover' }}
+                            />
+                            <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {preset.label}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 10, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddModal(false)}
+                      style={{
+                        padding: '10px 18px',
+                        borderRadius: 8,
+                        border: '1px solid var(--border)',
+                        background: 'var(--bg-main)',
+                        color: 'var(--text-main)',
+                        fontWeight: 700,
+                        fontSize: '0.85rem',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        padding: '10px 24px',
+                        borderRadius: 8,
+                        background: 'linear-gradient(135deg, #1E60F6 0%, #0D9488 100%)',
+                        color: 'white',
+                        fontWeight: 800,
+                        fontSize: '0.88rem',
+                        border: 'none',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(30, 96, 246, 0.25)'
+                      }}
+                    >
+                      <Check size={16} /> Save & Activate in AI Engine
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
