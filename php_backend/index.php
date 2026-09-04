@@ -63,6 +63,12 @@ if ($path === '/api/health' && $method === 'GET') {
 if ($path === '/api/admin/stats' && $method === 'GET') {
     AdminController::getStats();
 }
+if ($path === '/api/admin/ai-stats' && $method === 'GET') {
+    AdminController::getAiStats();
+}
+if ($path === '/api/admin/ai-sessions' && $method === 'GET') {
+    AdminController::getAiSessions();
+}
 if ($path === '/api/admin/hospital-rankings' && $method === 'GET') {
     AdminController::getHospitalRankings();
 }

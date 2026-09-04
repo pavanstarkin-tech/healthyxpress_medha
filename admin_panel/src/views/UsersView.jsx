@@ -27,7 +27,7 @@ export default function UsersView() {
               bloodGroup: u.blood_group || 'B+',
               allergies: u.allergies || 'None',
               pastSurgeries: u.past_surgeries || 'None',
-              avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200'
+              avatar: u.profile_picture || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200'
             })));
           }
         }

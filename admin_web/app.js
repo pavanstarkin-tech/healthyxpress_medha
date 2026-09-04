@@ -5,9 +5,9 @@ let platformData = {
   hospitals: [],
   doctors: [],
   users: [
-    { name: 'Rahul Kumar', phone: '+91 9876543210', email: 'rahul.kumar@gmail.com', aarogyasri: 'AROG12345678', joined: '18 May 2024', status: 'Active', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200' },
+    { name: 'Rahul Kumar', phone: '+91 9876543210', email: 'rahul.kumar@gmail.com', aarogyasri: 'AROG12345678', joined: '18 May 2024', status: 'Active', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200' },
     { name: 'Anita Sharma', phone: '+91 9848011223', email: 'anita.sharma@yahoo.com', aarogyasri: 'AROG88900112', joined: '17 May 2024', status: 'Active', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200' },
-    { name: 'Suresh Rao', phone: '+91 9700123456', email: 'suresh.rao@outlook.com', aarogyasri: 'AROG77865544', joined: '17 May 2024', status: 'Active', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=200' },
+    { name: 'Suresh Rao', phone: '+91 9700123456', email: 'suresh.rao@outlook.com', aarogyasri: 'AROG77865544', joined: '17 May 2024', status: 'Active', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200' },
   ],
   bookings: [
     { id: 'BK24851', patient: 'Rahul Kumar', doctor: 'Dr. Sandeep Attawar', hospital: 'KIMS Hospitals', datetime: '18 May 2024, 10:30 AM', status: 'Confirmed', payment: 'Paid (Aarogyasri)' },

@@ -14,6 +14,8 @@ export const healthApi = {
   // Live Telemetry & Computed Stats
   getHealth: () => api.get('/health'),
   getAdminStats: () => api.get('/admin/stats'),
+  getAiStats: () => api.get('/admin/ai-stats'),
+  getAiSessions: () => api.get('/admin/ai-sessions'),
   getHospitalRankings: () => api.get('/admin/hospital-rankings'),
   getConsultationDistribution: () => api.get('/admin/consultation-distribution'),
   getActivityLogs: () => api.get('/admin/activity-logs'),

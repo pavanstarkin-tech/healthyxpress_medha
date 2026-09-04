@@ -31,6 +31,50 @@ class AdminController {
     }
 
     /**
+     * Compute Real-time AI Triage & Voice Consultation Metrics
+     */
+    public static function getAiStats(): void {
+        $pdo = Database::getConnection();
+
+        $query = "SELECT 
+            (SELECT COUNT(*) FROM ai_sessions) AS total_ai_sessions,
+            (SELECT COUNT(*) FROM ai_sessions WHERE duration LIKE '%min%' OR symptoms LIKE '%voice%') AS voice_consultations,
+            (SELECT COUNT(*) FROM ai_sessions WHERE severity = 'Emergency') AS emergency_escalations,
+            (SELECT COUNT(*) FROM ai_sessions WHERE severity = 'Moderate') AS moderate_cases,
+            (SELECT COUNT(*) FROM ai_sessions WHERE severity = 'Mild') AS mild_cases";
+
+        $stmt = $pdo->query($query);
+        $aiStats = $stmt->fetch();
+
+        Response::json($aiStats);
+    }
+
+    /**
+     * Get Recent AI Triage Sessions with Patient Details
+     */
+    public static function getAiSessions(): void {
+        $pdo = Database::getConnection();
+
+        $query = "SELECT 
+            s.*,
+            u.name AS patient_name,
+            u.city AS patient_city,
+            u.profile_picture AS patient_avatar,
+            d.name AS recommended_doctor_name,
+            d.specialty AS recommended_doctor_specialty
+        FROM ai_sessions s
+        LEFT JOIN users u ON s.user_id = u.id
+        LEFT JOIN doctors d ON s.recommended_doctor_id = d.id
+        ORDER BY s.created_at DESC
+        LIMIT 20";
+
+        $stmt = $pdo->query($query);
+        $sessions = $stmt->fetchAll();
+
+        Response::json($sessions);
+    }
+
+    /**
      * Top Hospitals Volume Rankings
      */
     public static function getHospitalRankings(): void {
