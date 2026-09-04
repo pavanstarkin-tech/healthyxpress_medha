@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
-import '../../data/mock_database.dart';
+import '../../data/production_database.dart';
 import '../../models/hospital_model.dart';
 import '../../models/doctor_model.dart';
 import 'book_appointment_screen.dart';
@@ -30,7 +30,7 @@ class _HospitalDetailScreenState extends State<HospitalDetailScreen> with Single
   }
 
   List<DoctorModel> get _hospitalDoctors {
-    final docs = MockDatabase.doctors.where((d) => d.hospitalId == widget.hospital.id).toList();
+    final docs = ProductionDatabase.doctors.where((d) => d.hospitalId == widget.hospital.id).toList();
     if (_selectedDoctorSpecialty == 'All') return docs;
     return docs.where((d) => d.specialty.toLowerCase().contains(_selectedDoctorSpecialty.toLowerCase())).toList();
   }

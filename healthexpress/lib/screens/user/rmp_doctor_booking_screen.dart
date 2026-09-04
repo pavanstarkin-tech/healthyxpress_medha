@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
-import '../../data/mock_database.dart';
+import '../../data/production_database.dart';
 import 'book_appointment_screen.dart';
 
 class RmpDoctorBookingScreen extends StatefulWidget {
@@ -25,7 +25,7 @@ class _RmpDoctorBookingScreenState extends State<RmpDoctorBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final rmpDocs = MockDatabase.doctors.where((d) => d.isRmpDoctor || d.supportedTypes.contains(ConsultationType.homeVisitRMP)).toList();
+    final rmpDocs = ProductionDatabase.doctors.where((d) => d.isRmpDoctor || d.supportedTypes.contains(ConsultationType.homeVisitRMP)).toList();
 
     return Scaffold(
       backgroundColor: AppColors.background,

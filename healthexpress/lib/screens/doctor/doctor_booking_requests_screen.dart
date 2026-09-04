@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/doctor_portal_provider.dart';
-import '../../data/mock_database.dart';
+import '../../data/production_database.dart';
 import 'doctor_patient_detail_screen.dart';
 import 'doctor_consultation_notes_screen.dart';
 
@@ -89,7 +89,7 @@ class DoctorBookingRequestsScreen extends StatelessWidget {
                       child: OutlinedButton(
                         onPressed: () {
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => DoctorPatientDetailScreen(patient: MockDatabase.defaultUser)),
+                            MaterialPageRoute(builder: (_) => DoctorPatientDetailScreen(patient: ProductionDatabase.defaultUser)),
                           );
                         },
                         style: OutlinedButton.styleFrom(

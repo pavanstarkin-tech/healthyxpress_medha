@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../data/mock_database.dart';
+import '../data/production_database.dart';
 import '../models/doctor_model.dart';
 import '../models/medicine_model.dart';
 import '../models/lab_test_model.dart';
@@ -50,8 +50,8 @@ class AiAssistantProvider extends ChangeNotifier {
       detectedSymptoms: ['Fever', 'Sore Throat', 'Headache'],
       actionSuggestions: ['View Medicines', 'Consult Doctor', 'Book CBC Test', 'Home Care Plan'],
       recommendedProducts: [
-        MockDatabase.businessProducts[3], // 84-parameter checkup
-        MockDatabase.businessProducts[5], // Gold Family Pass
+        ProductionDatabase.businessProducts[3], // 84-parameter checkup
+        ProductionDatabase.businessProducts[5], // Gold Family Pass
       ],
     ),
   ];
@@ -73,33 +73,33 @@ class AiAssistantProvider extends ChangeNotifier {
 
   List<MedicineModel> get suggestedMedicines {
     if (_activeDiagnosis.contains('Fever') || _activeDiagnosis.contains('Viral')) {
-      return MockDatabase.medicines.where((m) => m.id == 'MED-01' || m.id == 'MED-02' || m.id == 'MED-03' || m.id == 'MED-04' || m.id == 'MED-05').toList();
+      return ProductionDatabase.medicines.where((m) => m.id == 'MED-01' || m.id == 'MED-02' || m.id == 'MED-03' || m.id == 'MED-04' || m.id == 'MED-05').toList();
     }
-    return MockDatabase.medicines.take(4).toList();
+    return ProductionDatabase.medicines.take(4).toList();
   }
 
   List<DoctorModel> get suggestedDoctors {
     if (_activeDiagnosis.contains('Fever') || _activeDiagnosis.contains('Viral')) {
-      return MockDatabase.doctors.where((d) => d.specialty.contains('General') || d.isRmpDoctor).toList();
+      return ProductionDatabase.doctors.where((d) => d.specialty.contains('General') || d.isRmpDoctor).toList();
     }
-    return MockDatabase.doctors.take(3).toList();
+    return ProductionDatabase.doctors.take(3).toList();
   }
 
   List<LabTestModel> get suggestedLabTests {
-    return MockDatabase.labTests.where((t) => t.code == 'CBC' || t.code == 'NS1-ANTIGEN' || t.code == 'MAL-AG').toList();
+    return ProductionDatabase.labTests.where((t) => t.code == 'CBC' || t.code == 'NS1-ANTIGEN' || t.code == 'MAL-AG').toList();
   }
 
   List<BusinessProductModel> get suggestedBusinessProducts {
     if (_userInterestSegment.contains('Diabetes')) {
-      return [MockDatabase.businessProducts[0], MockDatabase.businessProducts[1]];
+      return [ProductionDatabase.businessProducts[0], ProductionDatabase.businessProducts[1]];
     } else if (_userInterestSegment.contains('Cardiology') || _userInterestSegment.contains('Hypertension')) {
-      return [MockDatabase.businessProducts[2], MockDatabase.businessProducts[3]];
+      return [ProductionDatabase.businessProducts[2], ProductionDatabase.businessProducts[3]];
     } else if (_userInterestSegment.contains('Orthopedic')) {
-      return [MockDatabase.businessProducts[4], MockDatabase.businessProducts[3]];
+      return [ProductionDatabase.businessProducts[4], ProductionDatabase.businessProducts[3]];
     } else if (_userInterestSegment.contains('Women')) {
-      return [MockDatabase.businessProducts[6], MockDatabase.businessProducts[3]];
+      return [ProductionDatabase.businessProducts[6], ProductionDatabase.businessProducts[3]];
     }
-    return [MockDatabase.businessProducts[3], MockDatabase.businessProducts[5]];
+    return [ProductionDatabase.businessProducts[3], ProductionDatabase.businessProducts[5]];
   }
 
   void toggleVoiceListening() {
@@ -146,28 +146,28 @@ class AiAssistantProvider extends ChangeNotifier {
       detected = ['High Blood Sugar', 'Frequent Thirst', 'Glycemic Fatigue'];
       responseText = 'I have identified indicators related to blood sugar management. Regular daily glucose monitoring and periodic HbA1c screening are critical to prevent neuropathy and renal complications.\n\nHealthExpress provides smart automated glucometer syncing with our doctors:';
       actions = ['Order Glucometer Kit', 'Book Diabetic Profile', 'Consult Diabetologist'];
-      recommended = [MockDatabase.businessProducts[0], MockDatabase.businessProducts[1]];
+      recommended = [ProductionDatabase.businessProducts[0], ProductionDatabase.businessProducts[1]];
     } else if (lower.contains('knee') || lower.contains('joint') || lower.contains('arthritis') || lower.contains('back pain') || lower.contains('bone')) {
       _activeDiagnosis = 'Joint Pain & Musculoskeletal Strain';
       _userInterestSegment = 'Orthopedic & Joint Mobility';
       detected = ['Joint Pain', 'Morning Stiffness', 'Reduced Mobility'];
       responseText = 'Musculoskeletal joint discomfort detected. We advise avoiding sudden high-impact strain, applying targeted infrared heat therapy, and consulting an orthopedic specialist if swelling persists.\n\nRecommended therapeutic care & diagnostic screening:';
       actions = ['Order Knee Heat Wrap', 'Consult Orthopedic', 'Book Bone Density Panel'];
-      recommended = [MockDatabase.businessProducts[4], MockDatabase.businessProducts[3]];
+      recommended = [ProductionDatabase.businessProducts[4], ProductionDatabase.businessProducts[3]];
     } else if (lower.contains('bp') || lower.contains('pressure') || lower.contains('hypertension') || lower.contains('palpitation')) {
       _activeDiagnosis = 'Hypertension & Cardiac Telemetry';
       _userInterestSegment = 'Cardiology & Hypertension';
       detected = ['Elevated BP', 'Dizziness', 'Pulse Fluctuations'];
       responseText = 'Blood pressure variations require systematic daily tracking. We recommend recording systolic/diastolic readings morning and evening, reducing sodium intake, and logging vitals in your HealthExpress Vault.';
       actions = ['Order Digital BP Kit', 'Consult Cardiologist', 'Book Cardiac Risk Panel'];
-      recommended = [MockDatabase.businessProducts[2], MockDatabase.businessProducts[3]];
+      recommended = [ProductionDatabase.businessProducts[2], ProductionDatabase.businessProducts[3]];
     } else if (lower.contains('fever') || lower.contains('temperature') || lower.contains('chills') || lower.contains('throat')) {
       _activeDiagnosis = 'Viral Fever & Flu';
       _userInterestSegment = 'Preventive Master Checkups';
       detected = ['Fever', 'Body Pain', 'Sore Throat'];
       responseText = 'I have analyzed your symptoms. It matches acute viral fever. I recommend adequate hydration, resting, monitoring temperature 3 times a day, and taking Paracetamol 650mg if temperature rises above 99.5°F.';
       actions = ['View Suggested Medicines', 'Book Doctor Visit', 'Book CBC Blood Test'];
-      recommended = [MockDatabase.businessProducts[3], MockDatabase.businessProducts[5]];
+      recommended = [ProductionDatabase.businessProducts[3], ProductionDatabase.businessProducts[5]];
     } else if (lower.contains('chest') || lower.contains('breath') || lower.contains('heart') || lower.contains('emergency')) {
       _activeDiagnosis = 'Cardiac Alert / Emergency';
       _userInterestSegment = 'Cardiology & Hypertension';
@@ -181,7 +181,7 @@ class AiAssistantProvider extends ChangeNotifier {
       detected = ['Wellness Check'];
       responseText = 'Thank you for sharing. I am keeping track of your health profile. Would you like to explore nearby hospitals, specialist doctors, or our comprehensive family care passes?';
       actions = ['Find Doctors', 'Nearby Hospitals', 'Order Medicines'];
-      recommended = [MockDatabase.businessProducts[3], MockDatabase.businessProducts[5]];
+      recommended = [ProductionDatabase.businessProducts[3], ProductionDatabase.businessProducts[5]];
     }
 
     _currentSymptoms = detected;

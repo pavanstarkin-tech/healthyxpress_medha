@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
-import '../../data/mock_database.dart';
+import '../../data/production_database.dart';
 import '../../models/emergency_model.dart';
 
 class EmergencySosScreen extends StatefulWidget {
@@ -88,7 +88,7 @@ class _EmergencySosScreenState extends State<EmergencySosScreen> {
 
                   // Giant SOS Trigger Button
                   GestureDetector(
-                    onTap: () => _triggerSos(MockDatabase.ambulances[0]),
+                    onTap: () => _triggerSos(ProductionDatabase.ambulances[0]),
                     child: Container(
                       width: 110,
                       height: 110,
@@ -163,7 +163,7 @@ class _EmergencySosScreenState extends State<EmergencySosScreen> {
             const Text('Nearby Ambulance Fleet (Real-Time ETA)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
             const SizedBox(height: 12),
             Column(
-              children: MockDatabase.ambulances.map((amb) {
+              children: ProductionDatabase.ambulances.map((amb) {
                 final isDispatched = _dispatchedAmbulance == amb.providerName;
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),

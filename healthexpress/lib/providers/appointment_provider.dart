@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import '../core/constants/app_constants.dart';
 import '../models/appointment_model.dart';
 import '../models/doctor_model.dart';
-import '../data/mock_database.dart';
+import '../data/production_database.dart';
 
 class AppointmentProvider extends ChangeNotifier {
-  final List<AppointmentModel> _appointments = List.from(MockDatabase.initialAppointments);
+  final List<AppointmentModel> _appointments = List.from(ProductionDatabase.initialAppointments);
 
   List<AppointmentModel> get appointments => _appointments;
 

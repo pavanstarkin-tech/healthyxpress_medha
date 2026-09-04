@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
-import '../../data/mock_database.dart';
+import '../../data/production_database.dart';
 import '../../models/ticket_model.dart';
 
 class SupportTicketScreen extends StatefulWidget {
@@ -17,7 +17,7 @@ class _SupportTicketScreenState extends State<SupportTicketScreen> {
   final _descController = TextEditingController();
   String _selectedCategory = 'Booking';
   TicketPriority _selectedPriority = TicketPriority.medium;
-  final List<SupportTicket> _tickets = List.from(MockDatabase.initialTickets);
+  final List<SupportTicket> _tickets = List.from(ProductionDatabase.initialTickets);
 
   final List<String> _categories = ['Booking', 'Payment', 'Doctor Consultation', 'Medicines Delivery', 'Refund', 'Aarogyasri Record Sync'];
 

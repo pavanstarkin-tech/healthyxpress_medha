@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import '../core/constants/app_constants.dart';
 import '../models/user_model.dart';
 import '../models/doctor_model.dart';
-import '../data/mock_database.dart';
+import '../data/production_database.dart';
 
 class AuthProvider extends ChangeNotifier {
   UserRole _currentRole = UserRole.user;
   bool _isAuthenticated = true; // start authenticated for rich interactive demo, or can be reset
-  UserModel _currentUser = MockDatabase.defaultUser;
-  DoctorModel _currentDoctor = MockDatabase.doctors[0]; // Default doctor: Dr. Sandeep Attawar
+  UserModel _currentUser = ProductionDatabase.defaultUser;
+  DoctorModel _currentDoctor = ProductionDatabase.doctors[0]; // Default doctor: Dr. Sandeep Attawar
 
   UserRole get currentRole => _currentRole;
   bool get isAuthenticated => _isAuthenticated;

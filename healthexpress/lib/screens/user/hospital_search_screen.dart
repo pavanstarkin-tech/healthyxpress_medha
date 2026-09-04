@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
-import '../../data/mock_database.dart';
+import '../../data/production_database.dart';
 import '../../models/hospital_model.dart';
 import 'hospital_detail_screen.dart';
 
@@ -24,7 +24,7 @@ class _HospitalSearchScreenState extends State<HospitalSearchScreen> {
   }
 
   List<HospitalModel> get _filteredHospitals {
-    return MockDatabase.hospitals.where((h) {
+    return ProductionDatabase.hospitals.where((h) {
       final matchesSearch = _searchController.text.isEmpty ||
           h.name.toLowerCase().contains(_searchController.text.toLowerCase()) ||
           h.location.toLowerCase().contains(_searchController.text.toLowerCase()) ||

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/appointment_model.dart';
 import '../models/user_model.dart';
-import '../data/mock_database.dart';
+import '../data/production_database.dart';
 
 class DoctorPortalProvider extends ChangeNotifier {
   int _todayAppointmentsCount = 12;
@@ -16,8 +16,8 @@ class DoctorPortalProvider extends ChangeNotifier {
   final double videoConsultPercent = 25.0;
   final double rmpVisitPercent = 15.0;
 
-  final List<AppointmentModel> _doctorAppointments = List.from(MockDatabase.initialAppointments);
-  UserModel? _scannedPatient = MockDatabase.defaultUser;
+  final List<AppointmentModel> _doctorAppointments = List.from(ProductionDatabase.initialAppointments);
+  UserModel? _scannedPatient = ProductionDatabase.defaultUser;
 
   int get todayAppointmentsCount => _todayAppointmentsCount;
   int get completedAppointmentsCount => _completedAppointmentsCount;
@@ -46,7 +46,7 @@ class DoctorPortalProvider extends ChangeNotifier {
 
   void lookupPatientByAarogyasriQR(String qrToken) {
     // If QR code or token matches or user scans any code, resolve to verified patient record
-    _scannedPatient = MockDatabase.defaultUser;
+    _scannedPatient = ProductionDatabase.defaultUser;
     notifyListeners();
   }
 

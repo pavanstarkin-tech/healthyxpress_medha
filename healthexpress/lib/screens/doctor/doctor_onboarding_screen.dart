@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/auth_provider.dart';
-import '../../data/mock_database.dart';
+import '../../data/production_database.dart';
 import 'doctor_main_nav.dart';
 
 class DoctorOnboardingScreen extends StatefulWidget {
@@ -52,7 +52,7 @@ class _DoctorOnboardingScreenState extends State<DoctorOnboardingScreen> {
 
     final hospitalName = _isIndependent
         ? 'Independent Practice'
-        : MockDatabase.hospitals.firstWhere((h) => h.id == _selectedHospitalId).name;
+        : ProductionDatabase.hospitals.firstWhere((h) => h.id == _selectedHospitalId).name;
 
     final auth = context.read<AuthProvider>();
     auth.registerDoctor(
@@ -185,7 +185,7 @@ class _DoctorOnboardingScreenState extends State<DoctorOnboardingScreen> {
                   decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.apartment_rounded, color: AppColors.textMuted),
                   ),
-                  items: MockDatabase.hospitals
+                  items: ProductionDatabase.hospitals
                       .map((h) => DropdownMenuItem(value: h.id, child: Text('${h.name} (${h.location})', style: const TextStyle(fontSize: 13))))
                       .toList(),
                   onChanged: (val) => setState(() => _selectedHospitalId = val ?? _selectedHospitalId),

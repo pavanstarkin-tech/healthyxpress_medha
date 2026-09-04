@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../core/constants/app_constants.dart';
 import '../models/medicine_model.dart';
-import '../data/mock_database.dart';
+import '../data/production_database.dart';
 
 class ActiveOrder {
   final String orderId;
@@ -32,11 +32,11 @@ class ActiveOrder {
 }
 
 class PharmacyProvider extends ChangeNotifier {
-  final List<MedicineModel> _medicines = List.from(MockDatabase.medicines);
+  final List<MedicineModel> _medicines = List.from(ProductionDatabase.medicines);
   final List<CartItemModel> _cart = [
-    CartItemModel(medicine: MockDatabase.medicines[0], quantity: 1), // Paracetamol
-    CartItemModel(medicine: MockDatabase.medicines[1], quantity: 1), // Cetirizine
-    CartItemModel(medicine: MockDatabase.medicines[2], quantity: 1), // Cough Syrup
+    CartItemModel(medicine: ProductionDatabase.medicines[0], quantity: 1), // Paracetamol
+    CartItemModel(medicine: ProductionDatabase.medicines[1], quantity: 1), // Cetirizine
+    CartItemModel(medicine: ProductionDatabase.medicines[2], quantity: 1), // Cough Syrup
   ];
 
   String _selectedAddress = 'Home - 500081, Flat 402, Green Meadows, Hitech City, Hyderabad';
@@ -48,9 +48,9 @@ class PharmacyProvider extends ChangeNotifier {
     _activeOrder = ActiveOrder(
       orderId: '#HE12345678',
       items: [
-        CartItemModel(medicine: MockDatabase.medicines[0], quantity: 1),
-        CartItemModel(medicine: MockDatabase.medicines[1], quantity: 1),
-        CartItemModel(medicine: MockDatabase.medicines[2], quantity: 1),
+        CartItemModel(medicine: ProductionDatabase.medicines[0], quantity: 1),
+        CartItemModel(medicine: ProductionDatabase.medicines[1], quantity: 1),
+        CartItemModel(medicine: ProductionDatabase.medicines[2], quantity: 1),
       ],
       subtotal: 150.0,
       deliveryFee: 0.0, // Free quick delivery on > ₹99

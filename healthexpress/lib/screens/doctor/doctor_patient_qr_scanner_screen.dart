@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/doctor_portal_provider.dart';
-import '../../data/mock_database.dart';
+import '../../data/production_database.dart';
 import 'doctor_patient_detail_screen.dart';
 
 class DoctorPatientQrScannerScreen extends StatefulWidget {
@@ -18,7 +18,7 @@ class _DoctorPatientQrScannerScreenState extends State<DoctorPatientQrScannerScr
     context.read<DoctorPortalProvider>().lookupPatientByAarogyasriQR(token);
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => DoctorPatientDetailScreen(patient: MockDatabase.defaultUser),
+        builder: (_) => DoctorPatientDetailScreen(patient: ProductionDatabase.defaultUser),
       ),
     );
   }

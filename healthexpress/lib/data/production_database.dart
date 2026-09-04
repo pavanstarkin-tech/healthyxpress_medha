@@ -9,7 +9,7 @@ import '../models/emergency_model.dart';
 import '../models/ticket_model.dart';
 import '../models/business_product_model.dart';
 
-class MockDatabase {
+class ProductionDatabase {
   static final UserModel defaultUser = UserModel(
     id: 'USR-101',
     name: 'Rahul Kumar',

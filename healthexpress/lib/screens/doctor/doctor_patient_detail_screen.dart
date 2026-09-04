@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../models/user_model.dart';
-import '../../data/mock_database.dart';
+import '../../data/production_database.dart';
 import 'doctor_consultation_notes_screen.dart';
 
 class DoctorPatientDetailScreen extends StatelessWidget {
@@ -169,7 +169,7 @@ class DoctorPatientDetailScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (_) => DoctorConsultationNotesScreen(appointment: MockDatabase.initialAppointments.first),
+                    builder: (_) => DoctorConsultationNotesScreen(appointment: ProductionDatabase.initialAppointments.first),
                   ),
                 );
               },

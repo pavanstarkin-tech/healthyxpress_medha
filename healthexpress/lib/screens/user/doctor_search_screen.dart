@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
-import '../../data/mock_database.dart';
+import '../../data/production_database.dart';
 import '../../models/doctor_model.dart';
 import 'doctor_detail_screen.dart';
 
@@ -46,7 +46,7 @@ class _DoctorSearchScreenState extends State<DoctorSearchScreen> {
   }
 
   List<DoctorModel> get _filteredDoctors {
-    return MockDatabase.doctors.where((doc) {
+    return ProductionDatabase.doctors.where((doc) {
       final matchesSearch = _searchController.text.isEmpty ||
           doc.name.toLowerCase().contains(_searchController.text.toLowerCase()) ||
           doc.specialty.toLowerCase().contains(_searchController.text.toLowerCase()) ||

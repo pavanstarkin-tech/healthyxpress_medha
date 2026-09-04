@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
-import '../../data/mock_database.dart';
+import '../../data/production_database.dart';
 
 class LabTestsScreen extends StatefulWidget {
   const LabTestsScreen({super.key});
@@ -13,7 +13,7 @@ class _LabTestsScreenState extends State<LabTestsScreen> {
   final Set<String> _selectedTestIds = {'TEST-01', 'TEST-02', 'TEST-03'};
 
   double get _totalAmount {
-    return MockDatabase.labTests
+    return ProductionDatabase.labTests
         .where((t) => _selectedTestIds.contains(t.id))
         .fold(0.0, (sum, t) => sum + t.price);
   }
@@ -80,7 +80,7 @@ class _LabTestsScreenState extends State<LabTestsScreen> {
             const Text('Recommended Tests for Fever / Viral Symptoms', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
             const SizedBox(height: 12),
             Column(
-              children: MockDatabase.labTests.map((test) {
+              children: ProductionDatabase.labTests.map((test) {
                 final isSelected = _selectedTestIds.contains(test.id);
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
