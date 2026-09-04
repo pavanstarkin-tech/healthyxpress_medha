@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Plus, AlertTriangle, ShieldCheck, Cpu, Sliders, CheckCircle2, User, Clock, Activity, MessageSquare } from 'lucide-react';
 import { healthApi } from '../services/api';
+import { DB_SNAPSHOT } from '../data/databaseSnapshot';
 
 export default function AiManagementView() {
-  const [stats, setStats] = useState({
-    total_ai_sessions: 0,
-    voice_consultations: 0,
-    emergency_escalations: 0,
-    moderate_cases: 0,
-    mild_cases: 0,
-  });
-
-  const [aiSessions, setAiSessions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState(DB_SNAPSHOT.aiStats);
+  const [aiSessions, setAiSessions] = useState(DB_SNAPSHOT.aiSessions);
+  const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('rules'); // rules | sessions
 
   const [rules, setRules] = useState([

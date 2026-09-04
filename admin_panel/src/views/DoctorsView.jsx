@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Search, Eye, ShieldCheck, CheckCircle, Ban, AlertCircle, RefreshCw } from 'lucide-react';
 import DoctorVerificationModal from '../components/DoctorVerificationModal';
 import { healthApi } from '../services/api';
+import { DB_SNAPSHOT } from '../data/databaseSnapshot';
 
 export default function DoctorsView({ onOpenAddDoctor }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [specialtyFilter, setSpecialtyFilter] = useState('All');
   const [statusTab, setStatusTab] = useState('All'); // All | Pending | Verified | Rejected
   const [selectedDoctorForVerify, setSelectedDoctorForVerify] = useState(null);
-  const [doctors, setDoctors] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [doctors, setDoctors] = useState(DB_SNAPSHOT.doctors);
+  const [loading, setLoading] = useState(false);
 
   const loadDoctors = async () => {
     setLoading(true);

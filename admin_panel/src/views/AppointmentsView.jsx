@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Download, Eye, Video, Clock, Check, X } from 'lucide-react';
 import { healthApi } from '../services/api';
+import { DB_SNAPSHOT } from '../data/databaseSnapshot';
 
 export default function AppointmentsView() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [selectedAppt, setSelectedAppt] = useState(null);
-  const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [appointments, setAppointments] = useState(DB_SNAPSHOT.appointments);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function loadLiveAppointments() {

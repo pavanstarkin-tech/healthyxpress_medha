@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Search, Plus, MessageSquare, AlertCircle } from 'lucide-react';
 import ReplyTicketModal from '../components/ReplyTicketModal';
 import { healthApi } from '../services/api';
+import { DB_SNAPSHOT } from '../data/databaseSnapshot';
 
 export default function TicketsView() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [selectedTicket, setSelectedTicket] = useState(null);
-  const [tickets, setTickets] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [tickets, setTickets] = useState(DB_SNAPSHOT.tickets);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function loadLiveTickets() {

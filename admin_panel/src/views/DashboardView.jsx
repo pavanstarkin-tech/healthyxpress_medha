@@ -28,6 +28,7 @@ import {
 import { Line, Doughnut } from 'react-chartjs-2';
 import MetricCard from '../components/MetricCard';
 import { healthApi } from '../services/api';
+import { DB_SNAPSHOT } from '../data/databaseSnapshot';
 
 ChartJS.register(
   CategoryScale,
@@ -42,19 +43,14 @@ ChartJS.register(
 );
 
 export default function DashboardView({ onNavigate, onOpenAddHospital, onOpenAddDoctor }) {
-  const [stats, setStats] = useState({
-    total_users: 0,
-    total_doctors: 0,
-    total_hospitals: 0,
-    total_appointments: 0,
-    gross_revenue: 0,
-    pending_doctors: 0,
-    pending_hospitals: 0,
-    open_tickets: 0,
-  });
-
-  const [recentActivity, setRecentActivity] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState(DB_SNAPSHOT.stats);
+  const [recentActivity, setRecentActivity] = useState(
+    DB_SNAPSHOT.activityLogs.map(l => ({
+      text: `${l.action}: ${l.entity}`,
+      time: l.timestamp
+    }))
+  );
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function loadLiveStats() {

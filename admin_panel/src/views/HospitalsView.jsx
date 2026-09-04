@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Search, Eye, Building2, MapPin, Phone, Layers, Users, X } from 'lucide-react';
 import AddHospitalMultiStepModal from '../components/AddHospitalMultiStepModal';
 import { healthApi } from '../services/api';
+import { DB_SNAPSHOT } from '../data/databaseSnapshot';
 
 export default function HospitalsView() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isMultiStepOpen, setIsMultiStepOpen] = useState(false);
   const [selectedHospitalDetail, setSelectedHospitalDetail] = useState(null);
-  const [hospitals, setHospitals] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [hospitals, setHospitals] = useState(DB_SNAPSHOT.hospitals);
+  const [loading, setLoading] = useState(false);
 
   const loadHospitals = async () => {
     try {

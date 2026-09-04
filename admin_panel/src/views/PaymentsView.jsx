@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { DollarSign, ArrowUpRight, ArrowDownLeft, Search, Download, CreditCard, RefreshCw } from 'lucide-react';
 import MetricCard from '../components/MetricCard';
 import { healthApi } from '../services/api';
+import { DB_SNAPSHOT } from '../data/databaseSnapshot';
 
 export default function PaymentsView() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [payments, setPayments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [payments, setPayments] = useState(DB_SNAPSHOT.payments);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function loadLivePayments() {

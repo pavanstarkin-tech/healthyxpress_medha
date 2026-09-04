@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Search, Download, Eye } from 'lucide-react';
 import UserDetailsModal from '../components/UserDetailsModal';
 import { healthApi } from '../services/api';
+import { DB_SNAPSHOT } from '../data/databaseSnapshot';
 
 export default function UsersView() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState(DB_SNAPSHOT.users);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function loadLiveUsers() {

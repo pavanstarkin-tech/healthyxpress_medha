@@ -3,17 +3,18 @@ import { Users, UserRound, CalendarCheck, Building2 } from 'lucide-react';
 import { Line } from 'react-chartjs-2';
 import MetricCard from '../components/MetricCard';
 import { healthApi } from '../services/api';
+import { DB_SNAPSHOT } from '../data/databaseSnapshot';
 
 export default function ReportsView() {
-  const [stats, setStats] = useState({
-    total_users: 0,
-    total_doctors: 0,
-    total_hospitals: 0,
-    total_appointments: 0,
-    gross_revenue: 0,
-  });
-  const [hospitalRankings, setHospitalRankings] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState(DB_SNAPSHOT.stats);
+  const [hospitalRankings, setHospitalRankings] = useState(
+    DB_SNAPSHOT.hospitals.slice(0, 5).map((h, i) => ({
+      name: h.name,
+      bookings: 14 - i * 2,
+      pct: 100 - i * 15
+    }))
+  );
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function loadLiveData() {
