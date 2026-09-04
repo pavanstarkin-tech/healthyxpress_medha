@@ -41,12 +41,21 @@ class UserHomeScreen extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(7),
+                        width: 32,
+                        height: 32,
+                        padding: const EdgeInsets.all(3),
                         decoration: BoxDecoration(
-                          color: AppColors.primaryLight,
-                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: AppColors.border),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.1),
+                              blurRadius: 4,
+                            ),
+                          ],
                         ),
-                        child: const Icon(Icons.local_hospital_rounded, color: AppColors.primary, size: 20),
+                        child: Image.asset('assets/images/app_logo.png', fit: BoxFit.contain),
                       ),
                       const SizedBox(width: 8),
                       const Text(

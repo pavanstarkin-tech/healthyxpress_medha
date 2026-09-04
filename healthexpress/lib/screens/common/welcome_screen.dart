@@ -26,15 +26,24 @@ class WelcomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    width: 38,
+                    height: 38,
                     decoration: BoxDecoration(
-                      color: AppColors.primaryLight,
-                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.15),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                      border: Border.all(color: AppColors.border),
                     ),
-                    child: const Icon(
-                      Icons.local_hospital_rounded,
-                      color: AppColors.primary,
-                      size: 24,
+                    padding: const EdgeInsets.all(4),
+                    child: Image.asset(
+                      'assets/images/app_logo.png',
+                      fit: BoxFit.contain,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -145,11 +154,13 @@ class WelcomeScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          child: const ClipOval(
-                            child: Icon(
-                              Icons.health_and_safety_rounded,
-                              size: 80,
-                              color: AppColors.primary,
+                          child: ClipOval(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Image.asset(
+                                'assets/images/app_logo.png',
+                                fit: BoxFit.contain,
+                              ),
                             ),
                           ),
                         ),

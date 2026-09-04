@@ -47,20 +47,22 @@ export default function LoginView({ onLoginSuccess }) {
       }}>
         {/* Brand Header */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div style={{
-            width: 54,
-            height: 54,
-            borderRadius: 12,
-            background: 'linear-gradient(135deg, #1E60F6, #0D47A1)',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            marginBottom: 12,
-            boxShadow: '0 8px 16px rgba(30, 96, 246, 0.35)'
-          }}>
-            <Activity size={30} strokeWidth={2.5} />
-          </div>
+          <img
+            src="./logo.png"
+            alt="HealthExpress Logo"
+            style={{
+              width: 68,
+              height: 68,
+              borderRadius: 16,
+              objectFit: 'contain',
+              background: '#FFFFFF',
+              boxShadow: '0 8px 24px rgba(30, 96, 246, 0.25)',
+              marginBottom: 14,
+              padding: 4,
+              border: '1px solid #E2E8F0',
+              display: 'inline-block'
+            }}
+          />
           <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.5px' }}>
             HealthExpress AI
           </h2>

@@ -52,9 +52,20 @@ export default function Sidebar({ activeTab, setActiveTab }) {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <div className="logo-icon">
-          <Activity size={22} strokeWidth={2.5} />
-        </div>
+        <img 
+          src="./logo.png" 
+          alt="HealthExpress Logo" 
+          style={{ 
+            width: 40, 
+            height: 40, 
+            borderRadius: 10, 
+            objectFit: 'contain', 
+            background: '#FFFFFF', 
+            boxShadow: '0 4px 12px rgba(30, 96, 246, 0.15)',
+            border: '1px solid #E2E8F0',
+            flexShrink: 0
+          }} 
+        />
         <div className="logo-text">
           <h2>HealthExpress</h2>
           <span>Operations Center</span>
