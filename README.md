@@ -7,26 +7,30 @@
 [![MySQL](https://img.shields.io/badge/MySQL-Live_Production-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com)
 [![Razorpay](https://img.shields.io/badge/Razorpay-Live_SDK-0C2340?logo=razorpay&logoColor=white)](https://razorpay.com)
 [![Agora](https://img.shields.io/badge/Agora-WebRTC_Tokens-099DFD?logo=agora&logoColor=white)](https://www.agora.io)
-[![Gemini](https://img.shields.io/badge/Google-Gemini_AI-4285F4?logo=google&logoColor=white)](https://deepmind.google/technologies/gemini/)
+[![Sarvam AI & Gemini](https://img.shields.io/badge/AI-Sarvam_%26_Gemini-4285F4?logo=google&logoColor=white)](https://deepmind.google/technologies/gemini/)
+[![GitHub Pages](https://img.shields.io/badge/Live_Demo-GitHub_Pages-22C55E?logo=github&logoColor=white)](https://pavanstarkin-tech.github.io/healthyxpress_medha/)
 
-> **HealthExpress AI** is an end-to-end healthcare ecosystem combining an AI-powered Flutter patient/doctor super-app, a high-performance React 19 + Vite Super Admin Control Center, and a modular PHP 8+ REST API backend hosted on Hostinger connected directly to live MySQL.
+> **HealthExpress AI** is a state-of-the-art healthcare ecosystem combining an AI-powered Flutter patient/doctor super-app, a high-performance React 19 + Vite Super Admin Control Center with 3D illustration metrics and an AI Problem-to-Product Business Wing, and a robust PHP 8+ REST API backend hosted on Hostinger connected directly to live MySQL.
+
+🔗 **Live Super Admin Panel**: [https://pavanstarkin-tech.github.io/healthyxpress_medha/](https://pavanstarkin-tech.github.io/healthyxpress_medha/)
 
 ---
 
 ## 📑 Table of Contents
 
 - [1. System Architecture](#1-system-architecture)
-- [2. Role-Wise Workflows & Diagrams](#2-role-wise-workflows--diagrams)
-  - [A. Patient / User Journey](#a-patient--user-journey)
-  - [B. Doctor Clinical Workspace](#b-doctor-clinical-workspace)
-  - [C. Hospital Administration](#c-hospital-administration)
-  - [D. Super Admin Operations](#d-super-admin-operations)
-- [3. Technology Stack & Directory Structure](#3-technology-stack--directory-structure)
-- [4. Relational Database Schema (16 Tables)](#4-relational-database-schema-16-tables)
-- [5. API Endpoint Directory (28+ Endpoints)](#5-api-endpoint-directory-28-endpoints)
-- [6. Setup & Installation](#6-setup--installation)
-- [7. Hostinger PHP Production Deployment](#7-hostinger-php-production-deployment)
-- [8. Automated QA Test Suite](#8-automated-qa-test-suite)
+- [2. Key Modules & Innovations](#2-key-modules--innovations)
+  - [A. AI Problem-to-Product Business Wing](#a-ai-problem-to-product-business-wing)
+  - [B. 3D Illustration Metrics & 3-Cards-Per-Row Layout](#b-3d-illustration-metrics--3-cards-per-row-layout)
+  - [C. Patient & Doctor Super-App (Flutter)](#c-patient--doctor-super-app-flutter)
+  - [D. Super Admin Operations & Control Center](#d-super-admin-operations--control-center)
+- [3. Role-Wise Workflows & Sequence Diagrams](#3-role-wise-workflows--sequence-diagrams)
+- [4. Technology Stack & Repository Structure](#4-technology-stack--repository-structure)
+- [5. Authoritative Production Relational Database](#5-authoritative-production-relational-database)
+- [6. API Endpoint Directory](#6-api-endpoint-directory)
+- [7. Setup & Local Development](#7-setup--local-development)
+- [8. Deployment Guide (Hostinger & GitHub Pages)](#8-deployment-guide-hostinger--github-pages)
+- [9. Automated QA & Verification](#9-automated-qa--verification)
 
 ---
 
@@ -34,47 +38,74 @@
 
 ```mermaid
 graph TD
-    subgraph Frontend Clients
-        PatientApp["📱 Flutter Patient Super-App"]
-        DoctorApp["🩺 Flutter Doctor Portal"]
-        AdminApp["💻 React 19 + Vite Super Admin"]
+    subgraph Client Applications
+        PatientApp["📱 Flutter Patient Super-App<br/>(AI Triage, Booking, Rx Vault)"]
+        DoctorApp["🩺 Flutter Doctor Portal<br/>(Queue, ABDM QR Scan, Rx Builder)"]
+        AdminApp["💻 React 19 + Vite Admin Control Center<br/>(3D Metrics, Business Wing, CRM)"]
     end
 
-    subgraph Backend Gateways
-        PHPBackend["🐘 Hostinger PHP 8+ REST API<br/>(Apache .htaccess / PDO Singleton)"]
-        NodeBackend["⚡ Node.js / Express QA Engine"]
+    subgraph Backend & Gateway Layer
+        PHPBackend["🐘 Hostinger PHP 8+ REST API<br/>(Apache .htaccess / PDO Singleton / JWT)"]
+        NodeQA["⚡ Node.js / Express QA Engine<br/>(Automated End-to-End Test Suite)"]
     end
 
-    subgraph Authoritative Data Layer
-        RemoteDB[("🗄️ Hostinger MySQL / MariaDB 10.6+<br/>147.93.101.73:3306<br/>(16 Normalized Relational Tables)")]
+    subgraph Live Production Data Layer
+        LiveDB[("🗄️ Hostinger MySQL Database<br/>147.93.101.73:3306 (u170253497_healthexpress)<br/>(16 Normalized Relational Tables)")]
     end
 
-    subgraph Third-Party Microservices
-        Razorpay["💳 Razorpay Live API (Order & HMAC-SHA256)"]
-        Agora["🎥 Agora WebRTC (Dynamic Room Tokens)"]
-        Gemini["🧠 Google Gemini AI (Symptom Triage)"]
-        Mapbox["🗺️ Mapbox GL (Ambulance & 15-Min Delivery Tracking)"]
+    subgraph AI & Third-Party Microservices
+        AIModels["🧠 Sarvam AI + Google Gemini<br/>(Multilingual Voice & Clinical Segregation)"]
+        Razorpay["💳 Razorpay Live Gateway (Webhooks & HMAC)"]
+        Agora["🎥 Agora WebRTC (Encrypted Video Consultations)"]
+        Mapbox["🗺️ Mapbox GL (Ambulance & 15-Min Pharmacy Dispatch)"]
         FCM["🔔 Firebase Cloud Messaging (Push Notifications)"]
     end
 
-    PatientApp -->|HTTP REST| PHPBackend
-    DoctorApp -->|HTTP REST| PHPBackend
+    PatientApp -->|HTTPS REST| PHPBackend
+    DoctorApp -->|HTTPS REST| PHPBackend
     AdminApp -->|Axios REST| PHPBackend
-    NodeBackend -.->|QA Verification| RemoteDB
+    NodeQA -.->|QA Verification| LiveDB
 
-    PHPBackend -->|PDO Prepared Queries| RemoteDB
+    PHPBackend -->|PDO Prepared Queries| LiveDB
+    PHPBackend --> AIModels
     PHPBackend --> Razorpay
     PHPBackend --> Agora
-    PHPBackend --> Gemini
     PHPBackend --> Mapbox
     PHPBackend --> FCM
 ```
 
 ---
 
-## 2. Role-Wise Workflows & Diagrams
+## 2. Key Modules & Innovations
 
-### A. Patient / User Journey
+### A. AI Problem-to-Product Business Wing
+The **AI Business Wing** transforms everyday clinical queries into high-converting revenue streams:
+- **7 Health Segments**: Automatically categorizes user symptoms into Diabetes & Endocrine Care, Cardiac & Hypertension, Orthopedics & Joint Health, Maternal & Child Health, Respiratory, and General Preventive Wellness.
+- **Contextual Product Suggestion**: Recommends medical diagnostic kits (smart glucometers, digital BP monitors), wellness subscriptions, and lab packages directly in-stream during AI triage.
+- **Dynamic Catalog Builder**: Admin panel modal allows creation and activation of new business products with custom margin targets, condition triggers, and image assets.
+- **Nearby 24x7 Medical Stores**: Instant store discovery with GPS distance, ETA calculation, license verification, and direct phone/WhatsApp dispatch.
+
+### B. 3D Illustration Metrics & 3-Cards-Per-Row Layout
+All top metric and KPI cards across the Super Admin Panel are rendered with:
+- **3D Rendered Illustrations**: Custom 3D PNG illustrations (`1.png` to `8.png`) placed on the right side of each metric card.
+- **Consistent 3-per-row Grid**: Standardized `.metrics-grid` with `grid-template-columns: repeat(3, 1fr)` and responsive tablet/mobile breakpoints.
+- **Micro-Interactions**: Soft ambient glow, drop shadows, and subtle hover scale/rotation effects.
+
+### C. Patient & Doctor Super-App (Flutter)
+- **Aarogyasri Health ID & Digital Pass**: Auto-generates unique `AROGxxxx` IDs for every registered citizen with government subsidies.
+- **ABDM 15-Minute QR Consent**: Dynamic time-limited QR codes that enable doctors to unlock full EHR records securely.
+- **Multilingual Voice AI**: Real-time conversational triage powered by Sarvam AI supporting Telugu, Hindi, and English.
+- **Telehealth Video Consultations**: In-app Agora WebRTC with real-time latency optimization and digital Rx generation.
+
+### D. Super Admin Operations & Control Center
+- **12 Dedicated Workspaces**: Dashboard, AI Business Wing, Doctors, Hospitals, Appointments, Payments, Users, Tickets, Reports, Bookings, Audit Logs, and System Settings.
+- **100% Real Production Data**: Connected directly to live database snapshots and Hostinger MySQL with verified 200 OK image assets.
+
+---
+
+## 3. Role-Wise Workflows & Sequence Diagrams
+
+### Patient Registration, AI Triage & Aarogyasri Consultation
 
 ```mermaid
 sequenceDiagram
@@ -92,144 +123,59 @@ sequenceDiagram
     DB-->>API: User ID (USR-xxxxxx) & Aarogyasri ID
     API-->>App: Registered & Authenticated
 
-    User->>App: Progressive Onboarding (Vitals, Allergies, Surgeries)
-    App->>API: PUT /api/health-records/onboarding/complete
-    API->>DB: UPDATE health_profiles (100% Complete)
-
-    User->>App: Conversational AI Symptom Triage ("Fever for 2 days")
+    User->>App: Conversational AI Symptom Triage ("Chest pain & breathlessness")
     App->>API: POST /api/ai/triage
-    API-->>App: Clinical Guidance + Suggested Specialist (General Physician)
+    API-->>App: Triage Result + Doctor Specialty + Contextual Care Products
 
-    User->>App: Book Consultation (Apply 50% Aarogyasri Subsidy)
+    User->>App: Book Consultation (50% Aarogyasri Subsidy Applied)
     App->>API: POST /api/appointments/book
     API->>DB: INSERT appointments (Room ID: HEAL-xxxxxx)
     API->>RZP: Create Razorpay Live Order (₹400 / 50% Off)
     RZP-->>API: Order ID (order_xxxxxx)
     API-->>App: Booking Confirmed & Razorpay Ready
 
-    User->>App: Launch Telehealth Consultation
+    User->>App: Launch Telehealth Video Consultation
     App->>API: POST /api/telehealth/generate-agora-token
     API->>AG: Generate 24-hr Token for Room
-    AG-->>API: Dynamic Token
-    API-->>App: Video Call Active
-
-    User->>App: Generate ABDM 15-Min QR Consent Pass
-    App->>API: POST /api/consent/generate-token
-    API->>DB: INSERT qr_consent_tokens (Expires in 15 mins)
-    API-->>App: Encrypted Dynamic QR Code
+    AG-->>API: Dynamic WebRTC Token
+    API-->>App: Video Room Active
 ```
 
 ---
 
-### B. Doctor Clinical Workspace
-
-```mermaid
-flowchart TD
-    D1["🩺 Doctor Login & Profile"] --> D2{"MCI Verification Status"}
-    D2 -->|"Pending"| D3["Upload Medical Registration & Degree Certs"]
-    D3 --> D4["Admin Reviews & Approves in Workspace"]
-    D2 -->|"Verified"| D5["Live Daily Queue & Patient Telemetry"]
-    
-    D5 --> D6["In-Clinic / Video Appointments"]
-    D5 --> D7["Doctor Scans Patient ABDM QR Pass"]
-    
-    D7 --> D8["API Validates 15-Min Token & Logs Audit Trail"]
-    D8 --> D9["Unlocks Patient Medical History & Surgeries"]
-    
-    D6 --> D10["Issue Digital Prescription with Timed Dosages"]
-    D10 --> D11["Prescription Synced to Patient Aarogyasri Health Vault"]
-    D11 --> D12["Earnings & Payout Ledger Updated (80% Doctor Payout)"]
-```
-
----
-
-### C. Hospital Administration
-
-```mermaid
-flowchart LR
-    H1["🏥 Hospital Empanelment Wizard"] --> H2["Step 1: Basic Facility Details & License"]
-    H2 --> H3["Step 2: 24/7 Hotline & Contact"]
-    H3 --> H4["Step 3: Mapbox Location & GPS Coordinates"]
-    H4 --> H5["Step 4: Emergency, ICU, Lab & Radiology Services"]
-    H5 --> H6["Step 5: Clinical Departments: Cardiology, Ortho, etc."]
-    H6 --> H7["Step 6: Bed Capacity & OTs"]
-    H7 --> H8["Step 7: Medical Director Administration"]
-    H8 --> H9["Step 8: Review & Activate Facility in MySQL"]
-```
-
----
-
-### D. Super Admin Operations
-
-```mermaid
-graph TD
-    SA["👑 Super Admin Control Center"] --> Ops["Operations Management"]
-    SA --> AICont["AI Engine & Content"]
-    SA --> SecSys["Security & Analytics"]
-
-    Ops --> M1["Dashboard - 8 Real-time KPI Metric Cards"]
-    Ops --> M2["Hospitals - Empaneled facilities & Bed hierarchy"]
-    Ops --> M3["Doctors - Credentialing checklist & status toggles"]
-    Ops --> M4["Users - Patient registry & Aarogyasri ID passes"]
-    Ops --> M5["Appointments - Central lifecycle tracker"]
-    Ops --> M6["Payments - Razorpay gross revenue & doctor payouts"]
-    Ops --> M7["Tickets - 2-column helpdesk resolution board"]
-
-    AICont --> M8["Visual Clinical AI Rule Builder"]
-    AICont --> M9["CMS & Outbreak Health Protocols"]
-    AICont --> M10["FCM Push & In-App Notification Broadcast"]
-
-    SecSys --> M11["Volume Curves & Daily Booking Trends"]
-    SecSys --> M12["Immutable ABDM & Clinical Audit Trails"]
-    SecSys --> M13["System Settings & Security Config"]
-```
-
----
-
-## 3. Technology Stack & Directory Structure
+## 4. Technology Stack & Repository Structure
 
 ```
 healthyxpress_medha/
+├── 3D-ILLUS/                     # 🎨 High-resolution 3D asset source files
+│   └── ADMIN-PANAL/              # 3D illustration PNGs (1.png - 8.png)
+│
 ├── healthexpress/                # 📱 Flutter Mobile Super-App (Patient + Doctor)
 │   ├── lib/
-│   │   ├── core/theme/           # Design system tokens (Medical Blue #1E60F6)
-│   │   ├── models/               # Hospital, Doctor, Medicine, Appointment models
-│   │   ├── providers/            # State management (Auth, AI, Appointments)
-│   │   ├── services/api_service.dart # HTTP REST client to PHP backend
-│   │   └── screens/
-│   │       ├── user/             # Dynamic AI Home, Booking, Pharmacy, Records, QR
-│   │       └── doctor/           # Clinical queue, QR Scanner, Rx Creator, Earnings
+│   │   ├── core/theme/           # Design tokens (Medical Blue #1E60F6)
+│   │   ├── data/                 # Production database service (zero dummy data)
+│   │   ├── models/               # Medical stores, Products, Hospitals, Appointments
+│   │   ├── providers/            # Riverpod/Provider state (Auth, AI, Pharmacy)
+│   │   ├── services/             # REST client connected to Hostinger PHP backend
+│   │   └── screens/              # Patient & Doctor multi-role screens
 │   └── pubspec.yaml
 │
 ├── admin_panel/                  # 💻 React 19 + Vite Super Admin Control Center
 │   ├── src/
-│   │   ├── components/           # Sidebar (13 links), Header, Modals, MetricCards
-│   │   ├── services/api.js       # Axios client fetching live SQL metrics
-│   │   └── views/
-│   │       ├── DashboardView.jsx # 8 KPI Cards, Revenue curve, Live activity feed
-│   │       ├── HospitalsView.jsx # 8-step wizard & department drawer
-│   │       ├── DoctorsView.jsx   # Credentialing verification workspace
-│   │       ├── UsersView.jsx     # Patient registry & health pass
-│   │       ├── AppointmentsView.jsx # Lifecycle timeline modal
-│   │       ├── PaymentsView.jsx  # Financial ledger & Razorpay logs
-│   │       ├── TicketsView.jsx   # Helpdesk resolution desk
-│   │       ├── AiManagementView.jsx # Visual rule builder (IF symptom THEN specialty)
-│   │       ├── NotificationsView.jsx # FCM notification composer
-│   │       ├── ReportsView.jsx   # Volume rankings & trend charts
-│   │       ├── AuditLogsView.jsx # Immutable ABDM audit trail
-│   │       └── SettingsView.jsx  # Security & password settings
+│   │   ├── assets/illustrations/ # 3D PNG illustrations (1.png - 8.png)
+│   │   ├── components/           # MetricCard, Modals, Navbar, Sidebar
+│   │   ├── data/databaseSnapshot.js # Authoritative live data state
+│   │   ├── services/api.js       # Axios client for REST telemetry
+│   │   └── views/                # 12 operational views with 3-card grid
 │   └── package.json
 │
 ├── php_backend/                  # 🐘 Hostinger Production PHP 8+ REST API
 │   ├── .htaccess                 # Apache mod_rewrite clean routing
 │   ├── index.php                 # Front Controller & REST Router
-│   ├── config/
-│   │   ├── config.php            # Environment loader & API keys
-│   │   └── database.php          # Singleton PDO connection to 147.93.101.73:3306
-│   ├── controllers/              # 13 REST Controllers (Admin, Auth, Doctor, etc.)
-│   ├── cron/                     # Appointment reminders & token cleanup crons
+│   ├── config/                   # PDO database singleton & environment loader
+│   ├── controllers/              # 13 REST Controllers (Admin, Auth, Doctor, AI, etc.)
 │   ├── database/schema.sql       # 16-table relational MySQL schema
-│   └── HOSTINGER_DEPLOYMENT.md   # Deployment manual for Hostinger
+│   └── cron/                     # Automated reminder & cleanup crons
 │
 └── backend/                      # ⚡ Node.js / Express QA Test Suite
     ├── qa_test_suite.js          # 15 automated endpoint tests
@@ -238,30 +184,32 @@ healthyxpress_medha/
 
 ---
 
-## 4. Relational Database Schema (16 Tables)
+## 5. Authoritative Production Relational Database
 
-The remote MySQL database at `147.93.101.73:3306` (`u170253497_healthexpress`) contains 16 normalized relational tables:
+The authoritative MySQL database (`u170253497_healthexpress` at `147.93.101.73:3306`) comprises 16 normalized relational tables:
 
-1. `users`: Master user accounts, roles (`patient`, `doctor`, `hospital_admin`, `super_admin`), and unique Aarogyasri IDs.
-2. `health_profiles`: Blood group, allergies, past surgeries, chronic conditions, and completion percentages.
-3. `hospitals`: Empaneled facilities, licenses, 24/7 hotline numbers, and bed capacities.
-4. `departments`: Clinical departments linked to hospitals (ON DELETE CASCADE).
-5. `doctors`: Specializations, qualifications, MCI registration numbers, fees, and online status.
-6. `doctor_hospitals`: Many-to-many relationship linking doctors to hospitals and departments.
-7. `doctor_schedules`: Working days, consultation types, and time slots.
-8. `appointments`: Consultations, timestamps, room IDs, and Aarogyasri subsidy flags.
-9. `prescriptions`: Digital prescriptions with JSON medicine dosages and diagnostic test orders.
-10. `health_records`: Encrypted medical vault records (lab reports, discharge summaries, etc.).
-11. `qr_consent_tokens`: 15-minute temporary ABDM consent tokens.
-12. `medicines`: 15-minute doorstep delivery catalog with prescription requirement flags.
-13. `tickets`: Customer dispute desk tickets and priority classifications.
-14. `payments`: Razorpay transaction records, currency, and payment methods.
-15. `audit_logs`: Immutable clinical data access logs and administrative action trails.
-16. `chat_messages`: 2-way real-time messaging thread between doctors and patients.
+| # | Table Name | Key Attributes | Purpose |
+|---|---|---|---|
+| 1 | `users` | `id`, `name`, `phone`, `role`, `aarogyasri_id` | Master user directory and role-based authentication |
+| 2 | `health_profiles` | `user_id`, `blood_group`, `allergies`, `surgeries` | Comprehensive EHR vault and chronic condition tracker |
+| 3 | `hospitals` | `id`, `name`, `license_number`, `beds`, `hotline` | Empaneled hospital network & facility registry |
+| 4 | `departments` | `id`, `hospital_id`, `name`, `head_doctor` | Clinical departments linked with `ON DELETE CASCADE` |
+| 5 | `doctors` | `id`, `name`, `specialty`, `registration_number`, `fee` | Doctor credentials, MCI verification & availability |
+| 6 | `doctor_hospitals` | `doctor_id`, `hospital_id`, `department_id` | Many-to-many doctor-hospital facility affiliations |
+| 7 | `doctor_schedules` | `doctor_id`, `day_of_week`, `time_slot`, `type` | Consultation schedule slots and clinic timings |
+| 8 | `appointments` | `id`, `patient_id`, `doctor_id`, `room_id`, `subsidy` | Central consultation booking and lifecycle queue |
+| 9 | `prescriptions` | `id`, `appointment_id`, `medicines_json`, `tests_json` | Digital Rx records automatically synced to health vault |
+| 10 | `health_records` | `id`, `user_id`, `document_type`, `file_url` | Encrypted medical documents and lab test reports |
+| 11 | `qr_consent_tokens`| `token`, `user_id`, `expires_at`, `status` | 15-minute temporary ABDM QR consent tokens |
+| 12 | `medicines` | `id`, `name`, `category`, `price`, `requires_rx` | 15-minute doorstep medicine delivery catalog |
+| 13 | `tickets` | `id`, `user_id`, `subject`, `priority`, `status` | 2-column helpdesk and dispute resolution system |
+| 14 | `payments` | `id`, `order_id`, `amount`, `method`, `status` | Razorpay Live transactions and 80/20 revenue ledger |
+| 15 | `audit_logs` | `id`, `actor_id`, `action`, `entity_id`, `ip` | Immutable ABDM-compliant clinical & admin audit logs |
+| 16 | `chat_messages` | `id`, `sender_id`, `recipient_id`, `message` | Encrypted 2-way doctor-patient clinical messaging |
 
 ---
 
-## 5. API Endpoint Directory (28+ Endpoints)
+## 6. API Endpoint Directory
 
 | HTTP Method | Route | Controller & Action | Functionality |
 | :--- | :--- | :--- | :--- |
@@ -279,7 +227,7 @@ The remote MySQL database at `147.93.101.73:3306` (`u170253497_healthexpress`) c
 | `PUT` | `/api/doctors/:id/status`| `DoctorController::toggleStatus()` | Online/offline availability switch |
 | `GET` | `/api/appointments` | `AdminController::getAllAppointments()`| Central booking queue |
 | `POST` | `/api/appointments/book`| `AppointmentController::book()` | Slot booking with Aarogyasri subsidy |
-| `PUT` | `/api/appointments/:id/reschedule`| `AppointmentController::reschedule()` | >24h free vs <24h reschedule check |
+| `PUT` | `/api/appointments/:id/reschedule`| `AppointmentController::reschedule()` | Free reschedule check |
 | `PUT` | `/api/appointments/:id/prescription`| `AppointmentController::issuePrescription()`| Digital prescription sync to vault |
 | `POST` | `/api/payments/create-order`| `PaymentController::createOrder()` | Razorpay Live API order creation |
 | `POST` | `/api/payments/verify` | `PaymentController::verifySignature()`| Razorpay HMAC-SHA256 verification |
@@ -294,29 +242,27 @@ The remote MySQL database at `147.93.101.73:3306` (`u170253497_healthexpress`) c
 | `PUT` | `/api/health-records/onboarding/complete`| `HealthRecordController::completeOnboarding()`| Progressive profile enrichment |
 | `GET` | `/api/tickets` | `TicketController::getAll()` | Support dispute tickets |
 | `POST` | `/api/tickets` | `TicketController::create()` | Raise helpdesk ticket |
-| `POST` | `/api/ai/triage` | `AiController::triage()` | Gemini AI clinical symptom triage |
+| `POST` | `/api/ai/triage` | `AiController::triage()` | Gemini & Sarvam AI clinical triage |
 
 ---
 
-## 6. Setup & Installation
+## 7. Setup & Local Development
 
-### A. Flutter Mobile Application
-
+### A. Flutter Mobile Super-App
 ```bash
 cd healthexpress
 
-# Get packages
+# Install dependencies
 flutter pub get
 
-# Run test suite
+# Run unit & smoke tests
 flutter test
 
-# Start the mobile app on Chrome / Emulator
+# Start the application on Chrome / Device
 flutter run -d chrome
 ```
 
-### B. React 19 + Vite Super Admin Panel
-
+### B. React 19 Super Admin Panel
 ```bash
 cd admin_panel
 
@@ -326,29 +272,31 @@ npm install
 # Start Vite dev server (http://localhost:5173)
 npm run dev
 
-# Build for production
+# Build production bundle
 npm run build
 ```
 
 ---
 
-## 7. Hostinger PHP Production Deployment
+## 8. Deployment Guide (Hostinger & GitHub Pages)
 
-1. Upload the entire contents of [`php_backend/`](file:///c:/Users/shese/Desktop/healthyxpress_medha/php_backend) directly into your domain's `public_html/` on Hostinger.
-2. Ensure `.htaccess` is present to enable URL rewriting for `/api/*`.
-3. In **Hostinger hPanel → Cron Jobs**, configure:
-   - **Reminders** (Every 15 min): `/usr/bin/php /home/u170253497/domains/YOUR_DOMAIN/public_html/cron/appointment_reminders.php`
-   - **Consent Cleanup** (Daily at midnight): `/usr/bin/php /home/u170253497/domains/YOUR_DOMAIN/public_html/cron/token_cleanup.php`
-4. Verify your live endpoint:
-   ```bash
-   curl https://YOUR_DOMAIN/api/health
-   ```
+### Hostinger PHP Backend
+1. Copy the contents of [`php_backend/`](file:///c:/Users/shese/Desktop/healthyxpress_medha/php_backend) to `public_html/` on Hostinger.
+2. Confirm `.htaccess` is active for clean URL routing.
+3. Configure cron jobs in Hostinger hPanel for appointment reminders and token expiration.
+
+### Super Admin GitHub Pages
+The admin panel is built and deployed to the `gh-pages` branch:
+```bash
+cd admin_panel
+npm run build
+npx gh-pages -d dist -b gh-pages
+```
+🌐 **Production URL**: `https://pavanstarkin-tech.github.io/healthyxpress_medha/`
 
 ---
 
-## 8. Automated QA Test Suite
-
-To run the complete automated integration test suite against the live MySQL database:
+## 9. Automated QA & Verification
 
 ```bash
 # 1. 15-Endpoint REST API QA Tests
@@ -358,11 +306,16 @@ node backend/qa_test_suite.js
 # 2. 10 End-to-End User & Clinical Workflow Tests
 node backend/test_all_flows.js
 # Output: 10 / 10 PASSED (100%)
+
+# 3. Flutter Smoke & Widget Tests
+cd healthexpress && flutter test
+# Output: All tests passed!
 ```
 
 ---
 
-## 📜 License & Compliance
+## 📜 Compliance & Security
 
-- **ABDM Compliance**: Ayushman Bharat Digital Mission QR token architecture.
-- **Security**: Zero plain-text credentials in client code, HMAC-SHA256 payment verification, PDO parameter binding.
+- **ABDM Compliance**: Full implementation of Ayushman Bharat Digital Mission QR token architecture.
+- **Zero Plain-Text Credentials**: Secure token auth, HMAC-SHA256 Razorpay validation, and PDO parameter binding.
+- **HIPAA / DISHA Ready**: Immutable access audit trail for every electronic health record lookup.
