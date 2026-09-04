@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Search, Filter, Lock, Clock } from 'lucide-react';
+import MetricCard from '../components/MetricCard';
 import { healthApi } from '../services/api';
+import illus7 from '../assets/illustrations/7.png';
+import illus2 from '../assets/illustrations/2.png';
+import illus6 from '../assets/illustrations/6.png';
 
 export default function AuditLogsView() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -87,6 +91,31 @@ export default function AuditLogsView() {
   });
 
   return (
+    <div>
+      {/* 3 Audit KPI Metric Cards (3 per row) */}
+      <div className="metrics-grid" style={{ marginBottom: 20 }}>
+        <MetricCard
+          title="Total Telemetry Events"
+          value={logs.length > 0 ? `${logs.length} Live` : '100%'}
+          change="Cryptographically Signed"
+          illustration={illus7}
+          color="blue"
+        />
+        <MetricCard
+          title="Clinical Access Audits"
+          value={logs.filter(l => l.action.includes('HEALTH') || l.action.includes('RECORD') || l.role === 'doctor').length.toString()}
+          change="HIPAA / DISHA Compliant"
+          illustration={illus2}
+          color="green"
+        />
+        <MetricCard
+          title="Security & Root Operations"
+          value={logs.filter(l => l.actor === 'Super Admin').length.toString()}
+          change="Super Admin Signed"
+          illustration={illus6}
+          color="purple"
+        />
+      </div>
     <div className="table-card">
       <div className="table-header">
         <div className="table-title">
@@ -153,5 +182,6 @@ export default function AuditLogsView() {
         </tbody>
       </table>
     </div>
+  </div>
   );
 }

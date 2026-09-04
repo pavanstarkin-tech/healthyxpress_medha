@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Eye, ShieldCheck, CheckCircle, Ban, AlertCircle, RefreshCw } from 'lucide-react';
 import DoctorVerificationModal from '../components/DoctorVerificationModal';
+import MetricCard from '../components/MetricCard';
 import { healthApi } from '../services/api';
 import { DB_SNAPSHOT } from '../data/databaseSnapshot';
+import illus2 from '../assets/illustrations/2.png';
+import illus6 from '../assets/illustrations/6.png';
+import illus1 from '../assets/illustrations/1.png';
+import illus7 from '../assets/illustrations/7.png';
 
 export default function DoctorsView({ onOpenAddDoctor }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -66,31 +71,45 @@ export default function DoctorsView({ onOpenAddDoctor }) {
 
   return (
     <div>
-      {/* 4 Doctor Summary Stat Cards (Calculated directly from Live MySQL) */}
+      {/* 4 Doctor Summary Stat Cards (3 per row) */}
       <div className="metrics-grid" style={{ marginBottom: 20 }}>
-        <div className="metric-card" style={{ padding: '16px', cursor: 'pointer' }} onClick={() => setStatusTab('All')}>
-          <div className="metric-info">
-            <h3>Total Registered</h3>
-            <div className="metric-value">{doctors.length}</div>
-          </div>
+        <div onClick={() => setStatusTab('All')} style={{ cursor: 'pointer' }}>
+          <MetricCard
+            title="Total Registered"
+            value={doctors.length.toString()}
+            change="All Specialties"
+            illustration={illus2}
+            color="blue"
+          />
         </div>
-        <div className="metric-card" style={{ padding: '16px', cursor: 'pointer', border: statusTab === 'Pending' ? '2px solid var(--warning)' : '1px solid var(--border)' }} onClick={() => setStatusTab('Pending')}>
-          <div className="metric-info">
-            <h3 style={{ color: 'var(--warning-text)' }}>Pending KYC Approval</h3>
-            <div className="metric-value" style={{ color: 'var(--warning-text)' }}>{pendingCount}</div>
-          </div>
+        <div onClick={() => setStatusTab('Pending')} style={{ cursor: 'pointer' }}>
+          <MetricCard
+            title="Pending KYC Approval"
+            value={pendingCount.toString()}
+            change="Requires Review"
+            isPositive={pendingCount === 0}
+            illustration={illus6}
+            color="orange"
+          />
         </div>
-        <div className="metric-card" style={{ padding: '16px', cursor: 'pointer', border: statusTab === 'Verified' ? '2px solid var(--success)' : '1px solid var(--border)' }} onClick={() => setStatusTab('Verified')}>
-          <div className="metric-info">
-            <h3>Verified & Active</h3>
-            <div className="metric-value" style={{ color: 'var(--success-text)' }}>{verifiedCount}</div>
-          </div>
+        <div onClick={() => setStatusTab('Verified')} style={{ cursor: 'pointer' }}>
+          <MetricCard
+            title="Verified & Active"
+            value={verifiedCount.toString()}
+            change="Practicing"
+            illustration={illus1}
+            color="green"
+          />
         </div>
-        <div className="metric-card" style={{ padding: '16px', cursor: 'pointer', border: statusTab === 'Rejected' ? '2px solid var(--error)' : '1px solid var(--border)' }} onClick={() => setStatusTab('Rejected')}>
-          <div className="metric-info">
-            <h3>Rejected Applications</h3>
-            <div className="metric-value" style={{ color: 'var(--error)' }}>{rejectedCount}</div>
-          </div>
+        <div onClick={() => setStatusTab('Rejected')} style={{ cursor: 'pointer' }}>
+          <MetricCard
+            title="Rejected Applications"
+            value={rejectedCount.toString()}
+            change="Audit Trail"
+            isPositive={rejectedCount === 0}
+            illustration={illus7}
+            color="purple"
+          />
         </div>
       </div>
 

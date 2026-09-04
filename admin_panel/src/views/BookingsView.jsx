@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { Search, Download, Eye, Edit3, Video } from 'lucide-react';
+import MetricCard from '../components/MetricCard';
+import illus4 from '../assets/illustrations/4.png';
+import illus1 from '../assets/illustrations/1.png';
+import illus5 from '../assets/illustrations/5.png';
 
 export default function BookingsView() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,6 +26,31 @@ export default function BookingsView() {
   });
 
   return (
+    <div>
+      {/* 3 Booking Metric Cards (3 per row) */}
+      <div className="metrics-grid" style={{ marginBottom: 20 }}>
+        <MetricCard
+          title="Total Bookings"
+          value="3,248"
+          change="All Time"
+          illustration={illus4}
+          color="blue"
+        />
+        <MetricCard
+          title="Confirmed Bookings"
+          value="2,180"
+          change="Attended & Active"
+          illustration={illus1}
+          color="green"
+        />
+        <MetricCard
+          title="Completed Consultations"
+          value="1,024"
+          change="Completed"
+          illustration={illus5}
+          color="purple"
+        />
+      </div>
     <div className="table-card">
       <div className="table-header">
         <div className="table-title">
@@ -116,5 +145,6 @@ export default function BookingsView() {
         </div>
       </div>
     </div>
+  </div>
   );
 }

@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Eye, Building2, MapPin, Phone, Layers, Users, X } from 'lucide-react';
 import AddHospitalMultiStepModal from '../components/AddHospitalMultiStepModal';
+import MetricCard from '../components/MetricCard';
 import { healthApi } from '../services/api';
 import { DB_SNAPSHOT } from '../data/databaseSnapshot';
+import illus3 from '../assets/illustrations/3.png';
+import illus1 from '../assets/illustrations/1.png';
+import illus7 from '../assets/illustrations/7.png';
+import illus2 from '../assets/illustrations/2.png';
 
 export default function HospitalsView() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -53,32 +58,37 @@ export default function HospitalsView() {
 
   return (
     <div>
-      {/* 4 Hospital KPI Stats (Calculated directly from Live MySQL) */}
+      {/* 4 Hospital KPI Stats (3 per row) */}
       <div className="metrics-grid" style={{ marginBottom: 20 }}>
-        <div className="metric-card" style={{ padding: '16px' }}>
-          <div className="metric-info">
-            <h3>Registered Facilities</h3>
-            <div className="metric-value">{hospitals.length}</div>
-          </div>
-        </div>
-        <div className="metric-card" style={{ padding: '16px' }}>
-          <div className="metric-info">
-            <h3>Active Empaneled</h3>
-            <div className="metric-value" style={{ color: 'var(--success-text)' }}>{activeCount}</div>
-          </div>
-        </div>
-        <div className="metric-card" style={{ padding: '16px' }}>
-          <div className="metric-info">
-            <h3>Pending Onboarding</h3>
-            <div className="metric-value" style={{ color: 'var(--warning-text)' }}>{pendingCount}</div>
-          </div>
-        </div>
-        <div className="metric-card" style={{ padding: '16px' }}>
-          <div className="metric-info">
-            <h3>Verified Network</h3>
-            <div className="metric-value" style={{ color: 'var(--primary)' }}>{activeCount > 0 ? '100%' : '0%'}</div>
-          </div>
-        </div>
+        <MetricCard
+          title="Registered Facilities"
+          value={hospitals.length.toString()}
+          change="Telangana Network"
+          illustration={illus3}
+          color="blue"
+        />
+        <MetricCard
+          title="Active Empaneled"
+          value={activeCount.toString()}
+          change="Aarogyasri Active"
+          illustration={illus1}
+          color="green"
+        />
+        <MetricCard
+          title="Pending Onboarding"
+          value={pendingCount.toString()}
+          change="In Inspection"
+          isPositive={pendingCount === 0}
+          illustration={illus7}
+          color="orange"
+        />
+        <MetricCard
+          title="Verified Network"
+          value={activeCount > 0 ? '100%' : '0%'}
+          change="NABH Empaneled"
+          illustration={illus2}
+          color="blue"
+        />
       </div>
 
       <div className="table-card">

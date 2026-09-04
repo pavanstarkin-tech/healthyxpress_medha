@@ -30,6 +30,15 @@ import MetricCard from '../components/MetricCard';
 import { healthApi } from '../services/api';
 import { DB_SNAPSHOT } from '../data/databaseSnapshot';
 
+import illus1 from '../assets/illustrations/1.png';
+import illus2 from '../assets/illustrations/2.png';
+import illus3 from '../assets/illustrations/3.png';
+import illus4 from '../assets/illustrations/4.png';
+import illus5 from '../assets/illustrations/5.png';
+import illus6 from '../assets/illustrations/6.png';
+import illus7 from '../assets/illustrations/7.png';
+import illus8 from '../assets/illustrations/8.png';
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -128,45 +137,41 @@ export default function DashboardView({ onNavigate, onOpenAddHospital, onOpenAdd
 
   return (
     <div>
-      {/* Top KPI Row 1: Users, Doctors, Hospitals, Appointments */}
+      {/* Top KPI Cards - 3 Cards Per Row with 3D Illustrations */}
       <div className="metrics-grid">
         <MetricCard
           title="Total Users"
           value={stats.total_users.toLocaleString()}
           change="Live MySQL"
-          icon={Users}
+          illustration={illus1}
           color="blue"
         />
         <MetricCard
           title="Active Doctors"
           value={stats.total_doctors.toLocaleString()}
           change="Live MySQL"
-          icon={UserRound}
+          illustration={illus2}
           color="blue"
         />
         <MetricCard
           title="Partner Hospitals"
           value={stats.total_hospitals.toLocaleString()}
           change="Live MySQL"
-          icon={Building2}
+          illustration={illus3}
           color="blue"
         />
         <MetricCard
           title="Appointments"
           value={stats.total_appointments.toLocaleString()}
           change="Live MySQL"
-          icon={CalendarCheck}
+          illustration={illus4}
           color="orange"
         />
-      </div>
-
-      {/* Top KPI Row 2: Revenue, Pending Doctor, Pending Hospital, Open Tickets */}
-      <div className="metrics-grid" style={{ marginBottom: 24 }}>
         <MetricCard
           title="Gross Revenue"
           value={`₹${stats.gross_revenue.toLocaleString('en-IN')}`}
           change="Razorpay Live"
-          icon={DollarSign}
+          illustration={illus5}
           color="green"
         />
         <MetricCard
@@ -174,7 +179,7 @@ export default function DashboardView({ onNavigate, onOpenAddHospital, onOpenAdd
           value={stats.pending_doctors.toString()}
           change="Requires Action"
           isPositive={stats.pending_doctors === 0}
-          icon={UserCheck}
+          illustration={illus6}
           color="orange"
         />
         <MetricCard
@@ -182,7 +187,7 @@ export default function DashboardView({ onNavigate, onOpenAddHospital, onOpenAdd
           value={stats.pending_hospitals.toString()}
           change="Under Review"
           isPositive={stats.pending_hospitals === 0}
-          icon={AlertCircle}
+          illustration={illus7}
           color="purple"
         />
         <MetricCard
@@ -190,7 +195,7 @@ export default function DashboardView({ onNavigate, onOpenAddHospital, onOpenAdd
           value={stats.open_tickets.toString()}
           change="Active Queue"
           isPositive={stats.open_tickets === 0}
-          icon={LifeBuoy}
+          illustration={illus8}
           color="orange"
         />
       </div>

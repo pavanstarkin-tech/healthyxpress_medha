@@ -4,6 +4,11 @@ import { Line } from 'react-chartjs-2';
 import MetricCard from '../components/MetricCard';
 import { healthApi } from '../services/api';
 import { DB_SNAPSHOT } from '../data/databaseSnapshot';
+import illus1 from '../assets/illustrations/1.png';
+import illus2 from '../assets/illustrations/2.png';
+import illus3 from '../assets/illustrations/3.png';
+import illus4 from '../assets/illustrations/4.png';
+import illus5 from '../assets/illustrations/5.png';
 
 export default function ReportsView() {
   const [stats, setStats] = useState(DB_SNAPSHOT.stats);
@@ -79,34 +84,34 @@ export default function ReportsView() {
 
   return (
     <div>
-      {/* 4 Top Metric Cards (Calculated directly from Live MySQL) */}
+      {/* 4 Top Metric Cards (3 per row) */}
       <div className="metrics-grid">
         <MetricCard
           title="Total Registered Users"
           value={stats.total_users.toLocaleString()}
           change="Live MySQL"
-          icon={Users}
+          illustration={illus1}
           color="blue"
         />
         <MetricCard
           title="Total Verified Doctors"
           value={stats.total_doctors.toLocaleString()}
           change="Live MySQL"
-          icon={UserRound}
+          illustration={illus2}
           color="blue"
         />
         <MetricCard
           title="Total Appointments"
           value={stats.total_appointments.toLocaleString()}
           change="Live MySQL"
-          icon={CalendarCheck}
+          illustration={illus4}
           color="orange"
         />
         <MetricCard
           title="Empaneled Hospitals"
           value={stats.total_hospitals.toLocaleString()}
           change="Live MySQL"
-          icon={Building2}
+          illustration={illus3}
           color="blue"
         />
       </div>

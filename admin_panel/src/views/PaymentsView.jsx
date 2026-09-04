@@ -3,6 +3,10 @@ import { DollarSign, ArrowUpRight, ArrowDownLeft, Search, Download, CreditCard, 
 import MetricCard from '../components/MetricCard';
 import { healthApi } from '../services/api';
 import { DB_SNAPSHOT } from '../data/databaseSnapshot';
+import illus5 from '../assets/illustrations/5.png';
+import illus1 from '../assets/illustrations/1.png';
+import illus2 from '../assets/illustrations/2.png';
+import illus6 from '../assets/illustrations/6.png';
 
 export default function PaymentsView() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -45,35 +49,35 @@ export default function PaymentsView() {
 
   return (
     <div>
-      {/* 4 Financial KPI Cards */}
+      {/* 4 Financial KPI Cards (3 per row) */}
       <div className="metrics-grid">
         <MetricCard
           title="Total Gross Revenue"
           value={`₹${totalGross.toLocaleString('en-IN')}`}
           change="Live Razorpay"
-          icon={DollarSign}
+          illustration={illus5}
           color="green"
         />
         <MetricCard
           title="Platform Earnings (20%)"
           value={`₹${platformEarnings.toLocaleString('en-IN')}`}
           change="+ 18%"
-          icon={ArrowUpRight}
+          illustration={illus1}
           color="blue"
         />
         <MetricCard
           title="Doctor Payouts (80%)"
           value={`₹${doctorPayouts.toLocaleString('en-IN')}`}
           change="+ 14%"
-          icon={ArrowDownLeft}
+          illustration={illus2}
           color="purple"
         />
         <MetricCard
-          title="Refunds"
+          title="Dispute Holds / Refunds"
           value="₹0"
-          change="0.0%"
+          change="0.0% Clean"
           isPositive={true}
-          icon={RefreshCw}
+          illustration={illus6}
           color="orange"
         />
       </div>

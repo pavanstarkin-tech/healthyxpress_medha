@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Download, Eye, Video, Clock, Check, X } from 'lucide-react';
+import MetricCard from '../components/MetricCard';
 import { healthApi } from '../services/api';
 import { DB_SNAPSHOT } from '../data/databaseSnapshot';
+import illus4 from '../assets/illustrations/4.png';
+import illus1 from '../assets/illustrations/1.png';
+import illus5 from '../assets/illustrations/5.png';
+import illus6 from '../assets/illustrations/6.png';
 
 export default function AppointmentsView() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -53,40 +58,43 @@ export default function AppointmentsView() {
     return matchSearch && matchStatus;
   });
 
+  const confirmedCount = appointments.filter(a => a.status === 'Confirmed').length;
+  const completedCount = appointments.filter(a => a.status === 'Completed').length;
+  const rescheduledCount = appointments.filter(a => a.status === 'Rescheduled' || a.status === 'Cancelled').length;
+
   return (
     <div>
-      {/* 4 Appointment Top Stats */}
+      {/* 4 Appointment Top Stats (3 per row) */}
       <div className="metrics-grid" style={{ marginBottom: 20 }}>
-        <div className="metric-card" style={{ padding: '16px' }}>
-          <div className="metric-info">
-            <h3>Total Consultations</h3>
-            <div className="metric-value">{appointments.length}</div>
-          </div>
-        </div>
-        <div className="metric-card" style={{ padding: '16px' }}>
-          <div className="metric-info">
-            <h3>Confirmed Slots</h3>
-            <div className="metric-value" style={{ color: 'var(--primary)' }}>
-              {appointments.filter(a => a.status === 'Confirmed').length}
-            </div>
-          </div>
-        </div>
-        <div className="metric-card" style={{ padding: '16px' }}>
-          <div className="metric-info">
-            <h3>Completed Consultations</h3>
-            <div className="metric-value" style={{ color: 'var(--success-text)' }}>
-              {appointments.filter(a => a.status === 'Completed').length}
-            </div>
-          </div>
-        </div>
-        <div className="metric-card" style={{ padding: '16px' }}>
-          <div className="metric-info">
-            <h3>Rescheduled</h3>
-            <div className="metric-value" style={{ color: 'var(--warning-text)' }}>
-              {appointments.filter(a => a.status === 'Rescheduled').length}
-            </div>
-          </div>
-        </div>
+        <MetricCard
+          title="Total Consultations"
+          value={appointments.length.toString()}
+          change="Live Queue"
+          illustration={illus4}
+          color="blue"
+        />
+        <MetricCard
+          title="Confirmed Slots"
+          value={confirmedCount.toString()}
+          change="Ready to Attend"
+          illustration={illus1}
+          color="blue"
+        />
+        <MetricCard
+          title="Completed Care"
+          value={completedCount.toString()}
+          change="Rx Synced"
+          illustration={illus5}
+          color="green"
+        />
+        <MetricCard
+          title="Rescheduled / Pending"
+          value={rescheduledCount.toString()}
+          change="Follow-up needed"
+          isPositive={rescheduledCount === 0}
+          illustration={illus6}
+          color="orange"
+        />
       </div>
 
       <div className="table-card">

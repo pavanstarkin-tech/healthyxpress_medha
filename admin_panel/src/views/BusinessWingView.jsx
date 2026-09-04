@@ -37,6 +37,10 @@ import {
 } from 'lucide-react';
 import MetricCard from '../components/MetricCard';
 import { DB_SNAPSHOT } from '../data/databaseSnapshot';
+import illus1 from '../assets/illustrations/1.png';
+import illus2 from '../assets/illustrations/2.png';
+import illus4 from '../assets/illustrations/4.png';
+import illus5 from '../assets/illustrations/5.png';
 
 export default function BusinessWingView() {
   const [activeSubTab, setActiveSubTab] = useState('segments'); // 'segments' | 'products' | 'stores' | 'leads' | 'rules'
@@ -313,39 +317,39 @@ export default function BusinessWingView() {
               boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)'
             }}
           >
-            <ShoppingBag size={16} /> View Products ({products.length})
+            <ShoppingBag size={16} /> View Products ({productsList.length})
           </button>
         </div>
       </div>
 
-      {/* 4 Standard Top KPI Metric Cards */}
+      {/* Top KPI Metric Cards (3 per row) */}
       <div className="metrics-grid">
         <MetricCard
           title="Gross Merchandise Value"
           value={`₹${stats.total_gmv.toLocaleString('en-IN')}`}
           change="34.8% MoM Growth"
-          icon={DollarSign}
+          illustration={illus5}
           color="green"
         />
         <MetricCard
           title="AI Qualified Leads"
           value={stats.total_leads_generated.toLocaleString('en-IN')}
           change={`${stats.active_monetized_users} Active Intent`}
-          icon={Users}
+          illustration={illus1}
           color="blue"
         />
         <MetricCard
           title="AI Conversion Rate"
           value={`${stats.overall_conversion_rate}%`}
           change="4.6x Industry Avg"
-          icon={Zap}
+          illustration={illus4}
           color="orange"
         />
         <MetricCard
           title="Average Order Value"
           value={`₹${stats.avg_order_value.toLocaleString('en-IN')}`}
           change={stats.top_converting_product.split(' ')[2] || 'High Margin'}
-          icon={TrendingUp}
+          illustration={illus2}
           color="blue"
         />
       </div>

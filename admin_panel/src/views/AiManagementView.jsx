@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Plus, AlertTriangle, ShieldCheck, Cpu, Sliders, CheckCircle2, User, Clock, Activity, MessageSquare } from 'lucide-react';
+import MetricCard from '../components/MetricCard';
 import { healthApi } from '../services/api';
 import { DB_SNAPSHOT } from '../data/databaseSnapshot';
+import illus1 from '../assets/illustrations/1.png';
+import illus2 from '../assets/illustrations/2.png';
+import illus6 from '../assets/illustrations/6.png';
+import illus7 from '../assets/illustrations/7.png';
 
 export default function AiManagementView() {
   const [stats, setStats] = useState(DB_SNAPSHOT.aiStats);
@@ -106,51 +111,43 @@ export default function AiManagementView() {
     setNewRule({ condition: '', prioritySpecialty: 'General Physician', recommendedTests: '', recommendedMeds: '', severity: 'Moderate' });
   };
 
+  const totalSessions = stats.total_ai_sessions > 0 ? stats.total_ai_sessions : (aiSessions.length > 0 ? aiSessions.length : 5);
+  const voiceConsults = stats.voice_consultations > 0 ? stats.voice_consultations : Math.max(2, Math.floor(totalSessions * 0.4));
+  const emergencyCount = stats.emergency_escalations > 0 ? stats.emergency_escalations : (aiSessions.filter(s => s.severity === 'Emergency').length || 1);
+
   return (
     <div>
-      {/* 4 AI Metric Cards - Calculated Directly from Live Database */}
+      {/* 4 AI Metric Cards (3 per row) */}
       <div className="metrics-grid">
-        <div className="metric-card">
-          <div className="metric-info">
-            <h3>AI Triage Sessions</h3>
-            <div className="metric-value">
-              {stats.total_ai_sessions > 0 ? stats.total_ai_sessions.toLocaleString() : (aiSessions.length > 0 ? aiSessions.length : 5)}
-            </div>
-            <div className="metric-trend up">● Live DB Records</div>
-          </div>
-          <div className="metric-icon-box blue"><Sparkles size={24} /></div>
-        </div>
-
-        <div className="metric-card">
-          <div className="metric-info">
-            <h3>Voice AI Consultations</h3>
-            <div className="metric-value">
-              {stats.voice_consultations > 0 ? stats.voice_consultations.toLocaleString() : Math.max(2, Math.floor(stats.total_ai_sessions * 0.4))}
-            </div>
-            <div className="metric-trend up">● Multilingual Sarvam</div>
-          </div>
-          <div className="metric-icon-box purple"><Cpu size={24} /></div>
-        </div>
-
-        <div className="metric-card">
-          <div className="metric-info">
-            <h3>Emergency Escalations</h3>
-            <div className="metric-value" style={{ color: 'var(--error)' }}>
-              {stats.emergency_escalations > 0 ? stats.emergency_escalations : (aiSessions.filter(s => s.severity === 'Emergency').length || 1)}
-            </div>
-            <div className="metric-trend down">108 Dispatched</div>
-          </div>
-          <div className="metric-icon-box red" style={{ background: 'var(--error-bg)', color: 'var(--error)' }}><AlertTriangle size={24} /></div>
-        </div>
-
-        <div className="metric-card">
-          <div className="metric-info">
-            <h3>Active Clinical Rules</h3>
-            <div className="metric-value">{rules.length} Rules</div>
-            <div className="metric-trend up">● Active Guardrails</div>
-          </div>
-          <div className="metric-icon-box green"><ShieldCheck size={24} /></div>
-        </div>
+        <MetricCard
+          title="AI Triage Sessions"
+          value={totalSessions.toLocaleString()}
+          change="Live MySQL"
+          illustration={illus1}
+          color="blue"
+        />
+        <MetricCard
+          title="Voice AI Consultations"
+          value={voiceConsults.toLocaleString()}
+          change="Multilingual Sarvam"
+          illustration={illus2}
+          color="purple"
+        />
+        <MetricCard
+          title="Emergency Escalations"
+          value={emergencyCount.toString()}
+          change="108 Dispatched"
+          isPositive={emergencyCount === 0}
+          illustration={illus6}
+          color="orange"
+        />
+        <MetricCard
+          title="Active Clinical Rules"
+          value={`${rules.length} Rules`}
+          change="Safety Guardrails"
+          illustration={illus7}
+          color="green"
+        />
       </div>
 
       {/* Tabs for Rules vs Live Triage Audit Sessions */}

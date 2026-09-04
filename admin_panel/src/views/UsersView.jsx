@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Download, Eye } from 'lucide-react';
+import MetricCard from '../components/MetricCard';
 import UserDetailsModal from '../components/UserDetailsModal';
 import { healthApi } from '../services/api';
 import { DB_SNAPSHOT } from '../data/databaseSnapshot';
+import illus1 from '../assets/illustrations/1.png';
+import illus3 from '../assets/illustrations/3.png';
+import illus2 from '../assets/illustrations/2.png';
 
 export default function UsersView() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -44,6 +48,31 @@ export default function UsersView() {
   const filtered = users.filter(u => u.name.toLowerCase().includes(searchTerm.toLowerCase()) || u.phone.includes(searchTerm) || (u.aarogyasri && u.aarogyasri.toLowerCase().includes(searchTerm.toLowerCase())));
 
   return (
+    <div>
+      {/* 3 User KPI Metric Cards (3 per row) */}
+      <div className="metrics-grid" style={{ marginBottom: 20 }}>
+        <MetricCard
+          title="Total Registered Patients"
+          value={users.length.toString()}
+          change="Live Hostinger DB"
+          illustration={illus1}
+          color="blue"
+        />
+        <MetricCard
+          title="Aarogyasri Health Cards"
+          value={users.filter(u => u.aarogyasri).length.toString()}
+          change="Government Subsidy"
+          illustration={illus3}
+          color="green"
+        />
+        <MetricCard
+          title="Active Digital EHR Vaults"
+          value={users.length.toString()}
+          change="QR Scannable"
+          illustration={illus2}
+          color="purple"
+        />
+      </div>
     <div className="table-card">
       <div className="table-header">
         <div className="table-title">
@@ -136,5 +165,6 @@ export default function UsersView() {
         />
       )}
     </div>
+  </div>
   );
 }

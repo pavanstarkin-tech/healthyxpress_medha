@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, MessageSquare, AlertCircle } from 'lucide-react';
+import MetricCard from '../components/MetricCard';
 import ReplyTicketModal from '../components/ReplyTicketModal';
 import { healthApi } from '../services/api';
 import { DB_SNAPSHOT } from '../data/databaseSnapshot';
+import illus8 from '../assets/illustrations/8.png';
+import illus6 from '../assets/illustrations/6.png';
+import illus1 from '../assets/illustrations/1.png';
 
 export default function TicketsView() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -49,8 +53,37 @@ export default function TicketsView() {
     return matchSearch && matchStatus;
   });
 
+  const openTickets = tickets.filter(t => t.status === 'Open').length;
+  const resolvedTickets = tickets.filter(t => t.status === 'Resolved').length;
+
   return (
-    <div className="table-card">
+    <div>
+      {/* 3 Support KPI Metric Cards (3 per row) */}
+      <div className="metrics-grid" style={{ marginBottom: 20 }}>
+        <MetricCard
+          title="Total Support Tickets"
+          value={tickets.length.toString()}
+          change="Live Queue"
+          illustration={illus8}
+          color="blue"
+        />
+        <MetricCard
+          title="Open / Action Required"
+          value={openTickets.toString()}
+          change="Pending Reply"
+          isPositive={openTickets === 0}
+          illustration={illus6}
+          color="orange"
+        />
+        <MetricCard
+          title="Resolved Disputes"
+          value={resolvedTickets.toString()}
+          change="100% Satisfaction"
+          illustration={illus1}
+          color="green"
+        />
+      </div>
+      <div className="table-card">
       <div className="table-header">
         <div className="table-title">
           <h3>Customer Support & Dispute Desk</h3>
@@ -142,5 +175,6 @@ export default function TicketsView() {
         />
       )}
     </div>
+  </div>
   );
 }
