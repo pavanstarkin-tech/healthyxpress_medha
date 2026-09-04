@@ -14,7 +14,9 @@ import {
   ShieldCheck,
   Settings,
   Activity,
-  ChevronRight
+  ChevronRight,
+  TrendingUp,
+  ShoppingBag
 } from 'lucide-react';
 
 const NAV_SECTIONS = [
@@ -28,6 +30,13 @@ const NAV_SECTIONS = [
       { id: 'appointments', label: 'Appointments', icon: CalendarCheck },
       { id: 'payments', label: 'Payments & Ledger', icon: CreditCard },
       { id: 'tickets', label: 'Support Tickets', icon: LifeBuoy },
+    ]
+  },
+  {
+    title: 'BUSINESS & MONETIZATION',
+    items: [
+      { id: 'business', label: 'AI Business Wing & Leads', icon: TrendingUp },
+      { id: 'products', label: 'Health Products & Packages', icon: ShoppingBag },
     ]
   },
   {

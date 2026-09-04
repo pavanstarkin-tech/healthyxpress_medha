@@ -12,6 +12,7 @@ import UsersView from './views/UsersView';
 import AppointmentsView from './views/AppointmentsView';
 import PaymentsView from './views/PaymentsView';
 import TicketsView from './views/TicketsView';
+import BusinessWingView from './views/BusinessWingView';
 import AiManagementView from './views/AiManagementView';
 import NotificationsView from './views/NotificationsView';
 import ReportsView from './views/ReportsView';
@@ -71,6 +72,8 @@ export default function App() {
           {activeTab === 'appointments' && <AppointmentsView />}
 
           {activeTab === 'payments' && <PaymentsView />}
+
+          {(activeTab === 'business' || activeTab === 'products') && <BusinessWingView />}
 
           {activeTab === 'tickets' && <TicketsView />}
 

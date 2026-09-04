@@ -132,18 +132,24 @@ class AiController {
         $chronicConditions = $patientContext['profile']['chronic_conditions'] ?? 'None';
         $suggestedMedicines = self::computeSafeMedicineSuggestions($pdo, $rawQuery, $allergies, $chronicConditions);
 
-        // 10. Assemble Full Clinical Response with Real-Time Database Query Insights
+        // 10. AI BUSINESS WING: User Interest & Problem Segmentation Engine
+        $interestSegmentation = self::evaluateUserInterestSegment($rawQuery, $chronicConditions, $vitals, $feelings);
+        $recommendedBusinessProducts = self::getMatchingBusinessProducts($interestSegmentation['primary_segment'], $rawQuery);
+
+        // 11. Assemble Full Clinical & Commercial Response with Real-Time Database Query Insights
         $responseData = [
             'session_id'         => 'SESS-' . strtoupper(bin2hex(random_bytes(4))),
             'status'             => 'clinical_guidance',
             'severity'           => 'Moderate',
-            'ai_engine'          => 'Sarvam AI (Real-Time Database Querying & Clinical Memory Engine)',
+            'ai_engine'          => 'Sarvam AI (Real-Time Database Querying & Business Intelligence Engine)',
             'ai_clinical_notes'  => $sarvamResponseText ?: "Hello {$patientContext['user']['name']}, based on your real-time records in our database, your symptoms indicate mild acute infection. Hydration, rest, and symptomatic care are recommended.",
             'database_query_insights' => [
                 'intent_detected'    => $liveQueryResult['intent'] ?? 'General Triage',
                 'records_queried'    => $liveQueryResult['records_count'] ?? 0,
                 'queried_data'       => $liveQueryResult['data'] ?? [],
             ],
+            'user_interest_segmentation' => $interestSegmentation,
+            'business_products_recommended' => $recommendedBusinessProducts,
             'patient_context'    => [
                 'name'               => $patientContext['user']['name'] ?? 'Patient',
                 'age'                => $patientContext['user']['age'] ?? 28,
@@ -173,7 +179,7 @@ class AiController {
             'disclaimer'         => 'HealthExpress AI assists with triage and real-time health record retrieval. It does not replace a physical examination by a certified MCI doctor.'
         ];
 
-        // 11. Append Consultation Log to ai_sessions (Pure Append-Only; Never alters existing health records)
+        // 12. Append Consultation Log to ai_sessions (Pure Append-Only; Never alters existing health records)
         self::logAiConsultationSession($pdo, $userId, $rawQuery, $duration, 'Moderate', $feelings, $vitals, $responseData, $suggestedMedicines);
 
         Response::json($responseData);
@@ -585,5 +591,164 @@ CAPABILITIES & RULES:
         $sessions = $stmt->fetchAll();
 
         Response::json($sessions);
+    }
+
+    /**
+     * AI PROBLEM & USER INTEREST SEGMENTATION ENGINE
+     * Classifies users into high-affinity commercial health segments based on symptoms, vitals & conditions
+     */
+    private static function evaluateUserInterestSegment(string $query, string $chronicConditions, array $vitals, array $feelings): array {
+        $q = strtolower($query . ' ' . $chronicConditions);
+        
+        $primarySegment = 'Preventive Master Checkups';
+        $secondarySegment = 'General Wellness';
+        $affinityScore = 75;
+        $detectedProblems = [];
+
+        // 1. Diabetes & Metabolic Care
+        if (strpos($q, 'diabetes') !== false || strpos($q, 'sugar') !== false || strpos($q, 'glucose') !== false || strpos($q, 'hba1c') !== false || strpos($q, 'thirst') !== false || strpos($q, 'insulin') !== false) {
+            $primarySegment = 'Diabetes & Metabolic Care';
+            $secondarySegment = 'Preventive Master Checkups';
+            $affinityScore = 92;
+            $detectedProblems[] = 'Glycemic Fluctuations / Diabetes Management';
+        }
+        // 2. Cardiology & Hypertension
+        elseif (strpos($q, 'bp') !== false || strpos($q, 'pressure') !== false || strpos($q, 'hypertension') !== false || strpos($q, 'palpitation') !== false || strpos($q, 'dizziness') !== false || strpos($q, 'cholesterol') !== false) {
+            $primarySegment = 'Cardiology & Hypertension';
+            $secondarySegment = 'Emergency Monitoring';
+            $affinityScore = 90;
+            $detectedProblems[] = 'Elevated Blood Pressure & Cardiac Vitals';
+        }
+        // 3. Orthopedic & Joint Mobility
+        elseif (strpos($q, 'knee') !== false || strpos($q, 'joint') !== false || strpos($q, 'back pain') !== false || strpos($q, 'arthritis') !== false || strpos($q, 'sciatica') !== false || strpos($q, 'bone') !== false) {
+            $primarySegment = 'Orthopedic & Joint Mobility';
+            $secondarySegment = 'Physiotherapy & Mobility';
+            $affinityScore = 88;
+            $detectedProblems[] = 'Joint Stiffness & Musculoskeletal Discomfort';
+        }
+        // 4. Women & Maternal Health
+        elseif (strpos($q, 'pcos') !== false || strpos($q, 'period') !== false || strpos($q, 'pregnancy') !== false || strpos($q, 'hormon') !== false || strpos($q, 'thyroid') !== false || strpos($q, 'gynec') !== false) {
+            $primarySegment = 'Women & Maternal Health';
+            $secondarySegment = 'Preventive Master Checkups';
+            $affinityScore = 86;
+            $detectedProblems[] = 'Hormonal / Maternal Health Inquiries';
+        }
+        // 5. Pediatric & Child Care
+        elseif (strpos($q, 'child') !== false || strpos($q, 'baby') !== false || strpos($q, 'vaccin') !== false || strpos($q, 'infant') !== false || strpos($q, 'pediatric') !== false) {
+            $primarySegment = 'Pediatric & Child Care';
+            $secondarySegment = 'Immunity & Nutrition';
+            $affinityScore = 84;
+            $detectedProblems[] = 'Pediatric Wellness & Immunity Support';
+        }
+        // 6. Acute Fever / Infectious
+        elseif (strpos($q, 'fever') !== false || strpos($q, 'cough') !== false || strpos($q, 'cold') !== false || strpos($q, 'throat') !== false || strpos($q, 'dengue') !== false) {
+            $primarySegment = 'Preventive Master Checkups';
+            $secondarySegment = 'Diabetes & Metabolic Care';
+            $affinityScore = 80;
+            $detectedProblems[] = 'Acute Viral Infection / Outbreak Recovery';
+        }
+
+        if (empty($detectedProblems)) {
+            $detectedProblems[] = 'Routine Health Consultation';
+        }
+
+        return [
+            'primary_segment'   => $primarySegment,
+            'secondary_segment' => $secondarySegment,
+            'affinity_score'    => $affinityScore,
+            'detected_problems' => $detectedProblems,
+            'lead_intent'       => $affinityScore >= 85 ? 'HIGH_PURCHASE_INTENT' : 'INFORMATIONAL_CARE',
+            'suggested_campaign'=> 'Personalized Care Shield 2026'
+        ];
+    }
+
+    /**
+     * MATCH TARGETED COMMERCIAL PRODUCTS & PACKAGES
+     */
+    private static function getMatchingBusinessProducts(string $segment, string $query): array {
+        $catalog = [
+            'PRD-101' => [
+                'id' => 'PRD-101',
+                'title' => 'HealthExpress Smart Bluetooth Glucometer Kit',
+                'category' => 'Smart Medical Device',
+                'price' => 1199,
+                'original_price' => 1999,
+                'discount_percent' => 40,
+                'badge' => 'Bestseller',
+                'image_url' => 'https://images.unsplash.com/photo-1631556097152-c39479cbfeab?auto=format&fit=crop&q=80&w=400',
+                'cta_label' => 'Order with Free Home Delivery',
+                'features' => ['Auto Sync with App', '50 Free Lancets & Strips', '5-Sec Fast Reading']
+            ],
+            'PRD-102' => [
+                'id' => 'PRD-102',
+                'title' => 'Comprehensive Diabetic 360° Profile (HbA1c + Kidney)',
+                'category' => 'Diagnostic Lab Package',
+                'price' => 499,
+                'original_price' => 1200,
+                'discount_percent' => 58,
+                'badge' => 'High Value',
+                'image_url' => 'https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&q=80&w=400',
+                'cta_label' => 'Book Free Home Sample Pickup',
+                'features' => ['Reports in 6 Hours', 'Free AI Doctor Summary', 'NABL Accredited']
+            ],
+            'PRD-103' => [
+                'id' => 'PRD-103',
+                'title' => 'Digital BP Monitor with Arrhythmia & Pulse Warning',
+                'category' => 'Smart Medical Device',
+                'price' => 1499,
+                'original_price' => 2299,
+                'discount_percent' => 35,
+                'badge' => 'Doctor Recommended',
+                'image_url' => 'https://images.unsplash.com/photo-1628771065518-0d82f1938462?auto=format&fit=crop&q=80&w=400',
+                'cta_label' => 'Get BP Monitor',
+                'features' => ['Dual User Memory (90 Readings)', 'WHO BP Indicator', '1-Yr Warranty']
+            ],
+            'PRD-104' => [
+                'id' => 'PRD-104',
+                'title' => 'Full Body 84-Parameter Master Health Checkup Package',
+                'category' => 'Diagnostic Lab Package',
+                'price' => 999,
+                'original_price' => 2499,
+                'discount_percent' => 60,
+                'badge' => 'Top Pick',
+                'image_url' => 'https://images.unsplash.com/photo-1581056771107-24ca5f033842?auto=format&fit=crop&q=80&w=400',
+                'cta_label' => 'Book 84-Test Package',
+                'features' => ['Complete Organ Check', 'Free 6 AM Home Sample Pickup', 'Free Doctor Teleconsult']
+            ],
+            'PRD-105' => [
+                'id' => 'PRD-105',
+                'title' => 'Orthopedic Heat Therapy Knee & Lumbar Wrap',
+                'category' => 'Orthopedic Care Kit',
+                'price' => 749,
+                'original_price' => 1499,
+                'discount_percent' => 50,
+                'badge' => 'Pain Relief',
+                'image_url' => 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=400',
+                'cta_label' => 'Order Knee Wrap',
+                'features' => ['3-Level Heating', 'USB Rechargeable', 'Physio Approved']
+            ],
+            'PRD-106' => [
+                'id' => 'PRD-106',
+                'title' => 'HealthExpress Gold Family Annual Privilege Pass',
+                'category' => 'Privilege Care Subscription',
+                'price' => 1499,
+                'original_price' => 2999,
+                'discount_percent' => 50,
+                'badge' => 'Exclusive Privilege',
+                'image_url' => 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=400',
+                'cta_label' => 'Activate Family Pass',
+                'features' => ['Unlimited 24/7 AI Triage', '4 Free Specialist Calls', 'Flat 25% Off Meds']
+            ]
+        ];
+
+        if ($segment === 'Diabetes & Metabolic Care') {
+            return [$catalog['PRD-101'], $catalog['PRD-102']];
+        } elseif ($segment === 'Cardiology & Hypertension') {
+            return [$catalog['PRD-103'], $catalog['PRD-104']];
+        } elseif ($segment === 'Orthopedic & Joint Mobility') {
+            return [$catalog['PRD-105'], $catalog['PRD-104']];
+        } else {
+            return [$catalog['PRD-104'], $catalog['PRD-106']];
+        }
     }
 }

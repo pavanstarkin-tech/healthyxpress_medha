@@ -11,6 +11,8 @@ export default function Header({ activeTab, onLogout, user }) {
     users: { title: 'Users & Patients Management', subtitle: 'Registered patients, Aarogyasri health ID passes & medical vault' },
     appointments: { title: 'Central Appointments Queue', subtitle: 'Consultation requests, video room dispatch & rescheduling' },
     payments: { title: 'Payments & Revenue Ledger', subtitle: 'Platform earnings ledger, doctor payouts & Razorpay gateway' },
+    business: { title: 'AI Business Wing & Lead Monetization', subtitle: 'User interest segmentation, commercial product recommendation & GMV analytics' },
+    products: { title: 'Health Products & Diagnostic Packages', subtitle: 'Manage commercial catalog, smart devices, care plans & margins' },
     tickets: { title: 'Support & Dispute Desk', subtitle: 'Customer support resolution and dispute ticketing' },
     ai: { title: 'AI Rule Engine & Clinical Triage', subtitle: 'Configure symptom-to-specialty escalation rules and thresholds' },
     content: { title: 'Content & CMS Advisory', subtitle: 'Manage public health protocols and outbreak notifications' },
