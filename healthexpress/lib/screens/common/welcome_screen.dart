@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../core/constants/app_constants.dart';
 import '../../core/constants/app_illustrations.dart';
 import '../../core/theme/app_colors.dart';
-import '../../providers/auth_provider.dart';
 import 'choose_role_screen.dart';
-import 'auth_method_screen.dart';
-import '../user/user_main_nav.dart';
-import '../doctor/doctor_main_nav.dart';
-import '../store/store_main_nav.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -235,7 +228,7 @@ class WelcomeScreen extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const AuthMethodScreen(role: UserRole.user)),
+                      MaterialPageRoute(builder: (_) => const ChooseRoleScreen()),
                     );
                   },
                   style: OutlinedButton.styleFrom(
@@ -254,116 +247,44 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
 
-              // Fast Demo Entry Bar
+              // Production Trust & Security Badges
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
-                  color: AppColors.background,
+                  color: const Color(0xFFF8FAFC),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
                 ),
-                child: Column(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    const Text(
-                      '⚡ Quick Instant Access (Demo Mode)',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              final auth = context.read<AuthProvider>();
-                              auth.setRole(UserRole.user);
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(builder: (_) => const UserMainNav()),
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryLight,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              alignment: Alignment.center,
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.person_rounded, size: 16, color: AppColors.primary),
-                                  SizedBox(width: 6),
-                                  Text('Enter as Patient', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.primary)),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              final auth = context.read<AuthProvider>();
-                              auth.setRole(UserRole.doctor);
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(builder: (_) => const DoctorMainNav()),
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF0FDF4),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              alignment: Alignment.center,
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.medical_services_rounded, size: 16, color: AppColors.success),
-                                  SizedBox(width: 6),
-                                  Text('Enter as Doctor', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.success)),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    InkWell(
-                      onTap: () {
-                        final auth = context.read<AuthProvider>();
-                        auth.setRole(UserRole.store);
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (_) => const StoreMainNav()),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF0FDFA),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: const Color(0xFFCCFBF1)),
-                        ),
-                        alignment: Alignment.center,
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.local_pharmacy_rounded, size: 16, color: Color(0xFF0D9488)),
-                            SizedBox(width: 6),
-                            Text('Enter as Medical Store Partner', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0D9488))),
-                          ],
-                        ),
-                      ),
-                    ),
+                    _buildSecurityPill(Icons.local_fire_department_rounded, 'Firebase Auth', Colors.orange),
+                    _buildSecurityPill(Icons.psychology_rounded, 'Sarvam AI', AppColors.primary),
+                    _buildSecurityPill(Icons.security_rounded, 'ABDM Ready', AppColors.success),
                   ],
                 ),
               ),
+              const SizedBox(height: 16),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSecurityPill(IconData icon, String text, Color color) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 16, color: color),
+        const SizedBox(width: 6),
+        Text(
+          text,
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+        ),
+      ],
     );
   }
 }

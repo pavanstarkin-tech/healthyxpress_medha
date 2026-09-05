@@ -64,12 +64,12 @@ class UserProfileScreen extends StatelessWidget {
                       children: [
                         Text(user.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                         const SizedBox(height: 2),
-                        Text('+91 ${user.phone}', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                        Text(user.email.isNotEmpty ? user.email : '+91 ${user.phone}', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
                         const SizedBox(height: 6),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(color: AppColors.primaryLight, borderRadius: BorderRadius.circular(8)),
-                          child: Text('Aarogyasri: ${user.aarogyasriId}', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                          child: Text('Firebase ID: ${user.id.length > 12 ? user.id.substring(0, 12) + "..." : user.id}', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.primary)),
                         ),
                       ],
                     ),

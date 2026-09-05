@@ -17,6 +17,7 @@ import 'health_qr_screen.dart';
 import 'health_vitals_dashboard_screen.dart';
 import 'my_appointments_screen.dart';
 import 'medication_reminders_screen.dart';
+import 'user_profile_screen.dart';
 
 class UserHomeScreen extends StatelessWidget {
   const UserHomeScreen({super.key});
@@ -84,15 +85,23 @@ class UserHomeScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      Container(
-                        width: 38,
-                        height: 38,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.primary, width: 1.5),
-                          image: const DecorationImage(
-                            image: NetworkImage('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'),
-                            fit: BoxFit.cover,
+                      InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => const UserProfileScreen()),
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          width: 38,
+                          height: 38,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColors.primary, width: 1.5),
+                            image: const DecorationImage(
+                              image: NetworkImage('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'),
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                       ),

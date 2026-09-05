@@ -4,6 +4,7 @@ import '../models/doctor_model.dart';
 import '../models/medicine_model.dart';
 import '../models/lab_test_model.dart';
 import '../models/business_product_model.dart';
+import '../services/sarvam_ai_service.dart';
 
 class ChatMessage {
   final String id;
@@ -31,37 +32,19 @@ class AiAssistantProvider extends ChangeNotifier {
   final List<ChatMessage> _messages = [
     ChatMessage(
       id: 'msg-1',
-      text: 'Hello Rahul! 👋 I am your HealthExpress AI Assistant. Tell me how you are feeling today or describe any symptoms.',
+      text: 'Hello! 👋 I am your HealthExpress AI Assistant powered by Sarvam AI. Tell me how you are feeling today or describe any symptoms.',
       isUser: false,
       timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
       actionSuggestions: ['I have fever & body pain', 'High blood sugar & diabetes', 'Knee & joint pain', 'High blood pressure'],
-    ),
-    ChatMessage(
-      id: 'msg-2',
-      text: 'I have low grade fever, mild headache, and sore throat since yesterday morning.',
-      isUser: true,
-      timestamp: DateTime.now().subtract(const Duration(minutes: 4)),
-    ),
-    ChatMessage(
-      id: 'msg-3',
-      text: 'I understand. Based on your symptoms of low-grade fever, sore throat, and headache, it appears to be a mild Viral Upper Respiratory Infection.\n\nAlong with symptomatic care, our HealthExpress care package is tailored for rapid recovery:',
-      isUser: false,
-      timestamp: DateTime.now().subtract(const Duration(minutes: 3)),
-      detectedSymptoms: ['Fever', 'Sore Throat', 'Headache'],
-      actionSuggestions: ['View Medicines', 'Consult Doctor', 'Book CBC Test', 'Home Care Plan'],
-      recommendedProducts: [
-        ProductionDatabase.businessProducts[3], // 84-parameter checkup
-        ProductionDatabase.businessProducts[5], // Gold Family Pass
-      ],
     ),
   ];
 
   bool _isListening = false;
   bool _isThinking = false;
   bool _isSpeaking = false;
-  String _activeDiagnosis = 'Viral Fever';
+  String _activeDiagnosis = 'General Health Inquiry';
   String _userInterestSegment = 'Preventive Master Checkups';
-  List<String> _currentSymptoms = ['Fever', 'Sore Throat', 'Headache'];
+  List<String> _currentSymptoms = [];
 
   List<ChatMessage> get messages => _messages;
   bool get isListening => _isListening;
@@ -115,7 +98,7 @@ class AiAssistantProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addUserMessage(String text) {
+  Future<void> addUserMessage(String text, {String? patientName}) async {
     final userMsg = ChatMessage(
       id: 'msg-${DateTime.now().millisecondsSinceEpoch}',
       text: text,
@@ -126,11 +109,33 @@ class AiAssistantProvider extends ChangeNotifier {
     _isThinking = true;
     notifyListeners();
 
-    Future.delayed(const Duration(milliseconds: 1200), () {
-      _isThinking = false;
+    try {
+      final aiRes = await SarvamAiService.queryClinicalTriage(
+        userQuery: text,
+        patientName: patientName,
+      );
+
+      _activeDiagnosis = aiRes.triageCategory;
+      _userInterestSegment = aiRes.triageCategory;
+      _currentSymptoms = aiRes.detectedSymptoms;
+
+      final botMsg = ChatMessage(
+        id: 'msg-bot-${DateTime.now().millisecondsSinceEpoch}',
+        text: aiRes.content,
+        isUser: false,
+        timestamp: DateTime.now(),
+        detectedSymptoms: aiRes.detectedSymptoms,
+        actionSuggestions: aiRes.actionSuggestions,
+        recommendedProducts: suggestedBusinessProducts,
+      );
+
+      _messages.add(botMsg);
+    } catch (_) {
       _generateAiResponse(text);
+    } finally {
+      _isThinking = false;
       notifyListeners();
-    });
+    }
   }
 
   void _generateAiResponse(String userInput) {

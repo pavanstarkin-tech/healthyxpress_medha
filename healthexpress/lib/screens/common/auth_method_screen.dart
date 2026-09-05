@@ -168,10 +168,12 @@ class AuthMethodScreen extends StatelessWidget {
 
               // 1. Continue with Google (Firebase Google Login)
               InkWell(
-                onTap: () {
+                onTap: () async {
                   final auth = context.read<AuthProvider>();
-                  auth.login(identifier: 'google.user@gmail.com', role: role);
-                  _routeAfterLogin(context);
+                  await auth.loginWithGoogle(role: role);
+                  if (context.mounted) {
+                    _routeAfterLogin(context);
+                  }
                 },
                 borderRadius: BorderRadius.circular(16),
                 child: Container(
