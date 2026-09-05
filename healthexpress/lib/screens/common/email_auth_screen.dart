@@ -641,11 +641,11 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.network(
-                        'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
-                        height: 20,
-                        width: 20,
-                        errorBuilder: (_, __, ___) => const Icon(Icons.g_mobiledata, size: 24, color: Colors.red),
+                      Image.asset(
+                        'assets/images/google_logo.png',
+                        height: 22,
+                        width: 22,
+                        fit: BoxFit.contain,
                       ),
                       const SizedBox(width: 12),
                       const Text(

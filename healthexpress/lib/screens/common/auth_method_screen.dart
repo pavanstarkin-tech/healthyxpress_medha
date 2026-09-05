@@ -839,11 +839,11 @@ class _AuthMethodScreenState extends State<AuthMethodScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        width: 24,
-                        height: 24,
-                        alignment: Alignment.center,
-                        child: const Icon(Icons.g_mobiledata_rounded, size: 30, color: Colors.red),
+                      Image.asset(
+                        'assets/images/google_logo.png',
+                        width: 22,
+                        height: 22,
+                        fit: BoxFit.contain,
                       ),
                       const SizedBox(width: 10),
                       const Text(
