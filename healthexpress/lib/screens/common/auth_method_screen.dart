@@ -607,9 +607,13 @@ class _AuthMethodScreenState extends State<AuthMethodScreen> {
                       const SizedBox(height: 4),
                       Text(
                         _isSignIn
-                            ? 'Enter your credentials to access your $_roleTitle'
-                            : 'Create your $_roleTitle with full verified access',
-                        style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                            ? 'Enter your credentials to continue'
+                            : 'Fill in your details to get started',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                          height: 1.3,
+                        ),
                       ),
                       const SizedBox(height: 18),
 
