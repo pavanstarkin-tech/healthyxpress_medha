@@ -5,9 +5,11 @@ import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../models/appointment_model.dart';
 import '../../providers/appointment_provider.dart';
+import '../../providers/pharmacy_provider.dart';
 import 'chat_screen.dart';
 import 'video_consultation_screen.dart';
 import 'audio_call_screen.dart';
+import 'order_tracking_screen.dart';
 
 class AppointmentDetailScreen extends StatelessWidget {
   final AppointmentModel appointment;
@@ -231,16 +233,39 @@ class AppointmentDetailScreen extends StatelessWidget {
                       const SizedBox(height: 12),
                       const Text('Prescribed Medications:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textMuted)),
                       const SizedBox(height: 6),
-                      ...appointment.prescription.map((rx) => Padding(
-                            padding: const EdgeInsets.only(bottom: 6),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.medication_rounded, size: 14, color: AppColors.primary),
-                                const SizedBox(width: 6),
-                                Text('${rx.medicineName} • ${rx.dosage} (${rx.duration})', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-                              ],
-                            ),
-                          )),
+                      for (final rx in appointment.prescription)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.medication_rounded, size: 14, color: AppColors.primary),
+                              const SizedBox(width: 6),
+                              Text('${rx.medicineName} • ${rx.dosage} (${rx.duration})', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                        ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 44,
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          icon: const Icon(Icons.two_wheeler_rounded, color: Colors.white, size: 18),
+                          label: const Text(
+                            'Order Prescribed Medicines (15-Min Delivery)',
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                          ),
+                          onPressed: () {
+                            context.read<PharmacyProvider>().placeOrder();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => const OrderTrackingScreen()),
+                            );
+                          },
+                        ),
+                      ),
                     ],
                   ],
                 ),

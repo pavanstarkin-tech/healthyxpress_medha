@@ -2,22 +2,36 @@ import 'package:flutter/material.dart';
 import '../core/constants/app_constants.dart';
 import '../models/appointment_model.dart';
 import '../models/doctor_model.dart';
-import '../data/production_database.dart';
+import '../services/central_data_service.dart';
 
 class AppointmentProvider extends ChangeNotifier {
-  final List<AppointmentModel> _appointments = List.from(ProductionDatabase.initialAppointments);
+  final CentralDataService _central = CentralDataService.instance;
 
-  List<AppointmentModel> get appointments => _appointments;
+  AppointmentProvider() {
+    _central.addListener(_onCentralChanged);
+  }
 
-  List<AppointmentModel> get upcomingAppointments => _appointments
+  void _onCentralChanged() {
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _central.removeListener(_onCentralChanged);
+    super.dispose();
+  }
+
+  List<AppointmentModel> get appointments => _central.appointments;
+
+  List<AppointmentModel> get upcomingAppointments => _central.appointments
       .where((a) => a.status == AppointmentStatus.confirmed || a.status == AppointmentStatus.pending)
       .toList();
 
-  List<AppointmentModel> get completedAppointments => _appointments
+  List<AppointmentModel> get completedAppointments => _central.appointments
       .where((a) => a.status == AppointmentStatus.completed)
       .toList();
 
-  List<AppointmentModel> get cancelledAppointments => _appointments
+  List<AppointmentModel> get cancelledAppointments => _central.appointments
       .where((a) => a.status == AppointmentStatus.cancelled)
       .toList();
 
@@ -73,8 +87,7 @@ class AppointmentProvider extends ChangeNotifier {
       isRecurring: isRecurring,
     );
 
-    _appointments.insert(0, newBooking);
-    notifyListeners();
+    _central.addAppointment(newBooking);
     return newBooking;
   }
 
@@ -83,38 +96,15 @@ class AppointmentProvider extends ChangeNotifier {
     required DateTime newDate,
     required String newTimeSlot,
   }) {
-    final index = _appointments.indexWhere((a) => a.id == appointmentId);
+    final index = _central.appointments.indexWhere((a) => a.id == appointmentId);
     if (index == -1) return false;
 
-    final existing = _appointments[index];
-    final hoursDiff = existing.dateTime.difference(DateTime.now()).inHours;
-
-    double additionalDeduction = 0.0;
-    if (hoursDiff < 24) {
-      // Within 24 hours: 30% fee retained/re-calculated per policy
-      additionalDeduction = existing.consultationFee * 0.30;
-    }
-
-    _appointments[index] = existing.copyWith(
-      dateTime: newDate,
-      timeSlot: newTimeSlot,
-      status: AppointmentStatus.confirmed,
-      totalAmount: existing.totalAmount + additionalDeduction,
-    );
-
-    notifyListeners();
+    _central.updateAppointmentStatus(appointmentId, AppointmentStatus.confirmed);
     return true;
   }
 
   bool cancelAppointment(String appointmentId) {
-    final index = _appointments.indexWhere((a) => a.id == appointmentId);
-    if (index == -1) return false;
-
-    _appointments[index] = _appointments[index].copyWith(
-      status: AppointmentStatus.cancelled,
-      paymentStatus: PaymentStatus.refunded,
-    );
-    notifyListeners();
+    _central.updateAppointmentStatus(appointmentId, AppointmentStatus.cancelled);
     return true;
   }
 
@@ -124,15 +114,11 @@ class AppointmentProvider extends ChangeNotifier {
     required List<PrescriptionItem> prescription,
     required List<String> recommendedTests,
   }) {
-    final index = _appointments.indexWhere((a) => a.id == appointmentId);
-    if (index == -1) return;
-
-    _appointments[index] = _appointments[index].copyWith(
+    _central.recordDoctorPrescription(
+      appointmentId: appointmentId,
       doctorNotes: doctorNotes,
       prescription: prescription,
       recommendedTests: recommendedTests,
-      status: AppointmentStatus.completed,
     );
-    notifyListeners();
   }
 }

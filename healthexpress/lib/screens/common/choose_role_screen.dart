@@ -6,14 +6,54 @@ import '../../core/theme/app_colors.dart';
 import '../../providers/auth_provider.dart';
 import 'auth_method_screen.dart';
 
-class ChooseRoleScreen extends StatefulWidget {
+/// Screen wrapper for ChooseRoleSheet
+class ChooseRoleScreen extends StatelessWidget {
   const ChooseRoleScreen({super.key});
 
+  /// Static helper to open directly as a modal bottom sheet anywhere
+  static Future<void> show(BuildContext context) {
+    return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const ChooseRoleSheet(),
+    );
+  }
+
   @override
-  State<ChooseRoleScreen> createState() => _ChooseRoleScreenState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black.withValues(alpha: 0.5),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => Navigator.of(context).pop(),
+              child: const SizedBox.expand(),
+            ),
+          ),
+          const Align(
+            alignment: Alignment.bottomCenter,
+            child: ChooseRoleSheet(),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
+/// Bottom sheet utilizing only the space it needs
+class ChooseRoleSheet extends StatefulWidget {
+  const ChooseRoleSheet({super.key});
+
+  static Future<void> show(BuildContext context) => ChooseRoleScreen.show(context);
+
+  @override
+  State<ChooseRoleSheet> createState() => _ChooseRoleSheetState();
+}
+
+class _ChooseRoleSheetState extends State<ChooseRoleSheet> {
   UserRole _selectedRole = UserRole.user;
 
   Color get _activeThemeColor {
@@ -29,43 +69,94 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
     }
   }
 
+  void _handleContinue() {
+    final role = _selectedRole;
+    context.read<AuthProvider>().setRole(role);
+    Navigator.of(context).pop();
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AuthMethodScreen(role: role),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: AppColors.textPrimary),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 24,
+            offset: Offset(0, -4),
+          ),
+        ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Join HealthExpress',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
+              // Top Drag Handle
+              Center(
+                child: Container(
+                  width: 44,
+                  height: 4.5,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFCBD5E1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
-              const SizedBox(height: 6),
-              const Text(
-                'Select your account role to continue with a personalized experience.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 14),
 
-              // 1. User / Patient Card Option
+              // Header Row with Title and Close Button
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text(
+                          'Join HealthExpress',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.textPrimary,
+                            letterSpacing: -0.4,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Select your account role to continue with a personalized experience.',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.textSecondary,
+                            height: 1.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded, size: 22, color: AppColors.textSecondary),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+
+              // 1. User / Patient Option Card
               _buildRoleCard(
                 role: UserRole.user,
                 title: "I'm a User / Patient",
@@ -76,9 +167,9 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
                 activeBorderColor: AppColors.primary,
                 iconBgColor: AppColors.primary,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
 
-              // 2. Doctor Card Option
+              // 2. Doctor Option Card
               _buildRoleCard(
                 role: UserRole.doctor,
                 title: "I'm a Doctor",
@@ -89,9 +180,9 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
                 activeBorderColor: AppColors.success,
                 iconBgColor: AppColors.success,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
 
-              // 3. Store Partner / Pharmacy Card Option
+              // 3. Medical Store Partner Option Card
               _buildRoleCard(
                 role: UserRole.store,
                 title: "I'm a Medical Store Partner",
@@ -102,33 +193,31 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
                 activeBorderColor: const Color(0xFF0D9488),
                 iconBgColor: const Color(0xFF0D9488),
               ),
-              const SizedBox(height: 36),
+              const SizedBox(height: 20),
 
+              // Continue Button
               SizedBox(
                 width: double.infinity,
-                height: 54,
+                height: 52,
                 child: ElevatedButton(
-                  onPressed: () {
-                    context.read<AuthProvider>().setRole(_selectedRole);
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => AuthMethodScreen(role: _selectedRole),
-                      ),
-                    );
-                  },
+                  onPressed: _handleContinue,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _activeThemeColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
+                    elevation: 0,
                   ),
                   child: const Text(
                     'Continue',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -149,12 +238,12 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
     final isSelected = _selectedRole == role;
     return InkWell(
       onTap: () => setState(() => _selectedRole = role),
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(16),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected ? activeBgColor : Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? activeBorderColor : AppColors.border,
             width: isSelected ? 2 : 1,
@@ -162,41 +251,41 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
           boxShadow: [
             BoxShadow(
               color: isSelected
-                  ? activeBorderColor.withValues(alpha: 0.14)
-                  : Colors.black.withValues(alpha: 0.03),
-              blurRadius: isSelected ? 14 : 8,
-              offset: const Offset(0, 4),
+                  ? activeBorderColor.withValues(alpha: 0.12)
+                  : Colors.black.withValues(alpha: 0.02),
+              blurRadius: isSelected ? 10 : 4,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Row(
           children: [
             Container(
-              width: 64,
-              height: 64,
+              width: 50,
+              height: 50,
               decoration: BoxDecoration(
                 color: isSelected ? Colors.white : iconBgColor.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: isSelected ? activeBorderColor.withValues(alpha: 0.3) : Colors.transparent,
+                  color: isSelected ? activeBorderColor.withValues(alpha: 0.25) : Colors.transparent,
                   width: 1.5,
                 ),
               ),
-              padding: const EdgeInsets.all(4),
+              padding: const EdgeInsets.all(3),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
                 child: Image.asset(
                   illustrationAsset,
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) => Icon(
                     icon,
-                    size: 28,
+                    size: 24,
                     color: iconBgColor,
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -204,27 +293,28 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
                   Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 15,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 2),
                   Text(
                     description,
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 11,
                       color: AppColors.textSecondary,
-                      height: 1.3,
+                      height: 1.25,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
             Icon(
               isSelected ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded,
               color: isSelected ? activeBorderColor : AppColors.textMuted,
+              size: 22,
             ),
           ],
         ),

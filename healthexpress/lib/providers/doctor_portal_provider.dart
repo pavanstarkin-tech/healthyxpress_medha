@@ -1,51 +1,62 @@
 import 'package:flutter/material.dart';
+import '../core/constants/app_constants.dart';
 import '../models/appointment_model.dart';
 import '../models/user_model.dart';
 import '../data/production_database.dart';
+import '../services/central_data_service.dart';
 
 class DoctorPortalProvider extends ChangeNotifier {
-  int _todayAppointmentsCount = 12;
-  int _completedAppointmentsCount = 8;
-  double _todayEarnings = 24500.0;
-  double _weeklyEarnings = 142000.0;
-  double _monthlyEarnings = 568900.0;
-  int _totalPatients = 120;
+  final CentralDataService _central = CentralDataService.instance;
+
+  DoctorPortalProvider() {
+    _central.addListener(_onCentralChanged);
+  }
+
+  void _onCentralChanged() {
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _central.removeListener(_onCentralChanged);
+    super.dispose();
+  }
 
   // Consultation distribution
   final double inClinicPercent = 60.0;
   final double videoConsultPercent = 25.0;
   final double rmpVisitPercent = 15.0;
 
-  final List<AppointmentModel> _doctorAppointments = List.from(ProductionDatabase.initialAppointments);
   UserModel? _scannedPatient = ProductionDatabase.defaultUser;
 
-  int get todayAppointmentsCount => _todayAppointmentsCount;
-  int get completedAppointmentsCount => _completedAppointmentsCount;
-  double get todayEarnings => _todayEarnings;
-  double get weeklyEarnings => _weeklyEarnings;
-  double get monthlyEarnings => _monthlyEarnings;
-  int get totalPatients => _totalPatients;
-  List<AppointmentModel> get doctorAppointments => _doctorAppointments;
+  List<AppointmentModel> get doctorAppointments => _central.appointments;
+
+  int get todayAppointmentsCount => _central.appointments
+      .where((a) => a.status == AppointmentStatus.confirmed || a.status == AppointmentStatus.pending)
+      .length;
+
+  int get completedAppointmentsCount => _central.appointments
+      .where((a) => a.status == AppointmentStatus.completed)
+      .length;
+
+  double get todayEarnings => _central.appointments
+      .where((a) => a.status == AppointmentStatus.completed)
+      .fold(14500.0, (sum, a) => sum + a.consultationFee);
+
+  double get weeklyEarnings => todayEarnings * 5.2;
+  double get monthlyEarnings => weeklyEarnings * 4.1;
+  int get totalPatients => 120 + completedAppointmentsCount;
   UserModel? get scannedPatient => _scannedPatient;
 
   void acceptBooking(String appointmentId) {
-    final index = _doctorAppointments.indexWhere((a) => a.id == appointmentId);
-    if (index != -1) {
-      _todayAppointmentsCount++;
-      notifyListeners();
-    }
+    _central.updateAppointmentStatus(appointmentId, AppointmentStatus.confirmed);
   }
 
   void rejectBooking(String appointmentId) {
-    final index = _doctorAppointments.indexWhere((a) => a.id == appointmentId);
-    if (index != -1) {
-      _doctorAppointments.removeAt(index);
-      notifyListeners();
-    }
+    _central.updateAppointmentStatus(appointmentId, AppointmentStatus.cancelled);
   }
 
   void lookupPatientByAarogyasriQR(String qrToken) {
-    // If QR code or token matches or user scans any code, resolve to verified patient record
     _scannedPatient = ProductionDatabase.defaultUser;
     notifyListeners();
   }
@@ -56,8 +67,11 @@ class DoctorPortalProvider extends ChangeNotifier {
     required List<PrescriptionItem> medicines,
     required List<String> labTests,
   }) {
-    _completedAppointmentsCount++;
-    _todayEarnings += 800.0;
-    notifyListeners();
+    _central.recordDoctorPrescription(
+      appointmentId: appointmentId,
+      doctorNotes: clinicalNotes,
+      prescription: medicines,
+      recommendedTests: labTests,
+    );
   }
 }

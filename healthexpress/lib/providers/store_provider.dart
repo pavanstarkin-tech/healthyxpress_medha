@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/central_data_service.dart';
 
 class StoreProductItem {
   final String id;
@@ -93,6 +94,22 @@ class StoreOrderRequest {
 }
 
 class StoreProvider extends ChangeNotifier {
+  final CentralDataService _central = CentralDataService.instance;
+
+  StoreProvider() {
+    _central.addListener(_onCentralChanged);
+  }
+
+  void _onCentralChanged() {
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _central.removeListener(_onCentralChanged);
+    super.dispose();
+  }
+
   List<StoreProductItem> _products = [
     const StoreProductItem(
       id: 'PROD-01',
@@ -156,49 +173,31 @@ class StoreProvider extends ChangeNotifier {
     ),
   ];
 
-  List<StoreOrderRequest> _orders = [
-    const StoreOrderRequest(
-      id: 'ORD-8821',
-      patientName: 'Rahul Kumar',
-      patientPhone: '+91 98765 43210',
-      address: 'Flat 402, Cyber Towers View, Hitech City, Hyderabad',
-      items: ['Dolo 650mg (2 strips)', 'Pan-D (1 strip)'],
-      totalAmount: 244.0,
-      time: 'Just now',
-      status: 'incoming',
-      etaMinutes: 12,
-    ),
-    const StoreOrderRequest(
-      id: 'ORD-8819',
-      patientName: 'Sneha Reddy',
-      patientPhone: '+91 98490 88211',
-      address: 'Plot 18, Road No 36, Jubilee Hills, Hyderabad',
-      items: ['Azithral 500mg (1 strip)', 'Allegra 120mg (1 strip)'],
-      totalAmount: 314.0,
-      time: '8 mins ago',
-      status: 'packing',
-      etaMinutes: 15,
-    ),
-    const StoreOrderRequest(
-      id: 'ORD-8815',
-      patientName: 'Venkata Rao',
-      patientPhone: '+91 99887 66554',
-      address: 'Block B, Madhapur Main Road',
-      items: ['Accu-Chek Active Strips (1 pack)'],
-      totalAmount: 890.0,
-      time: '25 mins ago',
-      status: 'delivered',
-      etaMinutes: 14,
-    ),
-  ];
-
   List<StoreProductItem> get products => _products;
-  List<StoreOrderRequest> get orders => _orders;
+
+  List<StoreOrderRequest> get orders {
+    return _central.orders.map((o) {
+      final minsAgo = DateTime.now().difference(o.orderTime).inMinutes;
+      final timeLabel = minsAgo <= 1 ? 'Just now' : '$minsAgo mins ago';
+
+      return StoreOrderRequest(
+        id: o.orderId,
+        patientName: o.patientName,
+        patientPhone: o.patientPhone,
+        address: o.address,
+        items: o.itemNames,
+        totalAmount: o.totalAmount,
+        time: timeLabel,
+        status: o.storeStatusString,
+        etaMinutes: int.tryParse(o.etaMinutes.replaceAll(RegExp(r'[^0-9]'), '')) ?? 15,
+      );
+    }).toList();
+  }
 
   int get totalProductsCount => _products.length;
   int get inStockCount => _products.where((p) => p.inStock).length;
-  int get activeOrdersCount => _orders.where((o) => o.status != 'delivered').length;
-  double get todayRevenue => _orders.fold(0.0, (sum, o) => sum + o.totalAmount);
+  int get activeOrdersCount => orders.where((o) => o.status != 'delivered').length;
+  double get todayRevenue => orders.fold(0.0, (sum, o) => sum + o.totalAmount);
 
   void toggleStock(String productId) {
     _products = _products.map((p) {
@@ -234,12 +233,6 @@ class StoreProvider extends ChangeNotifier {
   }
 
   void updateOrderStatus(String orderId, String newStatus) {
-    _orders = _orders.map((o) {
-      if (o.id == orderId) {
-        return o.copyWith(status: newStatus);
-      }
-      return o;
-    }).toList();
-    notifyListeners();
+    _central.updateStoreOrderStatus(orderId, newStatus);
   }
 }

@@ -4,6 +4,7 @@ import '../models/medicine_model.dart';
 import '../models/medical_store_model.dart';
 import '../data/production_database.dart';
 import '../services/api_service.dart';
+import '../services/central_data_service.dart';
 
 class ActiveOrder {
   final String orderId;
@@ -28,12 +29,13 @@ class ActiveOrder {
     this.status = DeliveryStatus.outForDelivery,
     this.driverName = 'Ravi Kumar',
     this.driverPhone = '+91 9848123456',
-    this.etaMinutes = '18 mins',
+    this.etaMinutes = '14 mins',
     required this.orderTime,
   });
 }
 
 class PharmacyProvider extends ChangeNotifier {
+  final CentralDataService _central = CentralDataService.instance;
   final List<MedicineModel> _medicines = List.from(ProductionDatabase.medicines);
   final List<MedicalStoreModel> _medicalStores = List.from(ProductionDatabase.medicalStores);
   MedicalStoreModel? _selectedStore;
@@ -45,29 +47,22 @@ class PharmacyProvider extends ChangeNotifier {
     CartItemModel(medicine: ProductionDatabase.medicines[2], quantity: 1), // Cough Syrup
   ];
 
-  String _selectedAddress = 'Home - 500081, Flat 402, Green Meadows, Hitech City, Hyderabad';
+  String _selectedAddress = 'Flat 402, Cyber Towers View, Hitech City, Hyderabad';
   String? _uploadedPrescriptionPath;
-  ActiveOrder? _activeOrder;
 
   PharmacyProvider() {
-    // Initialize active order
-    _activeOrder = ActiveOrder(
-      orderId: '#HE12345678',
-      items: [
-        CartItemModel(medicine: ProductionDatabase.medicines[0], quantity: 1),
-        CartItemModel(medicine: ProductionDatabase.medicines[1], quantity: 1),
-        CartItemModel(medicine: ProductionDatabase.medicines[2], quantity: 1),
-      ],
-      subtotal: 150.0,
-      deliveryFee: 0.0,
-      total: 150.0,
-      deliveryAddress: _selectedAddress,
-      status: DeliveryStatus.outForDelivery,
-      orderTime: DateTime.now().subtract(const Duration(minutes: 12)),
-    );
-
-    // Fetch real live inventory from MySQL backend
+    _central.addListener(_onCentralChanged);
     loadFromLiveBackend();
+  }
+
+  void _onCentralChanged() {
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _central.removeListener(_onCentralChanged);
+    super.dispose();
   }
 
   bool get isLoading => _isLoading;
@@ -92,11 +87,28 @@ class PharmacyProvider extends ChangeNotifier {
   List<CartItemModel> get cart => _cart;
   String get selectedAddress => _selectedAddress;
   String? get uploadedPrescriptionPath => _uploadedPrescriptionPath;
-  ActiveOrder? get activeOrder => _activeOrder;
+
+  ActiveOrder? get activeOrder {
+    final centralActive = _central.activePatientOrder;
+    if (centralActive == null) return null;
+    return ActiveOrder(
+      orderId: centralActive.orderId,
+      items: centralActive.rawItems,
+      subtotal: centralActive.subtotal,
+      deliveryFee: centralActive.deliveryFee,
+      total: centralActive.totalAmount,
+      deliveryAddress: centralActive.address,
+      status: centralActive.deliveryStatus,
+      driverName: centralActive.driverName,
+      driverPhone: centralActive.driverPhone,
+      etaMinutes: centralActive.etaMinutes,
+      orderTime: centralActive.orderTime,
+    );
+  }
 
   void selectStore(MedicalStoreModel? store) {
     if (_selectedStore?.id == store?.id) {
-      _selectedStore = null; // Toggle off to show all
+      _selectedStore = null;
     } else {
       _selectedStore = store;
     }
@@ -138,7 +150,10 @@ class PharmacyProvider extends ChangeNotifier {
   }
 
   int getItemQuantity(String medicineId) {
-    final item = _cart.firstWhere((c) => c.medicine.id == medicineId, orElse: () => CartItemModel(medicine: _medicines[0], quantity: 0));
+    final item = _cart.firstWhere(
+      (c) => c.medicine.id == medicineId,
+      orElse: () => CartItemModel(medicine: _medicines[0], quantity: 0),
+    );
     return item.quantity;
   }
 
@@ -153,32 +168,19 @@ class PharmacyProvider extends ChangeNotifier {
   }
 
   ActiveOrder placeOrder() {
-    final order = ActiveOrder(
-      orderId: '#HE${DateTime.now().millisecondsSinceEpoch.toString().substring(6)}',
-      items: List.from(_cart),
+    _central.placeNewOrder(
+      items: _cart,
       subtotal: cartSubtotal,
       deliveryFee: deliveryFee,
       total: cartTotal,
       deliveryAddress: _selectedAddress,
-      status: DeliveryStatus.orderConfirmed,
-      orderTime: DateTime.now(),
     );
-    _activeOrder = order;
     _cart.clear();
     _uploadedPrescriptionPath = null;
-    notifyListeners();
-    return order;
+    return activeOrder!;
   }
 
   void advanceOrderStatus() {
-    if (_activeOrder == null) return;
-    if (_activeOrder!.status == DeliveryStatus.orderConfirmed) {
-      _activeOrder!.status = DeliveryStatus.packed;
-    } else if (_activeOrder!.status == DeliveryStatus.packed) {
-      _activeOrder!.status = DeliveryStatus.outForDelivery;
-    } else if (_activeOrder!.status == DeliveryStatus.outForDelivery) {
-      _activeOrder!.status = DeliveryStatus.delivered;
-    }
-    notifyListeners();
+    _central.advanceActiveOrderStatus();
   }
 }

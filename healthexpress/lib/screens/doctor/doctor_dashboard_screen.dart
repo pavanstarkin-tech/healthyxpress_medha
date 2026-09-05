@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../models/appointment_model.dart';
 import '../../providers/auth_provider.dart';
@@ -83,7 +84,7 @@ class DoctorDashboardScreen extends StatelessWidget {
                     ),
                     Switch(
                       value: doctor.isOnline,
-                      activeColor: AppColors.success,
+                      activeThumbColor: AppColors.success,
                       onChanged: (_) => auth.toggleDoctorOnlineStatus(),
                     ),
                   ],
@@ -91,7 +92,7 @@ class DoctorDashboardScreen extends StatelessWidget {
               ),
               const SizedBox(height: 18),
 
-              // Metric Stats Row (12 Appointments, 8 Completed, ₹24,500 Earnings)
+              // Metric Stats Row (Appointments, Completed, Earnings)
               Row(
                 children: [
                   Expanded(
@@ -166,33 +167,36 @@ class DoctorDashboardScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
 
-              // Appointment List Items (Matching Reference Image 2)
-              _DoctorAppointmentTile(
-                time: '10:30 AM',
-                patientName: 'Rahul Kumar',
-                aarogyasriId: 'AROG12345678',
-                type: 'In Clinic',
-                symptoms: 'Mild chest tightness, routine review',
-                appointment: doctorProv.doctorAppointments.first,
-              ),
+              // Dynamic Appointment List Items from Central Shared State
+              if (doctorProv.doctorAppointments.isEmpty)
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: const Center(
+                    child: Text('No appointments scheduled for today.', style: TextStyle(color: AppColors.textMuted)),
+                  ),
+                )
+              else
+                ...doctorProv.doctorAppointments.take(4).map((appt) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: _DoctorAppointmentTile(
+                      time: appt.timeSlot,
+                      patientName: appt.userName,
+                      aarogyasriId: appt.aarogyasriId.isNotEmpty ? appt.aarogyasriId : 'AROG-VERIFIED',
+                      type: appt.type == ConsultationType.videoConsult
+                          ? 'Video Consult'
+                          : (appt.type == ConsultationType.homeVisitRMP ? 'Home Visit RMP' : 'In Clinic'),
+                      symptoms: appt.symptomsSummary.isNotEmpty ? appt.symptomsSummary : 'Routine health review',
+                      appointment: appt,
+                    ),
+                  );
+                }),
               const SizedBox(height: 10),
-              _DoctorAppointmentTile(
-                time: '12:00 PM',
-                patientName: 'Anita Sharma',
-                aarogyasriId: 'AROG88900112',
-                type: 'In Clinic',
-                symptoms: 'Follow-up blood pressure review',
-                appointment: doctorProv.doctorAppointments.first,
-              ),
-              const SizedBox(height: 10),
-              _DoctorAppointmentTile(
-                time: '02:30 PM',
-                patientName: 'Suresh Rao',
-                aarogyasriId: 'AROG77865544',
-                type: 'Video Consult',
-                symptoms: 'High fever and dry cough',
-                appointment: doctorProv.doctorAppointments.first,
-              ),
               const SizedBox(height: 20),
 
               // Bottom View Full Schedule Button
