@@ -43,7 +43,7 @@ class ChooseRoleScreen extends StatelessWidget {
   }
 }
 
-/// Bottom sheet utilizing only the space it needs
+/// Bottom sheet utilizing only the space it needs with alternating 3D pop-out role cards
 class ChooseRoleSheet extends StatefulWidget {
   const ChooseRoleSheet({super.key});
 
@@ -154,9 +154,9 @@ class _ChooseRoleSheetState extends State<ChooseRoleSheet> {
                   ),
                 ],
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 20),
 
-              // 1. User / Patient Option Card
+              // 1. User / Patient Option Card (3D Image on LEFT, Radio on RIGHT)
               _buildRoleCard(
                 role: UserRole.user,
                 title: "I'm a User / Patient",
@@ -165,11 +165,11 @@ class _ChooseRoleSheetState extends State<ChooseRoleSheet> {
                 icon: Icons.person_rounded,
                 activeBgColor: AppColors.primaryLight,
                 activeBorderColor: AppColors.primary,
-                iconBgColor: AppColors.primary,
+                isImageOnLeft: true,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 16),
 
-              // 2. Doctor Option Card
+              // 2. Doctor Option Card (3D Image on RIGHT, Radio on LEFT - Alternating!)
               _buildRoleCard(
                 role: UserRole.doctor,
                 title: "I'm a Doctor",
@@ -178,11 +178,11 @@ class _ChooseRoleSheetState extends State<ChooseRoleSheet> {
                 icon: Icons.medical_services_rounded,
                 activeBgColor: const Color(0xFFF0FDF4),
                 activeBorderColor: AppColors.success,
-                iconBgColor: AppColors.success,
+                isImageOnLeft: false,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 16),
 
-              // 3. Medical Store Partner Option Card
+              // 3. Medical Store Partner Option Card (3D Image on LEFT, Radio on RIGHT)
               _buildRoleCard(
                 role: UserRole.store,
                 title: "I'm a Medical Store Partner",
@@ -191,9 +191,9 @@ class _ChooseRoleSheetState extends State<ChooseRoleSheet> {
                 icon: Icons.local_pharmacy_rounded,
                 activeBgColor: const Color(0xFFF0FDFA),
                 activeBorderColor: const Color(0xFF0D9488),
-                iconBgColor: const Color(0xFF0D9488),
+                isImageOnLeft: true,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 22),
 
               // Continue Button
               SizedBox(
@@ -233,92 +233,115 @@ class _ChooseRoleSheetState extends State<ChooseRoleSheet> {
     required IconData icon,
     required Color activeBgColor,
     required Color activeBorderColor,
-    required Color iconBgColor,
+    required bool isImageOnLeft,
   }) {
     final isSelected = _selectedRole == role;
-    return InkWell(
-      onTap: () => setState(() => _selectedRole = role),
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected ? activeBgColor : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? activeBorderColor : AppColors.border,
-            width: isSelected ? 2 : 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: isSelected
-                  ? activeBorderColor.withValues(alpha: 0.12)
-                  : Colors.black.withValues(alpha: 0.02),
-              blurRadius: isSelected ? 10 : 4,
-              offset: const Offset(0, 2),
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        // Main Card Container (Tappable)
+        InkWell(
+          onTap: () => setState(() => _selectedRole = role),
+          borderRadius: BorderRadius.circular(18),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: EdgeInsets.only(
+              left: isImageOnLeft ? 82 : 16,
+              right: isImageOnLeft ? 16 : 82,
+              top: 14,
+              bottom: 14,
             ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: isSelected ? Colors.white : iconBgColor.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: isSelected ? activeBorderColor.withValues(alpha: 0.25) : Colors.transparent,
-                  width: 1.5,
-                ),
+            decoration: BoxDecoration(
+              color: isSelected ? activeBgColor : Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: isSelected ? activeBorderColor : AppColors.border,
+                width: isSelected ? 2 : 1.2,
               ),
-              padding: const EdgeInsets.all(3),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.asset(
-                  illustrationAsset,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) => Icon(
-                    icon,
-                    size: 24,
-                    color: iconBgColor,
+              boxShadow: [
+                BoxShadow(
+                  color: isSelected
+                      ? activeBorderColor.withValues(alpha: 0.16)
+                      : Colors.black.withValues(alpha: 0.03),
+                  blurRadius: isSelected ? 12 : 5,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                // If image is on right, show Radio Button on left
+                if (!isImageOnLeft) ...[
+                  Icon(
+                    isSelected ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded,
+                    color: isSelected ? activeBorderColor : AppColors.textMuted,
+                    size: 22,
+                  ),
+                  const SizedBox(width: 10),
+                ],
+
+                // Text Information (Title & Description)
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: isImageOnLeft ? CrossAxisAlignment.start : CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        description,
+                        style: const TextStyle(
+                          fontSize: 11.5,
+                          color: AppColors.textSecondary,
+                          height: 1.25,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    description,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: AppColors.textSecondary,
-                      height: 1.25,
-                    ),
+
+                // If image is on left, show Radio Button on right
+                if (isImageOnLeft) ...[
+                  const SizedBox(width: 10),
+                  Icon(
+                    isSelected ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded,
+                    color: isSelected ? activeBorderColor : AppColors.textMuted,
+                    size: 22,
                   ),
                 ],
+              ],
+            ),
+          ),
+        ),
+
+        // 3D Illustration popping out of the card (60% larger, no box behind!)
+        Positioned(
+          left: isImageOnLeft ? 8 : null,
+          right: isImageOnLeft ? null : 8,
+          top: -14,
+          bottom: -8,
+          width: 80,
+          child: IgnorePointer(
+            child: Image.asset(
+              illustrationAsset,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) => Icon(
+                icon,
+                size: 32,
+                color: activeBorderColor,
               ),
             ),
-            const SizedBox(width: 6),
-            Icon(
-              isSelected ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded,
-              color: isSelected ? activeBorderColor : AppColors.textMuted,
-              size: 22,
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
