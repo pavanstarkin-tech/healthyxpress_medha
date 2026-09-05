@@ -124,31 +124,35 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Real Google Sign In Flow
-  Future<void> loginWithGoogle({
-    required UserRole role,
-    String? email,
-    String? displayName,
-  }) async {
-    final userEmail = email ?? 'google.user@healthexpress.ai';
-    final userName = displayName ?? 'Google Verified User';
-    final fakeUid = 'goog_${DateTime.now().millisecondsSinceEpoch}';
+  /// Real Google Sign In Flow with Firebase Web Popup
+  Future<void> loginWithGoogle({required UserRole role}) async {
+    final session = await FirebaseAuthService.signInWithGoogle();
 
-    _firebaseSession = FirebaseUserSession(
-      uid: fakeUid,
-      email: userEmail,
-      displayName: userName,
-      idToken: 'token_$fakeUid',
-      refreshToken: 'refresh_$fakeUid',
-    );
-
+    _firebaseSession = session;
     _currentRole = role;
     _currentUser = _currentUser.copyWith(
-      id: fakeUid,
-      name: userName,
-      email: userEmail,
-      aarogyasriId: 'AROG${fakeUid.substring(fakeUid.length - 8).toUpperCase()}',
+      id: session.uid,
+      name: session.displayName.isNotEmpty ? session.displayName : session.email.split('@')[0],
+      email: session.email,
+      aarogyasriId: 'AROG${session.uid.substring(0, session.uid.length > 8 ? 8 : session.uid.length).toUpperCase()}',
+      profilePhoto: session.photoUrl,
     );
+
+    if (role == UserRole.doctor) {
+      _currentDoctor = _currentDoctor.copyWith(
+        id: 'DOC-${session.uid.substring(0, session.uid.length > 8 ? 8 : session.uid.length)}',
+        name: session.displayName.startsWith('Dr.') ? session.displayName : 'Dr. ${session.displayName}',
+        email: session.email,
+        photoUrl: session.photoUrl ?? _currentDoctor.photoUrl,
+      );
+    } else if (role == UserRole.store) {
+      _currentStore = _currentStore.copyWith(
+        id: 'STORE-${session.uid.substring(0, session.uid.length > 8 ? 8 : session.uid.length)}',
+        name: '${session.displayName} Pharmacy',
+        ownerUserId: session.uid,
+        email: session.email,
+      );
+    }
 
     _isAuthenticated = true;
     notifyListeners();

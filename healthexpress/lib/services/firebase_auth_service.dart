@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../core/config/app_config.dart';
+import 'google_auth_bridge.dart';
 
 class FirebaseUserSession {
   final String uid;
@@ -43,6 +44,37 @@ class FirebaseUserSession {
 class FirebaseAuthService {
   static const String _apiKey = AppConfig.firebaseApiKey;
   static const String _authUrl = 'https://identitytoolkit.googleapis.com/v1/accounts';
+
+  /// Real Sign In with Google via Firebase Auth Web Popup
+  static Future<FirebaseUserSession> signInWithGoogle() async {
+    try {
+      final res = await GoogleAuthBridge.signInWithGoogleWeb();
+      if (res['success'] == true) {
+        final uid = res['uid'] as String;
+        final email = res['email'] as String;
+        final displayName = (res['displayName'] as String?)?.isNotEmpty == true
+            ? res['displayName'] as String
+            : email.split('@')[0];
+        final photoUrl = res['photoURL'] as String?;
+        final idToken = res['idToken'] as String? ?? '';
+
+        return FirebaseUserSession(
+          uid: uid,
+          email: email,
+          displayName: displayName,
+          idToken: idToken,
+          refreshToken: '',
+          photoUrl: photoUrl,
+        );
+      } else {
+        final msg = res['message']?.toString() ?? 'Google Sign-In failed.';
+        throw Exception(msg);
+      }
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('Google Sign-In error: $e');
+    }
+  }
 
   /// Real Sign In with Email & Password via Firebase Auth API
   static Future<FirebaseUserSession> signInWithEmailAndPassword({

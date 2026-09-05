@@ -21,8 +21,55 @@
   <title>HealthExpress AI — Intelligent Healthcare Platform</title>
   <meta name="description" content="AI-driven healthcare, 15-minute emergency medicine delivery, and ABDM integrated telehealth platform.">
   <link rel="manifest" href="manifest.json">
-</head>
-<body>
+  <!-- Firebase Web SDK for Real Google Sign-In Popup -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCU7Psyt8Rl5kQScIDAavvleuyNjkhVFxo",
+      authDomain: "healthexpress-1.firebaseapp.com",
+      projectId: "healthexpress-1",
+      storageBucket: "healthexpress-1.firebasestorage.app",
+      messagingSenderId: "575738669292",
+      appId: "1:575738669292:web:305a1fce4415b605c3ddc9",
+      measurementId: "G-11RHHGM6T0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+
+    window.triggerFirebaseGoogleSignIn = async function() {
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        const idToken = await user.getIdToken();
+        return JSON.stringify({
+          success: true,
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || (user.email ? user.email.split('@')[0] : 'Google User'),
+          photoURL: user.photoURL || '',
+          idToken: idToken
+        });
+      } catch (error) {
+        let msg = error.message;
+        if (error.code === 'auth/popup-closed-by-user') {
+          msg = 'Google Sign-In popup was closed before completing login.';
+        } else if (error.code === 'auth/popup-blocked') {
+          msg = 'The Google sign-in popup was blocked by your browser. Please allow popups for this site.';
+        }
+        return JSON.stringify({
+          success: false,
+          code: error.code,
+          message: msg
+        });
+      }
+    };
+  </script>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

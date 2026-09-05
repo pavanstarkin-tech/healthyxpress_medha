@@ -170,9 +170,20 @@ class AuthMethodScreen extends StatelessWidget {
               InkWell(
                 onTap: () async {
                   final auth = context.read<AuthProvider>();
-                  await auth.loginWithGoogle(role: role);
-                  if (context.mounted) {
-                    _routeAfterLogin(context);
+                  try {
+                    await auth.loginWithGoogle(role: role);
+                    if (context.mounted) {
+                      _routeAfterLogin(context);
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.red.shade700,
+                          content: Text(e.toString().replaceAll('Exception: ', '')),
+                        ),
+                      );
+                    }
                   }
                 },
                 borderRadius: BorderRadius.circular(16),
