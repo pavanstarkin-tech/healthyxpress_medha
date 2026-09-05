@@ -6,6 +6,7 @@ import 'providers/ai_assistant_provider.dart';
 import 'providers/appointment_provider.dart';
 import 'providers/pharmacy_provider.dart';
 import 'providers/doctor_portal_provider.dart';
+import 'providers/store_provider.dart';
 import 'screens/common/splash_screen.dart';
 
 void main() {
@@ -25,6 +26,7 @@ class HealthExpressApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AppointmentProvider()),
         ChangeNotifierProvider(create: (_) => PharmacyProvider()),
         ChangeNotifierProvider(create: (_) => DoctorPortalProvider()),
+        ChangeNotifierProvider(create: (_) => StoreProvider()),
       ],
       child: MaterialApp(
         title: 'HealthExpress AI',

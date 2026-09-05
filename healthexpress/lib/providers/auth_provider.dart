@@ -2,21 +2,25 @@ import 'package:flutter/material.dart';
 import '../core/constants/app_constants.dart';
 import '../models/user_model.dart';
 import '../models/doctor_model.dart';
+import '../models/medical_store_model.dart';
 import '../data/production_database.dart';
 
 class AuthProvider extends ChangeNotifier {
   UserRole _currentRole = UserRole.user;
-  bool _isAuthenticated = true; // start authenticated for rich interactive demo, or can be reset
+  bool _isAuthenticated = true; // start authenticated for rich interactive demo
   UserModel _currentUser = ProductionDatabase.defaultUser;
   DoctorModel _currentDoctor = ProductionDatabase.doctors[0]; // Default doctor: Dr. Sandeep Attawar
+  MedicalStoreModel _currentStore = ProductionDatabase.defaultStore;
 
   UserRole get currentRole => _currentRole;
   bool get isAuthenticated => _isAuthenticated;
   UserModel get currentUser => _currentUser;
   DoctorModel get currentDoctor => _currentDoctor;
+  MedicalStoreModel get currentStore => _currentStore;
 
   bool get isDoctorMode => _currentRole == UserRole.doctor;
   bool get isUserMode => _currentRole == UserRole.user;
+  bool get isStoreMode => _currentRole == UserRole.store;
 
   void setRole(UserRole role) {
     _currentRole = role;
@@ -26,6 +30,8 @@ class AuthProvider extends ChangeNotifier {
   void switchRole() {
     if (_currentRole == UserRole.user) {
       _currentRole = UserRole.doctor;
+    } else if (_currentRole == UserRole.doctor) {
+      _currentRole = UserRole.store;
     } else {
       _currentRole = UserRole.user;
     }
@@ -84,6 +90,83 @@ class AuthProvider extends ChangeNotifier {
     );
     _isAuthenticated = true;
     _currentRole = UserRole.doctor;
+    notifyListeners();
+  }
+
+  void registerStore({
+    required String name,
+    required String licenseNumber,
+    required String phone,
+    String? email,
+    required String address,
+    required String area,
+    required String openingTime,
+    required String closingTime,
+    required bool is24x7,
+    String? imageUrl,
+  }) {
+    final newId = 'STORE-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+    _currentStore = MedicalStoreModel(
+      id: newId,
+      name: name,
+      licenseNumber: licenseNumber,
+      phone: phone,
+      email: email ?? 'contact@${name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '')}.com',
+      address: address,
+      area: area,
+      openingTime: openingTime,
+      closingTime: closingTime,
+      is24x7: is24x7,
+      isOpen: true,
+      imageUrl: imageUrl ?? 'https://images.unsplash.com/photo-1576602976047-174e57a47881?auto=format&fit=crop&q=80&w=400',
+      distanceKm: 1.2,
+      etaMinutes: 15,
+      verificationStatus: 'pending', // Starts in pending review until approved by Super Admin
+      ownerUserId: _currentUser.id,
+    );
+    _isAuthenticated = true;
+    _currentRole = UserRole.store;
+    notifyListeners();
+  }
+
+  void updateStoreTimings({
+    required String openingTime,
+    required String closingTime,
+    required bool is24x7,
+  }) {
+    _currentStore = _currentStore.copyWith(
+      openingTime: openingTime,
+      closingTime: closingTime,
+      is24x7: is24x7,
+    );
+    notifyListeners();
+  }
+
+  void updateStoreContact({
+    required String phone,
+    String? email,
+    required String address,
+    required String area,
+  }) {
+    _currentStore = _currentStore.copyWith(
+      phone: phone,
+      email: email,
+      address: address,
+      area: area,
+    );
+    notifyListeners();
+  }
+
+  void toggleStoreOpen() {
+    _currentStore = _currentStore.copyWith(isOpen: !_currentStore.isOpen);
+    notifyListeners();
+  }
+
+  void verifyStoreLocally(bool approved, [String? reason]) {
+    _currentStore = _currentStore.copyWith(
+      verificationStatus: approved ? 'verified' : 'rejected',
+      rejectionReason: approved ? null : (reason ?? 'License verification pending'),
+    );
     notifyListeners();
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/constants/app_illustrations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/pharmacy_provider.dart';
 import 'cart_checkout_screen.dart';
@@ -142,10 +143,16 @@ class _PharmacyScreenState extends State<PharmacyScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), shape: BoxShape.circle),
-                    child: const Icon(Icons.delivery_dining_rounded, color: Colors.white, size: 40),
+                  Image.asset(
+                    AppIllustrations.storeDeliveryBike,
+                    height: 80,
+                    width: 80,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), shape: BoxShape.circle),
+                      child: const Icon(Icons.delivery_dining_rounded, color: Colors.white, size: 40),
+                    ),
                   ),
                 ],
               ),

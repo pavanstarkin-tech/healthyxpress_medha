@@ -829,4 +829,6 @@ class ProductionDatabase {
       reviewCount: 119,
     ),
   ];
+
+  static MedicalStoreModel get defaultStore => medicalStores[0];
 }

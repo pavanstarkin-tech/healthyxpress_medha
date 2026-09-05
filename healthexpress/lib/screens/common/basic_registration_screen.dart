@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/auth_provider.dart';
-import '../../services/api_service.dart';
 import '../user/user_main_nav.dart';
 
 class BasicRegistrationScreen extends StatefulWidget {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import '../../core/constants/app_illustrations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/auth_provider.dart';
 
@@ -68,7 +69,15 @@ class HealthQrScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
+
+                      // 3D Digital Health Smartcard Graphic
+                      Image.asset(
+                        AppIllustrations.abdmHealthPass,
+                        height: 70,
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(height: 16),
 
                       // High-Res QR Code
                       Container(

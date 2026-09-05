@@ -36,11 +36,16 @@ import {
   FileText
 } from 'lucide-react';
 import MetricCard from '../components/MetricCard';
+import StoreVerificationModal from '../components/StoreVerificationModal';
+import { healthApi } from '../services/api';
 import { DB_SNAPSHOT } from '../data/databaseSnapshot';
 import illus1 from '../assets/illustrations/1.png';
 import illus2 from '../assets/illustrations/2.png';
 import illus4 from '../assets/illustrations/4.png';
 import illus5 from '../assets/illustrations/5.png';
+import storePartnerIllus from '../assets/illustrations/store_partner.png';
+import storePendingIllus from '../assets/illustrations/store_pending.png';
+import storeDeliveryIllus from '../assets/illustrations/store_delivery.png';
 
 export default function BusinessWingView() {
   const [activeSubTab, setActiveSubTab] = useState('segments'); // 'segments' | 'products' | 'stores' | 'leads' | 'rules'
@@ -58,6 +63,24 @@ export default function BusinessWingView() {
   // Live medical stores state initialized from DB_SNAPSHOT
   const [medicalStoresList, setMedicalStoresList] = useState(DB_SNAPSHOT.medicalStores || []);
   const [showAddStoreModal, setShowAddStoreModal] = useState(false);
+  const [selectedStoreForVerify, setSelectedStoreForVerify] = useState(null);
+
+  const handleStoreVerified = async (storeId, newStatus, reason) => {
+    try {
+      await healthApi.verifyStore(storeId, newStatus, reason);
+    } catch (e) {
+      console.warn('API store verify note:', e);
+    }
+    const updated = medicalStoresList.map(s => 
+      s.id === storeId 
+        ? { ...s, verificationStatus: newStatus, verification_status: newStatus.toLowerCase(), rejectionReason: reason } 
+        : s
+    );
+    setMedicalStoresList(updated);
+    DB_SNAPSHOT.medicalStores = updated;
+    setToastMessage(`Store ${storeId} successfully ${newStatus === 'Verified' ? 'Approved & Activated' : 'Rejected'}!`);
+    setTimeout(() => setToastMessage(''), 4000);
+  };
 
   const verifiedStorePresets = [
     { label: 'Apollo Pharmacy Store', url: 'https://images.unsplash.com/photo-1576602976047-174e57a47881?auto=format&fit=crop&q=80&w=400' },
@@ -1243,13 +1266,20 @@ export default function BusinessWingView() {
             borderRadius: 12,
             border: '1px solid var(--border)'
           }}>
-            <div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
-                Nearby Medical Stores & Hyperlocal Dark Stores ({medicalStoresList.length})
-              </h3>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-                Powers 12-15 minute doorstep medicine delivery & live stock lookup in the patient mobile app.
-              </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <img
+                src={storePartnerIllus}
+                alt="Medical Store"
+                style={{ width: 56, height: 56, objectFit: 'contain' }}
+              />
+              <div>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
+                  Nearby Medical Stores & Hyperlocal Dark Stores ({medicalStoresList.length})
+                </h3>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
+                  Powers 12-15 minute doorstep medicine delivery & live stock lookup in the patient mobile app.
+                </p>
+              </div>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
@@ -1274,6 +1304,60 @@ export default function BusinessWingView() {
               </button>
             </div>
           </div>
+
+          {/* Pending Store Approvals Banner */}
+          {medicalStoresList.some(s => s.verificationStatus === 'Pending' || s.verification_status === 'pending') && (
+            <div style={{
+              background: '#FEF3C7',
+              border: '1px solid #FCD34D',
+              borderRadius: 12,
+              padding: '16px 20px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 12
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                <img
+                  src={storePendingIllus}
+                  alt="KYC Review"
+                  style={{ width: 54, height: 54, objectFit: 'contain' }}
+                />
+                <div>
+                  <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#92400E' }}>
+                    Pending Store Partner KYC Verifications
+                  </h4>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: '#B45309' }}>
+                    {medicalStoresList.filter(s => s.verificationStatus === 'Pending' || s.verification_status === 'pending').length} new pharmacy applications submitted via App onboarding awaiting State Drug License audit.
+                  </p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {medicalStoresList.filter(s => s.verificationStatus === 'Pending' || s.verification_status === 'pending').map(pStore => (
+                  <button
+                    key={pStore.id}
+                    onClick={() => setSelectedStoreForVerify(pStore)}
+                    style={{
+                      padding: '8px 16px',
+                      background: '#D97706',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: 8,
+                      fontWeight: 800,
+                      fontSize: '0.82rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6
+                    }}
+                  >
+                    <CheckCircle2 size={14} /> Review {pStore.name.split(' ')[0]}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Stores Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
@@ -1346,7 +1430,7 @@ export default function BusinessWingView() {
                     </div>
                   </div>
 
-                  {/* Metrics Footer */}
+                  {/* Metrics & KYC Footer */}
                   <div style={{ marginTop: 'auto', paddingTop: 12, borderTop: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{
                       padding: '4px 8px',
@@ -1358,9 +1442,35 @@ export default function BusinessWingView() {
                     }}>
                       ⚡ {store.etaMinutes} MINS ETA
                     </span>
-                    <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                      {store.availableMedicinesCount}+ Medicines in Stock
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{
+                        padding: '3px 8px',
+                        borderRadius: 6,
+                        fontSize: '0.72rem',
+                        fontWeight: 800,
+                        background: (store.verificationStatus === 'Verified' || store.verification_status === 'verified') ? '#DCFCE7' : store.verificationStatus === 'Rejected' ? '#FEE2E2' : '#FEF3C7',
+                        color: (store.verificationStatus === 'Verified' || store.verification_status === 'verified') ? '#166534' : store.verificationStatus === 'Rejected' ? '#991B1B' : '#92400E'
+                      }}>
+                        {store.verificationStatus || store.verification_status || 'Verified'}
+                      </span>
+                      {(store.verificationStatus === 'Pending' || store.verification_status === 'pending') && (
+                        <button
+                          onClick={() => setSelectedStoreForVerify(store)}
+                          style={{
+                            padding: '3px 8px',
+                            background: '#0D9488',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: 6,
+                            fontSize: '0.72rem',
+                            fontWeight: 800,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Verify KYC
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1730,6 +1840,14 @@ export default function BusinessWingView() {
           </div>
         </div>
       )}
+
+      {/* Store Verification Modal */}
+      <StoreVerificationModal
+        isOpen={!!selectedStoreForVerify}
+        onClose={() => setSelectedStoreForVerify(null)}
+        store={selectedStoreForVerify}
+        onVerified={handleStoreVerified}
+      />
     </div>
   );
 }

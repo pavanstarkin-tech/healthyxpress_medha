@@ -19,7 +19,6 @@ class _DoctorSearchScreenState extends State<DoctorSearchScreen> {
   String _selectedSpecialty = 'All';
   String _selectedFilter = 'All';
   List<DoctorModel> _doctorsList = List.from(ProductionDatabase.doctors);
-  bool _isLoading = false;
 
   final List<String> _specialties = [
     'All',

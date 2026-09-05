@@ -815,7 +815,28 @@ export const DB_SNAPSHOT = {
       license: 'TS-HYD-PHARM-2023-1129',
       imageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=400',
       availableMedicinesCount: 145,
-      monthlyFulfillments: 620
+      monthlyFulfillments: 620,
+      verificationStatus: 'Verified'
+    },
+    {
+      id: 'STORE-05',
+      name: 'MedPlus Express Pharmacy',
+      address: 'Plot 42, Silicon Valley Rd, Madhapur',
+      area: 'Madhapur',
+      city: 'Hyderabad',
+      rating: 4.9,
+      reviews: 1,
+      distanceKm: 1.4,
+      etaMinutes: 15,
+      is24x7: true,
+      isOpen: true,
+      phone: '+91 98480 99881',
+      license: 'TS-HYD-PHARM-2026-9421',
+      imageUrl: 'https://images.unsplash.com/photo-1576602976047-174e57a47881?auto=format&fit=crop&q=80&w=400',
+      availableMedicinesCount: 210,
+      monthlyFulfillments: 0,
+      verificationStatus: 'Pending',
+      submittedAt: '05 Sep 2026, 08:30 AM'
     }
   ]
 };

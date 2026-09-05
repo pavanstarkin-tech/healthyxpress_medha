@@ -46,8 +46,12 @@ export const healthApi = {
   getTickets: () => api.get('/tickets'),
   createTicket: (data) => api.post('/tickets', data),
 
-  // Pharmacy Catalog
+  // Pharmacy & Medical Stores
   getMedicines: () => api.get('/pharmacy/medicines'),
+  getStores: () => api.get('/pharmacy/stores'),
+  getPendingStores: () => api.get('/admin/pending-stores'),
+  verifyStore: (id, status, notes) => api.put(`/admin/verify-store/${id}`, { status, notes }),
+  createStore: (data) => api.post('/pharmacy/onboard', data),
 
   // Aarogyasri Health Pass
   getAarogyasriProfile: (id) => api.get(`/auth/aarogyasri/${id}`),

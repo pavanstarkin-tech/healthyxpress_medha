@@ -160,12 +160,39 @@ if ($path === '/api/telehealth/generate-agora-token' && $method === 'POST') {
     TelehealthController::generateToken();
 }
 
-// 8. Pharmacy & 15-min Delivery
+// 8. Pharmacy, Store Partners & 15-min Delivery
 if ($path === '/api/pharmacy/medicines' && $method === 'GET') {
     PharmacyController::getMedicines();
 }
 if ($path === '/api/pharmacy/order' && $method === 'POST') {
     PharmacyController::createOrder();
+}
+if ($path === '/api/pharmacy/stores' && $method === 'GET') {
+    PharmacyController::getStores();
+}
+if ($path === '/api/pharmacy/onboard' && $method === 'POST') {
+    PharmacyController::onboardStore();
+}
+if ($path === '/api/pharmacy/my-store' && $method === 'GET') {
+    PharmacyController::getMyStore($_GET['user_id'] ?? 'USR-STORE-101');
+}
+if (preg_match('#^/api/pharmacy/my-store/([^/]+)$#', $path, $matches) && $method === 'PUT') {
+    PharmacyController::updateMyStore($matches[1]);
+}
+if (preg_match('#^/api/pharmacy/stores/([^/]+)/products$#', $path, $matches) && $method === 'GET') {
+    PharmacyController::getStoreProducts($matches[1]);
+}
+if (preg_match('#^/api/pharmacy/stores/([^/]+)/products$#', $path, $matches) && $method === 'POST') {
+    PharmacyController::addStoreProduct($matches[1]);
+}
+if (preg_match('#^/api/pharmacy/products/([^/]+)/stock$#', $path, $matches) && $method === 'PUT') {
+    PharmacyController::toggleProductStock($matches[1]);
+}
+if ($path === '/api/admin/pending-stores' && $method === 'GET') {
+    PharmacyController::getPendingStores();
+}
+if (preg_match('#^/api/admin/verify-store/([^/]+)$#', $path, $matches) && $method === 'PUT') {
+    PharmacyController::verifyStore($matches[1]);
 }
 
 // 9. ABDM QR Consent

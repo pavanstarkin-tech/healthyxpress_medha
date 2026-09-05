@@ -21,6 +21,7 @@ build/
 # Production builds
 dist/
 dist-ssr/
+build_gh_pages/
 *.local
 
 # Logs & temp

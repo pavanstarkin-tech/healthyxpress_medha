@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/app_illustrations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../data/production_database.dart';
 import '../../models/emergency_model.dart';
@@ -67,20 +68,29 @@ class _EmergencySosScreenState extends State<EmergencySosScreen> {
               child: Column(
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Medical Emergency?', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                          SizedBox(height: 2),
-                          Text('Instant ambulance dispatch 24/7', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(10)),
+                              child: const Text('24/7 PRIORITY DISPATCH', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10)),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text('Medical Emergency?', style: TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 3),
+                            const Text('Instant GPS ambulance dispatch in under 8 mins.', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                          ],
+                        ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(12)),
-                        child: const Text('HIGH PRIORITY', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10)),
+                      const SizedBox(width: 8),
+                      Image.asset(
+                        AppIllustrations.emergencyAmbulance,
+                        height: 76,
+                        width: 76,
+                        fit: BoxFit.contain,
                       ),
                     ],
                   ),
@@ -176,12 +186,22 @@ class _EmergencySosScreenState extends State<EmergencySosScreen> {
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(10),
+                        width: 52,
+                        height: 52,
+                        padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
                           color: const Color(0xFFFEE2E2),
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        child: const Icon(Icons.airport_shuttle_rounded, color: AppColors.emergency, size: 28),
+                        child: Image.asset(
+                          AppIllustrations.emergencyAmbulance,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) => const Icon(
+                            Icons.airport_shuttle_rounded,
+                            color: AppColors.emergency,
+                            size: 28,
+                          ),
+                        ),
                       ),
                       const SizedBox(width: 14),
                       Expanded(

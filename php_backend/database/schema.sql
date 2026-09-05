@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(150) NOT NULL,
     phone VARCHAR(20) UNIQUE NOT NULL,
     email VARCHAR(150),
-    role ENUM('patient', 'doctor', 'hospital_admin', 'super_admin') DEFAULT 'patient',
+    role ENUM('patient', 'doctor', 'hospital_admin', 'super_admin', 'store') DEFAULT 'patient',
     aarogyasri_id VARCHAR(50) UNIQUE,
     dob DATE,
     gender ENUM('male', 'female', 'other'),
@@ -217,6 +217,45 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     message TEXT,
     media_url TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS pharmacy_stores (
+    id VARCHAR(50) PRIMARY KEY,
+    user_id VARCHAR(50) NOT NULL,
+    name VARCHAR(200) NOT NULL,
+    license_number VARCHAR(100) UNIQUE NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    email VARCHAR(150),
+    address TEXT NOT NULL,
+    area VARCHAR(100) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    pincode VARCHAR(20) NOT NULL,
+    latitude DECIMAL(10,8) DEFAULT 17.4400,
+    longitude DECIMAL(11,8) DEFAULT 78.3489,
+    is_24x7 TINYINT(1) DEFAULT 0,
+    opening_time VARCHAR(20) DEFAULT '08:00 AM',
+    closing_time VARCHAR(20) DEFAULT '10:00 PM',
+    is_open TINYINT(1) DEFAULT 1,
+    verification_status ENUM('pending', 'verified', 'rejected') DEFAULT 'pending',
+    rejection_reason TEXT,
+    image_url TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS pharmacy_store_products (
+    id VARCHAR(50) PRIMARY KEY,
+    store_id VARCHAR(50) NOT NULL,
+    name VARCHAR(200) NOT NULL,
+    category VARCHAR(100) DEFAULT 'General Medicine',
+    price DECIMAL(10,2) NOT NULL,
+    discount_percent INT DEFAULT 0,
+    in_stock TINYINT(1) DEFAULT 1,
+    stock_quantity INT DEFAULT 100,
+    image_url TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (store_id) REFERENCES pharmacy_stores(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

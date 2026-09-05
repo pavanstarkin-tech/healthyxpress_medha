@@ -113,6 +113,26 @@ export default function Sidebar({ activeTab, setActiveTab }) {
       </nav>
 
       <div className="sidebar-footer">
+        <a
+          href="../"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            padding: '8px 12px',
+            marginBottom: 10,
+            borderRadius: 8,
+            background: 'var(--primary-light)',
+            color: 'var(--primary)',
+            fontSize: '0.8rem',
+            fontWeight: 700,
+            textDecoration: 'none',
+            border: '1px solid rgba(30, 96, 246, 0.2)'
+          }}
+        >
+          📱 Open Mobile Web App
+        </a>
         <div className="admin-card-mini">
           <img
             src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200"

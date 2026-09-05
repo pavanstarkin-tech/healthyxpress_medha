@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:intl/intl.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/constants/app_illustrations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../models/appointment_model.dart';
 import 'user_main_nav.dart';
@@ -22,15 +23,24 @@ class BookingConfirmationScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 10),
-              // Success Animated Emblem
+              // 3D Success Celebration Box
               Container(
-                width: 76,
-                height: 76,
-                decoration: const BoxDecoration(
-                  color: AppColors.success,
-                  shape: BoxShape.circle,
+                height: 120,
+                width: 120,
+                margin: const EdgeInsets.only(bottom: 8),
+                child: Image.asset(
+                  AppIllustrations.orderSuccessBox,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    width: 76,
+                    height: 76,
+                    decoration: const BoxDecoration(
+                      color: AppColors.success,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.check_rounded, color: Colors.white, size: 44),
+                  ),
                 ),
-                child: const Icon(Icons.check_rounded, color: Colors.white, size: 44),
               ),
               const SizedBox(height: 16),
               const Text(

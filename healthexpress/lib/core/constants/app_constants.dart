@@ -2,6 +2,7 @@ enum UserRole {
   user,
   doctor,
   admin,
+  store,
 }
 
 enum ConsultationType {

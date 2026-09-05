@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/constants/app_illustrations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/appointment_provider.dart';
@@ -12,6 +13,7 @@ import 'lab_tests_screen.dart';
 import 'rmp_doctor_booking_screen.dart';
 import 'emergency_sos_screen.dart';
 import 'health_records_screen.dart';
+import 'health_qr_screen.dart';
 import 'health_vitals_dashboard_screen.dart';
 import 'my_appointments_screen.dart';
 import 'medication_reminders_screen.dart';
@@ -215,15 +217,13 @@ class UserHomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     // 3D Robot Mascot Container
-                    Container(
-                      width: 90,
-                      height: 90,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.15),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Center(
-                        child: Icon(
+                    SizedBox(
+                      width: 96,
+                      height: 96,
+                      child: Image.asset(
+                        AppIllustrations.aiTriageBot,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) => const Icon(
                           Icons.smart_toy_rounded,
                           size: 56,
                           color: Colors.white,
@@ -305,6 +305,70 @@ class UserHomeScreen extends StatelessWidget {
                     onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HealthVitalsDashboardScreen())),
                   ),
                 ],
+              ),
+              const SizedBox(height: 20),
+
+              // 15-Min Medicine Delivery Feature Banner
+              InkWell(
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PharmacyScreen())),
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF0D9488), Color(0xFF0F766E)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF0D9488).withValues(alpha: 0.25),
+                        blurRadius: 14,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: const Text(
+                                '⚡ 15-MIN EXPRESS',
+                                style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            const Text(
+                              'Doorstep Medicine Delivery',
+                              style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 2),
+                            const Text(
+                              'Order from verified dark-store pharmacies nearby.',
+                              style: TextStyle(color: Colors.white70, fontSize: 11),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Image.asset(
+                        AppIllustrations.storeDeliveryBike,
+                        height: 74,
+                        width: 74,
+                        fit: BoxFit.contain,
+                      ),
+                    ],
+                  ),
+                ),
               ),
               const SizedBox(height: 24),
 
@@ -470,6 +534,59 @@ class UserHomeScreen extends StatelessWidget {
                         ),
                       ),
                       const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textMuted),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Aarogyasri / ABDM Digital Health Pass Card
+              InkWell(
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HealthQrScreen())),
+                borderRadius: BorderRadius.circular(18),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.12),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        AppIllustrations.abdmHealthPass,
+                        height: 56,
+                        width: 56,
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(width: 14),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text('Aarogyasri / ABDM Card', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                                SizedBox(width: 6),
+                                Icon(Icons.verified_rounded, color: Color(0xFF38BDF8), size: 14),
+                              ],
+                            ),
+                            SizedBox(height: 2),
+                            Text('View digital health ID & cashless QR', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.qr_code_2_rounded, color: Colors.white, size: 28),
                     ],
                   ),
                 ),

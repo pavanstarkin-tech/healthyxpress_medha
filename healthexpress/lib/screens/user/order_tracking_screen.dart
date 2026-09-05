@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/constants/app_illustrations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/pharmacy_provider.dart';
 
@@ -66,10 +67,16 @@ class OrderTrackingScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), shape: BoxShape.circle),
-                    child: const Icon(Icons.two_wheeler_rounded, color: Colors.white, size: 32),
+                  Image.asset(
+                    AppIllustrations.storeDeliveryBike,
+                    height: 72,
+                    width: 72,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), shape: BoxShape.circle),
+                      child: const Icon(Icons.two_wheeler_rounded, color: Colors.white, size: 32),
+                    ),
                   ),
                 ],
               ),
