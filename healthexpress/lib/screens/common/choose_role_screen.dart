@@ -166,6 +166,7 @@ class _ChooseRoleSheetState extends State<ChooseRoleSheet> {
                 activeBgColor: AppColors.primaryLight,
                 activeBorderColor: AppColors.primary,
                 isImageOnLeft: true,
+                imageWidth: 72,
               ),
               const SizedBox(height: 16),
 
@@ -179,6 +180,7 @@ class _ChooseRoleSheetState extends State<ChooseRoleSheet> {
                 activeBgColor: const Color(0xFFF0FDF4),
                 activeBorderColor: AppColors.success,
                 isImageOnLeft: false,
+                imageWidth: 72,
               ),
               const SizedBox(height: 16),
 
@@ -192,6 +194,7 @@ class _ChooseRoleSheetState extends State<ChooseRoleSheet> {
                 activeBgColor: const Color(0xFFF0FDFA),
                 activeBorderColor: const Color(0xFF0D9488),
                 isImageOnLeft: true,
+                imageWidth: 72,
               ),
               const SizedBox(height: 22),
 
@@ -234,6 +237,7 @@ class _ChooseRoleSheetState extends State<ChooseRoleSheet> {
     required Color activeBgColor,
     required Color activeBorderColor,
     required bool isImageOnLeft,
+    double imageWidth = 72,
   }) {
     final isSelected = _selectedRole == role;
 
@@ -247,8 +251,8 @@ class _ChooseRoleSheetState extends State<ChooseRoleSheet> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             padding: EdgeInsets.only(
-              left: isImageOnLeft ? 82 : 16,
-              right: isImageOnLeft ? 16 : 82,
+              left: isImageOnLeft ? (imageWidth + 14) : 14,
+              right: isImageOnLeft ? 14 : (imageWidth + 14),
               top: 14,
               bottom: 14,
             ),
@@ -284,13 +288,13 @@ class _ChooseRoleSheetState extends State<ChooseRoleSheet> {
                 // Text Information (Title & Description)
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: isImageOnLeft ? CrossAxisAlignment.start : CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         title,
                         style: const TextStyle(
-                          fontSize: 14.5,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
                         ),
@@ -299,7 +303,7 @@ class _ChooseRoleSheetState extends State<ChooseRoleSheet> {
                       Text(
                         description,
                         style: const TextStyle(
-                          fontSize: 11.5,
+                          fontSize: 11,
                           color: AppColors.textSecondary,
                           height: 1.25,
                         ),
@@ -310,7 +314,7 @@ class _ChooseRoleSheetState extends State<ChooseRoleSheet> {
 
                 // If image is on left, show Radio Button on right
                 if (isImageOnLeft) ...[
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                   Icon(
                     isSelected ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded,
                     color: isSelected ? activeBorderColor : AppColors.textMuted,
@@ -322,13 +326,13 @@ class _ChooseRoleSheetState extends State<ChooseRoleSheet> {
           ),
         ),
 
-        // 3D Illustration popping out of the card (60% larger, no box behind!)
+        // 3D Illustration popping out of the card (no box behind, proportional bounds)
         Positioned(
-          left: isImageOnLeft ? 8 : null,
-          right: isImageOnLeft ? null : 8,
+          left: isImageOnLeft ? 6 : null,
+          right: isImageOnLeft ? null : 6,
           top: -14,
           bottom: -8,
-          width: 80,
+          width: imageWidth,
           child: IgnorePointer(
             child: Image.asset(
               illustrationAsset,
