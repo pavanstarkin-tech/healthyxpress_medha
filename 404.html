@@ -47,12 +47,7 @@
 
     window.triggerFirebaseGoogleSignIn = async function() {
       try {
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Google Sign-In popup timed out or blocked by browser COOP policy.')), 12000)
-        );
-
-        const signInPromise = signInWithPopup(auth, provider);
-        const result = await Promise.race([signInPromise, timeoutPromise]);
+        const result = await signInWithPopup(auth, provider);
         const user = result.user;
         const idToken = await user.getIdToken();
         return JSON.stringify({
@@ -70,13 +65,11 @@
         } else if (error.code === 'auth/popup-blocked') {
           msg = 'The Google sign-in popup was blocked by your browser. Please allow popups for this site.';
         } else if (error.code === 'auth/unauthorized-domain' || (msg && msg.includes('unauthorized-domain'))) {
-          msg = 'Domain not authorized in Firebase. Please add pavanstarkin-tech.github.io to Firebase Authentication -> Authorized domains.';
-        } else if (error.code === 'auth/internal-error' || (msg && msg.includes('500')) || (msg && msg.includes('Cross-Origin-Opener-Policy'))) {
-          msg = 'Cross-Origin policy prevented popup handshake. Please choose an account from the Google Account Chooser.';
+          msg = 'Domain not authorized in Firebase. Please add this domain to Firebase Authentication -> Authorized domains.';
         }
         return JSON.stringify({
           success: false,
-          code: error.code || 'coop_or_network_error',
+          code: error.code || 'error',
           message: msg
         });
       }
