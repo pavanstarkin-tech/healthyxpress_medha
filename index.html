@@ -44,7 +44,12 @@
 
     window.triggerFirebaseGoogleSignIn = async function() {
       try {
-        const result = await signInWithPopup(auth, provider);
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Google Sign-In popup timed out. Please check your network or try again.')), 20000)
+        );
+
+        const signInPromise = signInWithPopup(auth, provider);
+        const result = await Promise.race([signInPromise, timeoutPromise]);
         const user = result.user;
         const idToken = await user.getIdToken();
         return JSON.stringify({
@@ -61,10 +66,12 @@
           msg = 'Google Sign-In popup was closed before completing login.';
         } else if (error.code === 'auth/popup-blocked') {
           msg = 'The Google sign-in popup was blocked by your browser. Please allow popups for this site.';
+        } else if (error.code === 'auth/internal-error' || (msg && msg.includes('500'))) {
+          msg = 'Google OAuth Server returned 500. Please enable Google in Firebase Console or use Demo Google Login.';
         }
         return JSON.stringify({
           success: false,
-          code: error.code,
+          code: error.code || 'error',
           message: msg
         });
       }
