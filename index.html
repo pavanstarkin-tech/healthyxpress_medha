@@ -81,6 +81,82 @@
         });
       }
     };
+
+    // HealthExpress Real Web Speech Recognition & Synthesis for AI Assistant
+    window.healthExpressSpeech = {
+      recognition: null,
+      isListening: false,
+      startListening: function(lang, callback) {
+        try {
+          const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+          if (!SpeechRecognition) {
+            console.warn('Speech Recognition not supported in this browser');
+            if (callback) callback('error:not_supported');
+            return;
+          }
+          if (this.recognition) {
+            this.recognition.abort();
+          }
+          this.recognition = new SpeechRecognition();
+          this.recognition.lang = lang || 'en-IN'; // 'te-IN' for Telugu, 'hi-IN' for Hindi, 'en-IN' for English
+          this.recognition.continuous = false;
+          this.recognition.interimResults = true;
+
+          this.recognition.onstart = function() {
+            window.healthExpressSpeech.isListening = true;
+            if (window.onSpeechEvent) window.onSpeechEvent('start', '');
+          };
+
+          this.recognition.onresult = function(event) {
+            let transcript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+              transcript += event.results[i][0].transcript;
+            }
+            if (window.onSpeechEvent) window.onSpeechEvent('result', transcript);
+          };
+
+          this.recognition.onerror = function(event) {
+            window.healthExpressSpeech.isListening = false;
+            if (window.onSpeechEvent) window.onSpeechEvent('error', event.error || 'speech_error');
+          };
+
+          this.recognition.onend = function() {
+            window.healthExpressSpeech.isListening = false;
+            if (window.onSpeechEvent) window.onSpeechEvent('end', '');
+          };
+
+          this.recognition.start();
+        } catch (e) {
+          console.error('Speech recognition error:', e);
+          if (window.onSpeechEvent) window.onSpeechEvent('error', e.message);
+        }
+      },
+      stopListening: function() {
+        if (this.recognition) {
+          this.recognition.stop();
+          this.isListening = false;
+        }
+      },
+      speakText: function(text, lang) {
+        try {
+          if (!window.speechSynthesis) return;
+          window.speechSynthesis.cancel();
+          const cleanText = text.replace(/\*\*/g, '').replace(/###/g, '').replace(/\*/g, '');
+          const utterance = new SpeechSynthesisUtterance(cleanText);
+          utterance.lang = lang || 'en-IN';
+          utterance.rate = 1.0;
+          utterance.pitch = 1.0;
+          window.speechSynthesis.speak(utterance);
+        } catch (e) {
+          console.error('TTS error:', e);
+        }
+      },
+      stopSpeaking: function() {
+        if (window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+        }
+      }
+    };
   </script>
 
   <script src="flutter_bootstrap.js" async></script>
