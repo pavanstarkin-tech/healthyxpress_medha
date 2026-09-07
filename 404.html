@@ -27,7 +27,7 @@
   <!-- Firebase Web SDK for Real Google Sign-In Popup with COOP Fallback -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCU7Psyt8Rl5kQScIDAavvleuyNjkhVFxo",
@@ -42,35 +42,85 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({
+      prompt: 'select_account'
+    });
 
-    window.triggerFirebaseGoogleSignIn = async function() {
-      try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        const idToken = await user.getIdToken();
-        return JSON.stringify({
-          success: true,
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName || (user.email ? user.email.split('@')[0] : 'Google User'),
-          photoURL: user.photoURL || '',
-          idToken: idToken
-        });
-      } catch (error) {
-        let msg = error.message || '';
-        if (error.code === 'auth/popup-closed-by-user') {
-          msg = 'Google Sign-In popup was closed before completing login.';
-        } else if (error.code === 'auth/popup-blocked') {
-          msg = 'The Google sign-in popup was blocked by your browser. Please allow popups for this site.';
-        } else if (error.code === 'auth/unauthorized-domain' || (msg && msg.includes('unauthorized-domain'))) {
-          msg = 'Domain not authorized in Firebase. Please add this domain to Firebase Authentication -> Authorized domains.';
+    window.triggerFirebaseGoogleSignIn = function() {
+      return new Promise((resolve) => {
+        let isDone = false;
+
+        function finishSuccess(user, idToken) {
+          if (isDone) return;
+          isDone = true;
+          if (authUnsub) authUnsub();
+          resolve(JSON.stringify({
+            success: true,
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName || (user.email ? user.email.split('@')[0] : 'Google User'),
+            photoURL: user.photoURL || '',
+            idToken: idToken || ''
+          }));
         }
-        return JSON.stringify({
-          success: false,
-          code: error.code || 'error',
-          message: msg
+
+        function finishError(code, message) {
+          if (isDone) return;
+          isDone = true;
+          if (authUnsub) authUnsub();
+          resolve(JSON.stringify({
+            success: false,
+            code: code || 'error',
+            message: message || 'Google Sign-In failed.'
+          }));
+        }
+
+        // 1. Listen for auth state change - fires immediately when OAuth handshake completes,
+        // even if mobile browser COOP policy delays or blocks popup.closed checks!
+        const authUnsub = onAuthStateChanged(auth, async (user) => {
+          if (user && !isDone) {
+            try {
+              const idToken = await user.getIdToken();
+              finishSuccess(user, idToken);
+            } catch (e) {
+              finishSuccess(user, '');
+            }
+          }
         });
-      }
+
+        // 2. Trigger Google Sign-In Popup
+        signInWithPopup(auth, provider).then(async (result) => {
+          if (!isDone) {
+            const user = result.user;
+            const idToken = await user.getIdToken();
+            finishSuccess(user, idToken);
+          }
+        }).catch((error) => {
+          if (isDone) return;
+
+          let msg = error.message || '';
+          if (error.code === 'auth/popup-closed-by-user') {
+            msg = 'Google Sign-In popup was closed before completing login.';
+          } else if (error.code === 'auth/popup-blocked') {
+            msg = 'The Google sign-in popup was blocked by your browser. Please allow popups for this site.';
+          } else if (error.code === 'auth/unauthorized-domain' || (msg && msg.includes('unauthorized-domain'))) {
+            msg = 'Domain not authorized in Firebase. Please ensure pavanstarkin-tech.github.io is added to Firebase Console -> Authentication -> Settings -> Authorized domains.';
+          }
+          finishError(error.code, msg);
+        });
+
+        // 3. Safety timeout of 45s if mobile tab hangs without user interaction
+        setTimeout(() => {
+          if (!isDone) {
+            // Check if current user is already authenticated
+            if (auth.currentUser) {
+              finishSuccess(auth.currentUser, '');
+            } else {
+              finishError('timeout', 'Google Sign-In took too long. Please try again.');
+            }
+          }
+        }, 45000);
+      });
     };
 
     // HealthExpress Real Web Speech Recognition & Synthesis for AI Assistant
