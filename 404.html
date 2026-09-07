@@ -21,6 +21,9 @@
   <title>HealthExpress AI — Intelligent Healthcare Platform</title>
   <meta name="description" content="AI-driven healthcare, 15-minute emergency medicine delivery, and ABDM integrated telehealth platform.">
   <link rel="manifest" href="manifest.json">
+  <!-- Mapbox GL JS Official SDK for Real Vector Tile Maps -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
   <!-- Firebase Web SDK for Real Google Sign-In Popup with COOP Fallback -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -143,6 +146,495 @@
         if (window.speechSynthesis) {
           window.speechSynthesis.cancel();
         }
+      }
+    };
+
+    // Sarvam Live Voice Assistant Audio Recorder & Real-Time STT (saaras:v3)
+    window.sarvamLiveAudioRecorder = {
+      mediaStream: null,
+      audioContext: null,
+      processor: null,
+      input: null,
+      pcmData: [],
+      isRecording: false,
+
+      startRecording: async function(lang) {
+        try {
+          this.pcmData = [];
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              channelCount: 1,
+              sampleRate: 16000,
+              echoCancellation: true,
+              noiseSuppression: true
+            }
+          });
+          this.mediaStream = stream;
+
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.audioContext = new AudioContext({ sampleRate: 16000 });
+          this.input = this.audioContext.createMediaStreamSource(stream);
+
+          this.processor = this.audioContext.createScriptProcessor(4096, 1, 1);
+          this.processor.onaudioprocess = (e) => {
+            if (!this.isRecording) return;
+            const channel = e.inputBuffer.getChannelData(0);
+            this.pcmData.push(new Float32Array(channel));
+          };
+
+          this.input.connect(this.processor);
+          this.processor.connect(this.audioContext.destination);
+          this.isRecording = true;
+
+          // Start Web Speech for instantaneous real-time interim recognition display
+          if (window.healthExpressSpeech) {
+            window.healthExpressSpeech.startListening(lang || 'en-IN');
+          }
+
+          return JSON.stringify({ success: true });
+        } catch (err) {
+          console.error('Sarvam mic recording error:', err);
+          return JSON.stringify({ success: false, error: err.message || err.toString() });
+        }
+      },
+
+      stopAndTranscribe: async function(apiKey, langCode) {
+        return new Promise(async (resolve) => {
+          try {
+            this.isRecording = false;
+
+            if (window.healthExpressSpeech) {
+              window.healthExpressSpeech.stopListening();
+            }
+
+            if (this.processor) {
+              this.processor.disconnect();
+              this.processor = null;
+            }
+            if (this.input) {
+              this.input.disconnect();
+              this.input = null;
+            }
+            if (this.mediaStream) {
+              this.mediaStream.getTracks().forEach(t => t.stop());
+              this.mediaStream = null;
+            }
+            if (this.audioContext && this.audioContext.state !== 'closed') {
+              await this.audioContext.close();
+              this.audioContext = null;
+            }
+
+            let totalLength = 0;
+            for (let i = 0; i < this.pcmData.length; i++) {
+              totalLength += this.pcmData[i].length;
+            }
+
+            if (totalLength === 0) {
+              resolve(JSON.stringify({ success: false, error: 'No audio captured' }));
+              return;
+            }
+
+            const pcmBuffer = new Float32Array(totalLength);
+            let offset = 0;
+            for (let i = 0; i < this.pcmData.length; i++) {
+              pcmBuffer.set(this.pcmData[i], offset);
+              offset += this.pcmData[i].length;
+            }
+
+            // Encode 16kHz 16-bit Mono PCM WAV
+            const wavBuffer = new ArrayBuffer(44 + pcmBuffer.length * 2);
+            const view = new DataView(wavBuffer);
+
+            function writeString(view, offset, string) {
+              for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+              }
+            }
+
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + pcmBuffer.length * 2, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // PCM format
+            view.setUint16(22, 1, true); // 1 channel
+            view.setUint32(24, 16000, true); // 16kHz
+            view.setUint32(28, 32000, true); // 16000 * 2
+            view.setUint16(32, 2, true); // block align
+            view.setUint16(34, 16, true); // 16 bits
+            writeString(view, 36, 'data');
+            view.setUint32(40, pcmBuffer.length * 2, true);
+
+            let pcmIndex = 44;
+            for (let i = 0; i < pcmBuffer.length; i++, pcmIndex += 2) {
+              let s = Math.max(-1, Math.min(1, pcmBuffer[i]));
+              view.setInt16(pcmIndex, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+            }
+
+            const wavBlob = new Blob([view], { type: 'audio/wav' });
+
+            // Post genuine audio directly to Sarvam Live STT API
+            const formData = new FormData();
+            formData.append('file', wavBlob, 'voice_query.wav');
+            formData.append('model', 'saaras:v3');
+            formData.append('language_code', langCode || 'en-IN');
+
+            const res = await fetch('https://api.sarvam.ai/speech-to-text', {
+              method: 'POST',
+              headers: {
+                'api-subscription-key': apiKey
+              },
+              body: formData
+            });
+
+            if (res.ok) {
+              const data = await res.json();
+              resolve(JSON.stringify({
+                success: true,
+                transcript: data.transcript || '',
+                language_code: data.language_code || langCode
+              }));
+            } else {
+              const errText = await res.text();
+              console.warn('Sarvam API error:', errText);
+              resolve(JSON.stringify({ success: false, error: errText }));
+            }
+          } catch (err) {
+            console.error('Sarvam STT failed:', err);
+            resolve(JSON.stringify({ success: false, error: err.toString() }));
+          }
+        });
+      }
+    };
+
+    window.startSarvamLiveRecording = function(lang) {
+      return window.sarvamLiveAudioRecorder.startRecording(lang);
+    };
+
+    window.stopSarvamLiveRecording = function(apiKey, lang) {
+      return window.sarvamLiveAudioRecorder.stopAndTranscribe(apiKey, lang);
+    };
+
+    // HealthExpress In-Device Phonebook Contact Picker API (W3C Standard)
+    window.launchDeviceContactPicker = async function() {
+      if ('contacts' in navigator && 'ContactsManager' in window) {
+        try {
+          const props = ['name', 'tel'];
+          const contacts = await navigator.contacts.select(props, { multiple: false });
+          if (contacts && contacts.length > 0) {
+            const c = contacts[0];
+            const name = (c.name && c.name.length > 0) ? c.name[0] : '';
+            const tel = (c.tel && c.tel.length > 0) ? c.tel[0] : '';
+            return JSON.stringify({ success: true, name: name, phone: tel });
+          }
+          return JSON.stringify({ success: false, cancelled: true });
+        } catch (e) {
+          return JSON.stringify({ success: false, error: e.toString() });
+        }
+      } else {
+        return JSON.stringify({ success: false, notSupported: true });
+      }
+    };
+
+    // HealthExpress Live GPS Geolocation API
+    window.getLiveGpsCoordinates = function() {
+      return new Promise((resolve) => {
+        if (!navigator.geolocation) {
+          resolve(JSON.stringify({ success: false, error: 'Geolocation not supported' }));
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            resolve(JSON.stringify({
+              success: true,
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude
+            }));
+          },
+          (err) => {
+            resolve(JSON.stringify({ success: false, error: err.message || 'Location permission denied' }));
+          },
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+      });
+    };
+  </script>
+
+  <!-- Real Agora WebRTC SDK v4.20.0 -->
+  <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.20.0.js"></script>
+  <script>
+    window.agoraState = {
+      client: null,
+      localAudioTrack: null,
+      localVideoTrack: null,
+      remoteUsers: {},
+      isJoined: false
+    };
+
+    window.agoraJoinCall = async function(appId, channel, token, isVideo) {
+      try {
+        if (!window.AgoraRTC) {
+          console.warn("AgoraRTC SDK not yet loaded from CDN");
+          return JSON.stringify({ success: false, error: "AgoraRTC SDK not loaded" });
+        }
+        if (!window.agoraState.client) {
+          window.agoraState.client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+          window.agoraState.client.on("user-published", async (user, mediaType) => {
+            await window.agoraState.client.subscribe(user, mediaType);
+            window.agoraState.remoteUsers[user.uid] = user;
+            if (mediaType === "video") {
+              const remoteDiv = document.getElementById("agora-remote-player");
+              if (remoteDiv && user.videoTrack) {
+                user.videoTrack.play(remoteDiv);
+              }
+            }
+            if (mediaType === "audio" && user.audioTrack) {
+              user.audioTrack.play();
+            }
+          });
+          window.agoraState.client.on("user-unpublished", (user, mediaType) => {
+            console.log("Remote user unpublished:", user.uid, mediaType);
+          });
+          window.agoraState.client.on("user-left", (user) => {
+            delete window.agoraState.remoteUsers[user.uid];
+          });
+        }
+
+        const client = window.agoraState.client;
+        const uid = Math.floor(10000 + Math.random() * 90000);
+        await client.join(appId, channel, token || null, uid);
+        window.agoraState.isJoined = true;
+
+        if (isVideo) {
+          try {
+            window.agoraState.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+            window.agoraState.localVideoTrack = await AgoraRTC.createCameraVideoTrack();
+            const localDiv = document.getElementById("agora-local-player");
+            if (localDiv && window.agoraState.localVideoTrack) {
+              window.agoraState.localVideoTrack.play(localDiv);
+            }
+            await client.publish([window.agoraState.localAudioTrack, window.agoraState.localVideoTrack]);
+          } catch (camErr) {
+            console.warn("Camera/Mic device permission warning:", camErr);
+          }
+        } else {
+          try {
+            window.agoraState.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+            await client.publish([window.agoraState.localAudioTrack]);
+          } catch (micErr) {
+            console.warn("Mic device permission warning:", micErr);
+          }
+        }
+
+        return JSON.stringify({ success: true, channel: channel, uid: uid });
+      } catch (err) {
+        console.warn("agoraJoinCall error:", err);
+        return JSON.stringify({ success: false, error: err.toString() });
+      }
+    };
+
+    window.agoraToggleMuteAudio = function(isMuted) {
+      if (window.agoraState.localAudioTrack) {
+        window.agoraState.localAudioTrack.setEnabled(!isMuted);
+      }
+    };
+
+    window.agoraToggleMuteVideo = function(isVideoOff) {
+      if (window.agoraState.localVideoTrack) {
+        window.agoraState.localVideoTrack.setEnabled(!isVideoOff);
+      }
+    };
+
+    window.agoraLeaveCall = async function() {
+      try {
+        if (window.agoraState.localAudioTrack) {
+          window.agoraState.localAudioTrack.stop();
+          window.agoraState.localAudioTrack.close();
+          window.agoraState.localAudioTrack = null;
+        }
+        if (window.agoraState.localVideoTrack) {
+          window.agoraState.localVideoTrack.stop();
+          window.agoraState.localVideoTrack.close();
+          window.agoraState.localVideoTrack = null;
+        }
+        if (window.agoraState.client && window.agoraState.isJoined) {
+          await window.agoraState.client.leave();
+          window.agoraState.isJoined = false;
+        }
+        window.agoraState.remoteUsers = {};
+        return JSON.stringify({ success: true });
+      } catch (err) {
+        console.warn("agoraLeaveCall error:", err);
+        return JSON.stringify({ success: false, error: err.toString() });
+      }
+    };
+
+    // ==========================================
+    // Real Mapbox GL JS Engine Integration
+    // ==========================================
+    window.healthExpressMapbox = {
+      maps: {},
+      markers: {},
+      initMap: function(containerId, optionsStr) {
+        try {
+          const opts = JSON.parse(optionsStr || "{}");
+          mapboxgl.accessToken = opts.accessToken || "pk.eyJ1IjoicGF2YW5rdW1hcnN3YW15IiwiYSI6ImNtNnc1c3ZpdTBkdGgyanM5b25rN2ZqcncifQ.Ls1e2W6rx3apoBsStWa5Ow";
+
+          const container = document.getElementById(containerId);
+          if (!container) return JSON.stringify({ success: false, error: "Container not found" });
+
+          if (this.maps[containerId]) {
+            try { this.maps[containerId].remove(); } catch (_) {}
+            delete this.maps[containerId];
+          }
+
+          const map = new mapboxgl.Map({
+            container: containerId,
+            style: opts.style || "mapbox://styles/mapbox/streets-v12",
+            center: [opts.centerLng || 78.3880, opts.centerLat || 17.4420],
+            zoom: opts.zoom || 14,
+            pitch: opts.pitch || 0,
+            bearing: opts.bearing || 0,
+            interactive: opts.interactive !== false,
+          });
+
+          if (opts.showControls !== false) {
+            map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), "top-right");
+          }
+
+          map.on("load", () => {
+            map.resize();
+            if (opts.routeCoords && opts.routeCoords.length > 1) {
+              window.healthExpressMapbox.renderRoute(containerId, opts.routeCoords);
+            }
+          });
+
+          setTimeout(() => map.resize(), 150);
+          setTimeout(() => map.resize(), 600);
+          setTimeout(() => map.resize(), 1500);
+
+          this.maps[containerId] = map;
+          this.markers[containerId] = {};
+
+          return JSON.stringify({ success: true });
+        } catch (e) {
+          console.error("Mapbox init error:", e);
+          return JSON.stringify({ success: false, error: e.toString() });
+        }
+      },
+
+      flyTo: function(containerId, lng, lat, zoom) {
+        const map = this.maps[containerId];
+        if (map) {
+          map.flyTo({
+            center: [lng, lat],
+            zoom: zoom || 15,
+            essential: true,
+          });
+          setTimeout(() => map.resize(), 300);
+          return true;
+        }
+        return false;
+      },
+
+      addCustomMarker: function(containerId, markerId, lng, lat, optionsJson) {
+        const map = this.maps[containerId];
+        if (!map) return false;
+
+        const opts = JSON.parse(optionsJson || "{}");
+        if (this.markers[containerId] && this.markers[containerId][markerId]) {
+          try { this.markers[containerId][markerId].remove(); } catch (_) {}
+        }
+
+        const el = document.createElement("div");
+        el.className = "healthexpress-mapbox-marker";
+        el.style.width = "38px";
+        el.style.height = "38px";
+        el.style.borderRadius = "50%";
+        el.style.display = "flex";
+        el.style.alignItems = "center";
+        el.style.justifyContent = "center";
+        el.style.cursor = "pointer";
+        el.style.boxShadow = "0 4px 14px rgba(0,0,0,0.35)";
+        el.style.backgroundColor = opts.color || "#2563EB";
+        el.style.color = "#FFFFFF";
+        el.style.fontSize = "18px";
+        el.style.border = "2.5px solid #FFFFFF";
+        el.innerHTML = opts.iconHtml || "📍";
+
+        const marker = new mapboxgl.Marker({
+          element: el,
+          draggable: opts.draggable === true
+        })
+          .setLngLat([lng, lat])
+          .addTo(map);
+
+        if (opts.popupText) {
+          const popup = new mapboxgl.Popup({ offset: 25 }).setHTML("<strong>" + opts.popupText + "</strong>");
+          marker.setPopup(popup);
+        }
+
+        if (!this.markers[containerId]) this.markers[containerId] = {};
+        this.markers[containerId][markerId] = marker;
+        return true;
+      },
+
+      renderRoute: function(containerId, coordinates) {
+        const map = this.maps[containerId];
+        if (!map) return;
+
+        const routeGeoJson = {
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "LineString",
+            coordinates: coordinates
+          }
+        };
+
+        if (map.getSource("delivery-route")) {
+          map.getSource("delivery-route").setData(routeGeoJson);
+        } else {
+          map.addSource("delivery-route", {
+            type: "geojson",
+            data: routeGeoJson
+          });
+
+          map.addLayer({
+            id: "delivery-route-layer",
+            type: "line",
+            source: "delivery-route",
+            layout: {
+              "line-join": "round",
+              "line-cap": "round"
+            },
+            paint: {
+              "line-color": "#0D9488",
+              "line-width": 5,
+              "line-dasharray": [1, 1.5]
+            }
+          });
+        }
+
+        try {
+          const bounds = new mapboxgl.LngLatBounds();
+          coordinates.forEach(coord => bounds.extend(coord));
+          map.fitBounds(bounds, { padding: 40 });
+        } catch (_) {}
+      },
+
+      resizeMap: function(containerId) {
+        if (this.maps[containerId]) {
+          this.maps[containerId].resize();
+        }
+      },
+
+      destroyMap: function(containerId) {
+        if (this.maps[containerId]) {
+          try { this.maps[containerId].remove(); } catch (_) {}
+          delete this.maps[containerId];
+        }
+        delete this.markers[containerId];
       }
     };
   </script>
