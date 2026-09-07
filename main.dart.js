@@ -30581,7 +30581,7 @@ s=p}for(;;)switch(s){case 0:i=null
 h=null
 g=null
 p=4
-n="http://localhost:5000/api/hospitals"
+n="https://vedvaidyam.com/healthexpress/api/hospitals"
 if(h!=null&&g!=null){n=J.O4(n,"?lat="+A.q(h)+"&lng="+A.q(g))
 if(i!=null&&B.d.gc7(i))n=J.O4(n,"&city="+i)}s=7
 return A.L(A.aRk(A.dQ(n,0,null)).hP(B.ex),$async$a7d)
@@ -30615,7 +30615,7 @@ s=p}for(;;)switch(s){case 0:i=null
 h=null
 g=null
 p=4
-n="http://localhost:5000/api/doctors"
+n="https://vedvaidyam.com/healthexpress/api/doctors"
 if(i!=null&&h!=null){n=J.O4(n,"?lat="+A.q(i)+"&lng="+A.q(h))
 if(g!=null&&B.d.gc7(g))n=J.O4(n,"&specialty="+g)}s=7
 return A.L(A.aRk(A.dQ(n,0,null)).hP(B.ex),$async$a7b)
@@ -30645,7 +30645,7 @@ a7g(){var s=0,r=A.S(t.wM),q,p=2,o=[],n,m,l,k,j,i,h
 var $async$a7g=A.T(function(a,b){if(a===1){o.push(b)
 s=p}for(;;)switch(s){case 0:p=4
 s=7
-return A.L(A.aRk(A.dQ("http://localhost:5000/api/pharmacy/medicines",0,null)).hP(B.ex),$async$a7g)
+return A.L(A.aRk(A.dQ("https://vedvaidyam.com/healthexpress/api/pharmacy/medicines",0,null)).hP(B.ex),$async$a7g)
 case 7:n=b
 if(n.b===200){k=n
 m=A.Ok(A.hb(A.h9(k.e)).d4(k.w))
@@ -30678,7 +30678,7 @@ var $async$a7l=A.T(function(a1,a2){if(a1===1){o.push(a2)
 s=p}for(;;)switch(s){case 0:f=null
 e=null
 p=4
-l=A.dQ("http://localhost:5000/api/ai/triage",0,null)
+l=A.dQ("https://vedvaidyam.com/healthexpress/api/ai/triage",0,null)
 k=t.N
 j=A.a5(["Content-Type","application/json"],k,k)
 i=f
@@ -30712,7 +30712,7 @@ a79(a,b,c,d,e,f,g,h,i){return A.b68(a,b,c,d,e,f,g,h,i)},
 b68(a,b,c,d,e,f,g,a0,a1){var s=0,r=A.S(t.nA),q,p=2,o=[],n,m,l,k,j,i,h
 var $async$a79=A.T(function(a2,a3){if(a2===1){o.push(a3)
 s=p}for(;;)switch(s){case 0:p=4
-l=A.dQ("http://localhost:5000/api/appointments/book",0,null)
+l=A.dQ("https://vedvaidyam.com/healthexpress/api/appointments/book",0,null)
 k=t.N
 j=A.a5(["Content-Type","application/json"],k,k)
 s=7
@@ -30743,7 +30743,7 @@ a7k(a,b,c,d){return A.b6e(a,b,c,d)},
 b6e(a,b,c,d){var s=0,r=A.S(t.nA),q,p=2,o=[],n,m,l,k,j,i
 var $async$a7k=A.T(function(e,f){if(e===1){o.push(f)
 s=p}for(;;)switch(s){case 0:p=4
-m=A.dQ("http://localhost:5000/api/auth/register",0,null)
+m=A.dQ("https://vedvaidyam.com/healthexpress/api/auth/register",0,null)
 l=t.N
 k=A.a5(["Content-Type","application/json"],l,l)
 s=7
@@ -30772,7 +30772,7 @@ a7i(a,b,c,d,e,f,g,h){return A.b6c(a,b,c,d,e,f,g,h)},
 b6c(a,b,c,d,e,f,g,h){var s=0,r=A.S(t.nA),q,p=2,o=[],n,m,l,k,j,i
 var $async$a7i=A.T(function(a0,a1){if(a0===1){o.push(a1)
 s=p}for(;;)switch(s){case 0:p=4
-m=A.dQ("http://localhost:5000/api/doctors/onboard",0,null)
+m=A.dQ("https://vedvaidyam.com/healthexpress/api/doctors/onboard",0,null)
 l=t.N
 k=A.a5(["Content-Type","application/json"],l,l)
 s=7
@@ -30804,7 +30804,7 @@ var $async$a7j=A.T(function(f,a0){if(f===1){o.push(a0)
 s=p}for(;;)switch(s){case 0:i=null
 h=null
 p=4
-m=A.dQ("http://localhost:5000/api/pharmacy/onboard",0,null)
+m=A.dQ("https://vedvaidyam.com/healthexpress/api/pharmacy/onboard",0,null)
 l=t.N
 k=A.a5(["Content-Type","application/json"],l,l)
 s=7
@@ -30833,7 +30833,7 @@ a7a(a,b,c,d){return A.b69(a,b,c,d)},
 b69(a,b,c,d){var s=0,r=A.S(t.nA),q,p=2,o=[],n,m,l,k,j,i
 var $async$a7a=A.T(function(e,f){if(e===1){o.push(f)
 s=p}for(;;)switch(s){case 0:p=4
-m=A.dQ("http://localhost:5000/api/pharmacy/orders",0,null)
+m=A.dQ("https://vedvaidyam.com/healthexpress/api/pharmacy/orders",0,null)
 l=t.N
 k=A.a5(["Content-Type","application/json"],l,l)
 s=7
