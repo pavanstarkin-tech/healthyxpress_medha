@@ -689,6 +689,17 @@
     };
   </script>
 
+  <script>
+    // Ensure browsers & mobile Chrome immediately fetch the latest live production backend
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (let registration of registrations) {
+          registration.update();
+        }
+      });
+    }
+  </script>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
