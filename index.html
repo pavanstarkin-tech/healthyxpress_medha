@@ -131,8 +131,17 @@
     window.healthExpressSpeech = {
       recognition: null,
       isListening: false,
+      lastTranscript: '',
+      interimTranscript: '',
+
+      getLiveInterim: function() {
+        return this.interimTranscript || this.lastTranscript || '';
+      },
+
       startListening: function(lang, callback) {
         try {
+          this.lastTranscript = '';
+          this.interimTranscript = '';
           const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
           if (!SpeechRecognition) {
             console.warn('Speech Recognition not supported in this browser');
@@ -140,65 +149,102 @@
             return;
           }
           if (this.recognition) {
-            this.recognition.abort();
+            try { this.recognition.abort(); } catch (_) {}
           }
-          this.recognition = new SpeechRecognition();
-          this.recognition.lang = lang || 'en-IN'; // 'te-IN' for Telugu, 'hi-IN' for Hindi, 'en-IN' for English
-          this.recognition.continuous = false;
-          this.recognition.interimResults = true;
+          const rec = new SpeechRecognition();
+          rec.lang = lang || 'en-IN';
+          rec.continuous = true;
+          rec.interimResults = true;
+          rec.maxAlternatives = 1;
 
-          this.recognition.onstart = function() {
-            window.healthExpressSpeech.isListening = true;
+          rec.onstart = () => {
+            this.isListening = true;
             if (window.onSpeechEvent) window.onSpeechEvent('start', '');
           };
 
-          this.recognition.onresult = function(event) {
-            let transcript = '';
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
-              transcript += event.results[i][0].transcript;
+          rec.onresult = (event) => {
+            let interim = '';
+            let final = '';
+            for (let i = 0; i < event.results.length; ++i) {
+              const res = event.results[i];
+              if (res.isFinal) {
+                final += res[0].transcript + ' ';
+              } else {
+                interim += res[0].transcript;
+              }
             }
-            if (window.onSpeechEvent) window.onSpeechEvent('result', transcript);
+            this.lastTranscript = (final + interim).trim();
+            this.interimTranscript = this.lastTranscript;
+            if (window.onSpeechEvent) window.onSpeechEvent('result', this.lastTranscript);
           };
 
-          this.recognition.onerror = function(event) {
-            window.healthExpressSpeech.isListening = false;
+          rec.onerror = (event) => {
+            console.warn('Speech recognition warning:', event.error);
+            if (event.error !== 'no-speech') {
+              this.isListening = false;
+            }
             if (window.onSpeechEvent) window.onSpeechEvent('error', event.error || 'speech_error');
           };
 
-          this.recognition.onend = function() {
-            window.healthExpressSpeech.isListening = false;
-            if (window.onSpeechEvent) window.onSpeechEvent('end', '');
+          rec.onend = () => {
+            this.isListening = false;
+            if (window.onSpeechEvent) window.onSpeechEvent('end', this.lastTranscript);
           };
 
-          this.recognition.start();
+          this.recognition = rec;
+          rec.start();
         } catch (e) {
           console.error('Speech recognition error:', e);
           if (window.onSpeechEvent) window.onSpeechEvent('error', e.message);
         }
       },
+
       stopListening: function() {
         if (this.recognition) {
-          this.recognition.stop();
+          try { this.recognition.stop(); } catch (_) {}
           this.isListening = false;
         }
+        return this.lastTranscript;
       },
+
       speakText: function(text, lang) {
         try {
           if (!window.speechSynthesis) return;
           window.speechSynthesis.cancel();
-          const cleanText = text.replace(/\*\*/g, '').replace(/###/g, '').replace(/\*/g, '');
+          if (!text || !text.trim()) return;
+
+          // Clean markdown asterisks, hashes, and symbols
+          const cleanText = text
+            .replace(/\*\*/g, '')
+            .replace(/###/g, '')
+            .replace(/##/g, '')
+            .replace(/#/g, '')
+            .replace(/\*/g, '')
+            .replace(/`+/g, '')
+            .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
+            .trim();
+
           const utterance = new SpeechSynthesisUtterance(cleanText);
           utterance.lang = lang || 'en-IN';
-          utterance.rate = 1.0;
+          utterance.rate = 1.05;
           utterance.pitch = 1.0;
+
+          // Attempt to match best local Indian voice
+          const voices = window.speechSynthesis.getVoices();
+          if (voices && voices.length > 0) {
+            const match = voices.find(v => v.lang.startsWith(lang || 'en') || v.lang.includes('IN') || v.name.includes('India'));
+            if (match) utterance.voice = match;
+          }
+
           window.speechSynthesis.speak(utterance);
         } catch (e) {
           console.error('TTS error:', e);
         }
       },
+
       stopSpeaking: function() {
         if (window.speechSynthesis) {
-          window.speechSynthesis.cancel();
+          try { window.speechSynthesis.cancel(); } catch (_) {}
         }
       }
     };
@@ -215,36 +261,48 @@
       startRecording: async function(lang) {
         try {
           this.pcmData = [];
-          const stream = await navigator.mediaDevices.getUserMedia({
-            audio: {
-              channelCount: 1,
-              sampleRate: 16000,
-              echoCancellation: true,
-              noiseSuppression: true
-            }
-          });
-          this.mediaStream = stream;
-
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          this.audioContext = new AudioContext({ sampleRate: 16000 });
-          this.input = this.audioContext.createMediaStreamSource(stream);
-
-          this.processor = this.audioContext.createScriptProcessor(4096, 1, 1);
-          this.processor.onaudioprocess = (e) => {
-            if (!this.isRecording) return;
-            const channel = e.inputBuffer.getChannelData(0);
-            this.pcmData.push(new Float32Array(channel));
-          };
-
-          this.input.connect(this.processor);
-          this.processor.connect(this.audioContext.destination);
-          this.isRecording = true;
-
-          // Start Web Speech for instantaneous real-time interim recognition display
+          
+          // Always start Web Speech API simultaneously for instant local recognition
           if (window.healthExpressSpeech) {
             window.healthExpressSpeech.startListening(lang || 'en-IN');
           }
 
+          if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            try {
+              const stream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                  channelCount: 1,
+                  sampleRate: 16000,
+                  echoCancellation: true,
+                  noiseSuppression: true
+                }
+              });
+              this.mediaStream = stream;
+
+              const AudioCtx = window.AudioContext || window.webkitAudioContext;
+              if (AudioCtx) {
+                this.audioContext = new AudioCtx({ sampleRate: 16000 });
+                if (this.audioContext.state === 'suspended') {
+                  await this.audioContext.resume();
+                }
+
+                this.input = this.audioContext.createMediaStreamSource(stream);
+                this.processor = this.audioContext.createScriptProcessor(4096, 1, 1);
+                this.processor.onaudioprocess = (e) => {
+                  if (!this.isRecording) return;
+                  const channel = e.inputBuffer.getChannelData(0);
+                  this.pcmData.push(new Float32Array(channel));
+                };
+
+                this.input.connect(this.processor);
+                this.processor.connect(this.audioContext.destination);
+              }
+            } catch (micErr) {
+              console.warn('Microphone stream initialization note:', micErr);
+            }
+          }
+
+          this.isRecording = true;
           return JSON.stringify({ success: true });
         } catch (err) {
           console.error('Sarvam mic recording error:', err);
@@ -257,24 +315,25 @@
           try {
             this.isRecording = false;
 
+            let webSpeechTranscript = '';
             if (window.healthExpressSpeech) {
-              window.healthExpressSpeech.stopListening();
+              webSpeechTranscript = window.healthExpressSpeech.stopListening() || '';
             }
 
             if (this.processor) {
-              this.processor.disconnect();
+              try { this.processor.disconnect(); } catch (_) {}
               this.processor = null;
             }
             if (this.input) {
-              this.input.disconnect();
+              try { this.input.disconnect(); } catch (_) {}
               this.input = null;
             }
             if (this.mediaStream) {
-              this.mediaStream.getTracks().forEach(t => t.stop());
+              try { this.mediaStream.getTracks().forEach(t => t.stop()); } catch (_) {}
               this.mediaStream = null;
             }
             if (this.audioContext && this.audioContext.state !== 'closed') {
-              await this.audioContext.close();
+              try { await this.audioContext.close(); } catch (_) {}
               this.audioContext = null;
             }
 
@@ -283,79 +342,102 @@
               totalLength += this.pcmData[i].length;
             }
 
-            if (totalLength === 0) {
-              resolve(JSON.stringify({ success: false, error: 'No audio captured' }));
-              return;
-            }
+            // If audio was recorded, attempt Sarvam STT cloud API
+            if (totalLength > 1600) {
+              const pcmBuffer = new Float32Array(totalLength);
+              let offset = 0;
+              for (let i = 0; i < this.pcmData.length; i++) {
+                pcmBuffer.set(this.pcmData[i], offset);
+                offset += this.pcmData[i].length;
+              }
 
-            const pcmBuffer = new Float32Array(totalLength);
-            let offset = 0;
-            for (let i = 0; i < this.pcmData.length; i++) {
-              pcmBuffer.set(this.pcmData[i], offset);
-              offset += this.pcmData[i].length;
-            }
+              // Encode 16kHz 16-bit Mono PCM WAV
+              const wavBuffer = new ArrayBuffer(44 + pcmBuffer.length * 2);
+              const view = new DataView(wavBuffer);
 
-            // Encode 16kHz 16-bit Mono PCM WAV
-            const wavBuffer = new ArrayBuffer(44 + pcmBuffer.length * 2);
-            const view = new DataView(wavBuffer);
+              function writeString(view, offset, string) {
+                for (let i = 0; i < string.length; i++) {
+                  view.setUint8(offset + i, string.charCodeAt(i));
+                }
+              }
 
-            function writeString(view, offset, string) {
-              for (let i = 0; i < string.length; i++) {
-                view.setUint8(offset + i, string.charCodeAt(i));
+              writeString(view, 0, 'RIFF');
+              view.setUint32(4, 36 + pcmBuffer.length * 2, true);
+              writeString(view, 8, 'WAVE');
+              writeString(view, 12, 'fmt ');
+              view.setUint32(16, 16, true);
+              view.setUint16(20, 1, true); // PCM format
+              view.setUint16(22, 1, true); // 1 channel
+              view.setUint32(24, 16000, true); // 16kHz
+              view.setUint32(28, 32000, true); // 16000 * 2
+              view.setUint16(32, 2, true); // block align
+              view.setUint16(34, 16, true); // 16 bits
+              writeString(view, 36, 'data');
+              view.setUint32(40, pcmBuffer.length * 2, true);
+
+              let pcmIndex = 44;
+              for (let i = 0; i < pcmBuffer.length; i++, pcmIndex += 2) {
+                let s = Math.max(-1, Math.min(1, pcmBuffer[i]));
+                view.setInt16(pcmIndex, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+              }
+
+              const wavBlob = new Blob([view], { type: 'audio/wav' });
+
+              try {
+                const formData = new FormData();
+                formData.append('file', wavBlob, 'voice_query.wav');
+                formData.append('model', 'saaras:v3');
+                formData.append('language_code', langCode || 'en-IN');
+
+                const res = await fetch('https://api.sarvam.ai/speech-to-text', {
+                  method: 'POST',
+                  headers: {
+                    'api-subscription-key': apiKey
+                  },
+                  body: formData
+                });
+
+                if (res.ok) {
+                  const data = await res.json();
+                  const sarvamTranscript = (data.transcript || '').trim();
+                  if (sarvamTranscript) {
+                    resolve(JSON.stringify({
+                      success: true,
+                      transcript: sarvamTranscript,
+                      language_code: data.language_code || langCode,
+                      source: 'sarvam'
+                    }));
+                    return;
+                  }
+                }
+              } catch (apiErr) {
+                console.warn('Sarvam cloud STT network notice, using Web Speech fallback:', apiErr);
               }
             }
 
-            writeString(view, 0, 'RIFF');
-            view.setUint32(4, 36 + pcmBuffer.length * 2, true);
-            writeString(view, 8, 'WAVE');
-            writeString(view, 12, 'fmt ');
-            view.setUint32(16, 16, true);
-            view.setUint16(20, 1, true); // PCM format
-            view.setUint16(22, 1, true); // 1 channel
-            view.setUint32(24, 16000, true); // 16kHz
-            view.setUint32(28, 32000, true); // 16000 * 2
-            view.setUint16(32, 2, true); // block align
-            view.setUint16(34, 16, true); // 16 bits
-            writeString(view, 36, 'data');
-            view.setUint32(40, pcmBuffer.length * 2, true);
-
-            let pcmIndex = 44;
-            for (let i = 0; i < pcmBuffer.length; i++, pcmIndex += 2) {
-              let s = Math.max(-1, Math.min(1, pcmBuffer[i]));
-              view.setInt16(pcmIndex, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-            }
-
-            const wavBlob = new Blob([view], { type: 'audio/wav' });
-
-            // Post genuine audio directly to Sarvam Live STT API
-            const formData = new FormData();
-            formData.append('file', wavBlob, 'voice_query.wav');
-            formData.append('model', 'saaras:v3');
-            formData.append('language_code', langCode || 'en-IN');
-
-            const res = await fetch('https://api.sarvam.ai/speech-to-text', {
-              method: 'POST',
-              headers: {
-                'api-subscription-key': apiKey
-              },
-              body: formData
-            });
-
-            if (res.ok) {
-              const data = await res.json();
+            // Fallback to Web Speech transcript if Sarvam was empty or network failed
+            if (webSpeechTranscript && webSpeechTranscript.trim().length > 0) {
               resolve(JSON.stringify({
                 success: true,
-                transcript: data.transcript || '',
-                language_code: data.language_code || langCode
+                transcript: webSpeechTranscript.trim(),
+                language_code: langCode,
+                source: 'webspeech'
               }));
-            } else {
-              const errText = await res.text();
-              console.warn('Sarvam API error:', errText);
-              resolve(JSON.stringify({ success: false, error: errText }));
+              return;
             }
+
+            resolve(JSON.stringify({
+              success: false,
+              error: 'No clear speech detected. Please tap mic and speak again.',
+              transcript: ''
+            }));
           } catch (err) {
-            console.error('Sarvam STT failed:', err);
-            resolve(JSON.stringify({ success: false, error: err.toString() }));
+            console.error('STT execution failed:', err);
+            resolve(JSON.stringify({
+              success: false,
+              error: err.toString(),
+              transcript: ''
+            }));
           }
         });
       }
