@@ -140,6 +140,11 @@
 
       startListening: function(lang, callback) {
         try {
+          if (this.isSpeakingNow()) {
+            console.log('AI speech is active. Postponing speech recognition start.');
+            if (callback) callback('speaking');
+            return;
+          }
           this.lastTranscript = '';
           this.interimTranscript = '';
           const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -163,6 +168,9 @@
           };
 
           rec.onresult = (event) => {
+            if (this.isSpeakingNow()) {
+              return;
+            }
             let interim = '';
             let final = '';
             for (let i = 0; i < event.results.length; ++i) {
@@ -175,13 +183,6 @@
             }
             this.lastTranscript = (final + interim).trim();
             this.interimTranscript = this.lastTranscript;
-
-            // Real-time phone call barge-in: If user speaks while AI is speaking, interrupt AI speech immediately
-            if (this.isSpeaking && this.lastTranscript.length > 1) {
-              console.log('Real-time phone call barge-in detected! Stopping AI voice...');
-              this.stopSpeaking();
-              if (window.onSpeechEvent) window.onSpeechEvent('interrupted', this.lastTranscript);
-            }
 
             if (window.onSpeechEvent) window.onSpeechEvent('result', this.lastTranscript);
           };
@@ -227,6 +228,10 @@
           this.stopSpeaking();
           if (!text || !text.trim()) return;
 
+          this.isSpeaking = true;
+          // Immediately stop microphone capture so AI audio is not recorded from speakers
+          this.stopListening();
+
           // Clean markdown formatting, symbols, emojis, and links for natural clinical pronunciation
           const cleanText = text
             .replace(/\*\*/g, '')
@@ -239,21 +244,25 @@
             .replace(/[\u{1F600}-\u{1F64F}|\u{1F300}-\u{1F5FF}|\u{1F680}-\u{1F6FF}|\u{1F1E0}-\u{1F1FF}|\u{2600}-\u{26FF}|\u{2700}-\u{27BF}]/gu, '')
             .trim();
 
-          if (!cleanText) return;
+          if (!cleanText) {
+            this.isSpeaking = false;
+            return;
+          }
 
           const key = apiKey || 'sk_n4tzuy3c_JIUK6l5ExNHHGoiiAGwvroYh';
           const targetLang = (lang && (lang.includes('te') || lang === 'te'))
             ? 'te-IN'
             : ((lang && (lang.includes('hi') || lang === 'hi')) ? 'hi-IN' : 'en-IN');
           
-          // Strictly use Indian Lady Voices: Meera / Kavya / Pavithra
-          const speakerVoice = targetLang === 'te-IN' ? 'meera' : (targetLang === 'hi-IN' ? 'kavya' : 'kavya');
+          // Realistic Indian Clinical Voice Selection for Sarvam bulbul:v3
+          // Telugu: kavitha | Hindi: kavya | English: priya
+          const speakerVoice = targetLang === 'te-IN' ? 'kavitha' : (targetLang === 'hi-IN' ? 'kavya' : 'priya');
 
-          // Try Sarvam Bulbul v3 Indian TTS Engine for ultra-clear Indian pronunciation
+          // Sarvam Bulbul v3 Indian AI Voice Synthesis (Ultra-realistic, HD 22050 Hz)
           let sarvamAudioPlayed = false;
           try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 4000);
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
 
             const res = await fetch('https://api.sarvam.ai/text-to-speech', {
               method: 'POST',
@@ -266,9 +275,9 @@
                 target_language_code: targetLang,
                 speaker: speakerVoice,
                 pitch: 0,
-                pace: 1.05,
+                pace: 1.0,
                 loudness: 1.5,
-                speech_sample_rate: 8000,
+                speech_sample_rate: 22050,
                 enable_preprocessing: true,
                 model: 'bulbul:v3'
               }),
@@ -305,6 +314,7 @@
             this._fallbackWebSpeech(cleanText, targetLang);
           }
         } catch (e) {
+          this.isSpeaking = false;
           console.error('TTS error:', e);
         }
       },
@@ -373,6 +383,10 @@
 
       startRecording: async function(lang) {
         try {
+          if (window.healthExpressSpeech && window.healthExpressSpeech.isSpeakingNow()) {
+            console.log('AI speech is currently playing. Deferring mic capture.');
+            return JSON.stringify({ success: false, isSpeaking: true });
+          }
           this.pcmData = [];
           
           // Always start Web Speech API simultaneously for instant local recognition
