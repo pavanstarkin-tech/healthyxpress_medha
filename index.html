@@ -207,13 +207,15 @@
         return this.lastTranscript;
       },
 
-      speakText: function(text, lang) {
+      currentAudio: null,
+      isSpeaking: false,
+
+      speakText: async function(text, lang, apiKey) {
         try {
-          if (!window.speechSynthesis) return;
-          window.speechSynthesis.cancel();
+          this.stopSpeaking();
           if (!text || !text.trim()) return;
 
-          // Clean markdown asterisks, hashes, and symbols
+          // Clean markdown formatting, symbols, emojis, and links for natural clinical pronunciation
           const cleanText = text
             .replace(/\*\*/g, '')
             .replace(/###/g, '')
@@ -222,27 +224,111 @@
             .replace(/\*/g, '')
             .replace(/`+/g, '')
             .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
+            .replace(/[\u{1F600}-\u{1F64F}|\u{1F300}-\u{1F5FF}|\u{1F680}-\u{1F6FF}|\u{1F1E0}-\u{1F1FF}|\u{2600}-\u{26FF}|\u{2700}-\u{27BF}]/gu, '')
             .trim();
+
+          if (!cleanText) return;
+
+          const key = apiKey || 'sk_n4tzuy3c_JIUK6l5ExNHHGoiiAGwvroYh';
+          const targetLang = (lang && (lang.includes('te') || lang === 'te'))
+            ? 'te-IN'
+            : ((lang && (lang.includes('hi') || lang === 'hi')) ? 'hi-IN' : 'en-IN');
+          const speakerVoice = targetLang === 'te-IN' ? 'meera' : 'shubh';
+
+          // Try Sarvam Bulbul v3 Indian TTS Engine for ultra-clear Indian pronunciation
+          let sarvamAudioPlayed = false;
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+            const res = await fetch('https://api.sarvam.ai/text-to-speech', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'api-subscription-key': key
+              },
+              body: JSON.stringify({
+                inputs: [cleanText.length > 500 ? cleanText.substring(0, 500) : cleanText],
+                target_language_code: targetLang,
+                speaker: speakerVoice,
+                pitch: 0,
+                pace: 1.05,
+                loudness: 1.5,
+                speech_sample_rate: 8000,
+                enable_preprocessing: true,
+                model: 'bulbul:v3'
+              }),
+              signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.audios && data.audios.length > 0 && data.audios[0]) {
+                const audio = new Audio("data:audio/wav;base64," + data.audios[0]);
+                this.currentAudio = audio;
+                this.isSpeaking = true;
+                audio.onended = () => {
+                  this.isSpeaking = false;
+                  this.currentAudio = null;
+                };
+                audio.onerror = () => {
+                  this.isSpeaking = false;
+                  this.currentAudio = null;
+                  this._fallbackWebSpeech(cleanText, targetLang);
+                };
+                await audio.play();
+                sarvamAudioPlayed = true;
+              }
+            }
+          } catch (sarvamErr) {
+            console.warn('Sarvam TTS notice, switching to browser speaker synthesis:', sarvamErr);
+          }
+
+          // Seamless fallback to browser Web SpeechSynthesis if Sarvam is unavailable or busy
+          if (!sarvamAudioPlayed) {
+            this._fallbackWebSpeech(cleanText, targetLang);
+          }
+        } catch (e) {
+          console.error('TTS error:', e);
+        }
+      },
+
+      _fallbackWebSpeech: function(cleanText, lang) {
+        try {
+          if (!window.speechSynthesis) return;
+          window.speechSynthesis.cancel();
 
           const utterance = new SpeechSynthesisUtterance(cleanText);
           utterance.lang = lang || 'en-IN';
           utterance.rate = 1.05;
           utterance.pitch = 1.0;
 
-          // Attempt to match best local Indian voice
           const voices = window.speechSynthesis.getVoices();
           if (voices && voices.length > 0) {
             const match = voices.find(v => v.lang.startsWith(lang || 'en') || v.lang.includes('IN') || v.name.includes('India'));
             if (match) utterance.voice = match;
           }
 
+          utterance.onstart = () => { this.isSpeaking = true; };
+          utterance.onend = () => { this.isSpeaking = false; };
+          utterance.onerror = () => { this.isSpeaking = false; };
+
           window.speechSynthesis.speak(utterance);
         } catch (e) {
-          console.error('TTS error:', e);
+          console.error('Web Speech fallback error:', e);
         }
       },
 
       stopSpeaking: function() {
+        this.isSpeaking = false;
+        if (this.currentAudio) {
+          try {
+            this.currentAudio.pause();
+            this.currentAudio.currentTime = 0;
+          } catch (_) {}
+          this.currentAudio = null;
+        }
         if (window.speechSynthesis) {
           try { window.speechSynthesis.cancel(); } catch (_) {}
         }
@@ -294,8 +380,12 @@
                   this.pcmData.push(new Float32Array(channel));
                 };
 
+                // Connect to a silent gain node to prevent raw microphone audio loopback into speakers while recording
+                const muteGain = this.audioContext.createGain();
+                muteGain.gain.value = 0;
                 this.input.connect(this.processor);
-                this.processor.connect(this.audioContext.destination);
+                this.processor.connect(muteGain);
+                muteGain.connect(this.audioContext.destination);
               }
             } catch (micErr) {
               console.warn('Microphone stream initialization note:', micErr);
