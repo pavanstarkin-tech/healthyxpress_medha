@@ -175,6 +175,14 @@
             }
             this.lastTranscript = (final + interim).trim();
             this.interimTranscript = this.lastTranscript;
+
+            // Real-time phone call barge-in: If user speaks while AI is speaking, interrupt AI speech immediately
+            if (this.isSpeaking && this.lastTranscript.length > 1) {
+              console.log('Real-time phone call barge-in detected! Stopping AI voice...');
+              this.stopSpeaking();
+              if (window.onSpeechEvent) window.onSpeechEvent('interrupted', this.lastTranscript);
+            }
+
             if (window.onSpeechEvent) window.onSpeechEvent('result', this.lastTranscript);
           };
 
@@ -210,6 +218,10 @@
       currentAudio: null,
       isSpeaking: false,
 
+      isSpeakingNow: function() {
+        return this.isSpeaking || (window.speechSynthesis && window.speechSynthesis.speaking);
+      },
+
       speakText: async function(text, lang, apiKey) {
         try {
           this.stopSpeaking();
@@ -233,7 +245,9 @@
           const targetLang = (lang && (lang.includes('te') || lang === 'te'))
             ? 'te-IN'
             : ((lang && (lang.includes('hi') || lang === 'hi')) ? 'hi-IN' : 'en-IN');
-          const speakerVoice = targetLang === 'te-IN' ? 'meera' : 'shubh';
+          
+          // Strictly use Indian Lady Voices: Meera / Kavya / Pavithra
+          const speakerVoice = targetLang === 'te-IN' ? 'meera' : (targetLang === 'hi-IN' ? 'kavya' : 'kavya');
 
           // Try Sarvam Bulbul v3 Indian TTS Engine for ultra-clear Indian pronunciation
           let sarvamAudioPlayed = false;
@@ -271,6 +285,7 @@
                 audio.onended = () => {
                   this.isSpeaking = false;
                   this.currentAudio = null;
+                  if (window.onSpeechEvent) window.onSpeechEvent('speaking_end', '');
                 };
                 audio.onerror = () => {
                   this.isSpeaking = false;
@@ -304,14 +319,26 @@
           utterance.rate = 1.05;
           utterance.pitch = 1.0;
 
+          // Strictly select Lady Voice for speech synthesis
           const voices = window.speechSynthesis.getVoices();
           if (voices && voices.length > 0) {
-            const match = voices.find(v => v.lang.startsWith(lang || 'en') || v.lang.includes('IN') || v.name.includes('India'));
-            if (match) utterance.voice = match;
+            const femaleMatch = voices.find(v => {
+              const name = (v.name || '').toLowerCase();
+              const langMatch = v.lang.startsWith(lang || 'en') || v.lang.includes('IN') || name.includes('india');
+              const isFemale = name.includes('female') || name.includes('zira') || name.includes('veena') || name.includes('heera') || name.includes('neerja') || name.includes('swara') || name.includes('kalpana') || name.includes('samantha') || name.includes('karen') || name.includes('victoria') || name.includes('google हिन्दी') || name.includes('google telugu') || name.includes('natural');
+              return langMatch && isFemale;
+            }) || voices.find(v => {
+              const name = (v.name || '').toLowerCase();
+              return !name.includes('david') && !name.includes('george') && !name.includes('rishi') && !name.includes('ravi') && !name.includes('mark') && !name.includes('male') && (v.lang.startsWith(lang || 'en') || v.lang.includes('IN'));
+            });
+            if (femaleMatch) utterance.voice = femaleMatch;
           }
 
           utterance.onstart = () => { this.isSpeaking = true; };
-          utterance.onend = () => { this.isSpeaking = false; };
+          utterance.onend = () => {
+            this.isSpeaking = false;
+            if (window.onSpeechEvent) window.onSpeechEvent('speaking_end', '');
+          };
           utterance.onerror = () => { this.isSpeaking = false; };
 
           window.speechSynthesis.speak(utterance);
