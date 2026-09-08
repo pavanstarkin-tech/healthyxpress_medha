@@ -689,6 +689,122 @@
     };
   </script>
 
+  <!-- LiveKit WebRTC Real-Time Client SDK for Sarvam Voice Agent -->
+  <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+  <script>
+    window.healthExpressLiveKit = {
+      room: null,
+      isConnecting: false,
+      isConnected: false,
+
+      startVoiceSession: async function(optionsJson) {
+        try {
+          const opts = JSON.parse(optionsJson || "{}");
+          const livekitUrl = opts.url || "wss://luca-vsv9whhr.livekit.cloud";
+          const apiKey = opts.apiKey || "API5veVBN62icXT";
+          const apiSecret = opts.apiSecret || "0rj6XKM9tbWRfvja4Yo7DVpDk06mPef6XNLQbbdVCgTA";
+          const roomName = opts.roomName || ("healthexpress-room-" + Date.now());
+          const participantName = opts.participantName || ("patient-" + Math.floor(Math.random() * 10000));
+
+          if (this.room) {
+            await this.stopVoiceSession();
+          }
+
+          let token = opts.token;
+          if (!token) {
+            // Generate temporary client token
+            const header = btoa(JSON.stringify({ typ: 'JWT', alg: 'HS256' })).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+            const now = Math.floor(Date.now() / 1000);
+            const payload = btoa(JSON.stringify({
+              iss: apiKey,
+              sub: participantName,
+              nbf: now,
+              exp: now + 3600,
+              video: {
+                room: roomName,
+                roomJoin: true,
+                canPublish: true,
+                canSubscribe: true
+              }
+            })).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+            const enc = new TextEncoder();
+            const key = await crypto.subtle.importKey(
+              'raw',
+              enc.encode(apiSecret),
+              { name: 'HMAC', hash: 'SHA-256' },
+              false,
+              ['sign']
+            );
+            const sigBuf = await crypto.subtle.sign('HMAC', key, enc.encode(header + '.' + payload));
+            const sig = btoa(String.fromCharCode(...new Uint8Array(sigBuf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+            token = header + '.' + payload + '.' + sig;
+          }
+
+          const room = new LivekitClient.Room({
+            adaptiveStream: true,
+            dynacast: true,
+            audioCaptureDefaults: {
+              echoCancellation: true,
+              noiseSuppression: true,
+              autoGainControl: true,
+            }
+          });
+
+          this.room = room;
+          this.isConnecting = true;
+
+          room.on(LivekitClient.RoomEvent.TrackSubscribed, (track, publication, participant) => {
+            if (track.kind === LivekitClient.Track.Kind.Audio) {
+              const audioElement = track.attach();
+              document.body.appendChild(audioElement);
+              console.log("🔊 Playing real-time voice response from Sarvam Agent!");
+            }
+          });
+
+          room.on(LivekitClient.RoomEvent.Disconnected, () => {
+            console.log("LiveKit Voice Room Disconnected");
+            this.isConnected = false;
+            this.isConnecting = false;
+          });
+
+          await room.connect(livekitUrl, token);
+          await room.localParticipant.setMicrophoneEnabled(true);
+
+          this.isConnected = true;
+          this.isConnecting = false;
+          console.log("✅ Connected to LiveKit Room:", roomName);
+
+          return JSON.stringify({
+            success: true,
+            room: roomName,
+            participant: participantName,
+            url: livekitUrl
+          });
+        } catch (e) {
+          console.error("LiveKit voice error:", e);
+          this.isConnecting = false;
+          this.isConnected = false;
+          return JSON.stringify({ success: false, error: e.toString() });
+        }
+      },
+
+      stopVoiceSession: async function() {
+        try {
+          if (this.room) {
+            await this.room.disconnect();
+            this.room = null;
+          }
+          this.isConnected = false;
+          this.isConnecting = false;
+          return JSON.stringify({ success: true });
+        } catch (e) {
+          return JSON.stringify({ success: false, error: e.toString() });
+        }
+      }
+    };
+  </script>
+
   <script>
     // Ensure browsers & mobile Chrome immediately fetch the latest live production backend
     if ('serviceWorker' in navigator) {
