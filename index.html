@@ -165,6 +165,8 @@
         return this.interimTranscript || this.lastTranscript || '';
       },
 
+      isExplicitlyActive: false,
+
       startListening: function(lang, callback) {
         try {
           if (this.isSpeakingNow()) {
@@ -172,6 +174,7 @@
             if (callback) callback('speaking');
             return;
           }
+          this.isExplicitlyActive = true;
           this.lastTranscript = '';
           this.interimTranscript = '';
           this.silenceCutoffTriggered = false;
@@ -224,31 +227,44 @@
               if (window.onSpeechEvent) window.onSpeechEvent('result', this.lastTranscript);
 
               // Real-Time Voice Activity Detection (VAD) Auto-Cut:
-              // Whenever the user speaks and then stops/pauses for 900ms, auto-trigger cutoff!
+              // Whenever user speaks and gives a natural 1.4s gap, auto-cut & process!
               if (this.silenceTimer) clearTimeout(this.silenceTimer);
               this.silenceTimer = setTimeout(() => {
                 if (this.isListening && this.hasSpoken && this.lastTranscript && this.lastTranscript.trim().length > 0 && !this.isSpeakingNow()) {
-                  console.log("⚡ VAD Auto-Cut: Speech gap detected. Auto-stopping mic & processing instantly!", this.lastTranscript);
+                  console.log("⚡ VAD Auto-Cut: User finished speaking. Processing response instantly!", this.lastTranscript);
                   this.silenceCutoffTriggered = true;
                   if (window.onSpeechSilenceCutoff) {
                     window.onSpeechSilenceCutoff(this.lastTranscript);
                   }
                 }
-              }, 950);
+              }, 1400);
             }
           };
 
           rec.onerror = (event) => {
-            console.warn('Speech recognition warning:', event.error);
-            if (event.error !== 'no-speech') {
+            console.warn('Speech recognition event:', event.error);
+            if (event.error === 'no-speech' || event.error === 'network') {
+              // Never abort listening on momentary pause / no-speech; keep listening seamlessly!
+              if (this.isExplicitlyActive && !this.isSpeakingNow() && !this.silenceCutoffTriggered) {
+                try { rec.start(); } catch (_) {}
+              }
+            } else {
               this.isListening = false;
             }
             if (window.onSpeechEvent) window.onSpeechEvent('error', event.error || 'speech_error');
           };
 
           rec.onend = () => {
-            this.isListening = false;
-            if (window.onSpeechEvent) window.onSpeechEvent('end', this.lastTranscript);
+            // Keep listening continuously in call mode without cutting off at browser 5-second default limit
+            if (this.isExplicitlyActive && !this.isSpeakingNow() && !this.silenceCutoffTriggered) {
+              try {
+                rec.start();
+                this.isListening = true;
+              } catch (_) {}
+            } else {
+              this.isListening = false;
+              if (window.onSpeechEvent) window.onSpeechEvent('end', this.lastTranscript);
+            }
           };
 
           this.recognition = rec;
@@ -260,6 +276,7 @@
       },
 
       stopListening: function() {
+        this.isExplicitlyActive = false;
         if (this.silenceTimer) clearTimeout(this.silenceTimer);
         if (this.recognition) {
           try { this.recognition.stop(); } catch (_) {}
