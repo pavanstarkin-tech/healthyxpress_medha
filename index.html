@@ -301,7 +301,11 @@
             return;
           }
 
-          const key = apiKey || 'sk_n4tzuy3c_JIUK6l5ExNHHGoiiAGwvroYh';
+          const rawKeys = apiKey ? (apiKey.includes(',') ? apiKey.split(',') : [apiKey]) : ['sk_n4tzuy3c_JIUK6l5ExNHHGoiiAGwvroYh', 'sk_kp9erlr9_KNPOzulHyWvwno8unZykydgb'];
+          const keys = rawKeys.map(k => k.trim()).filter(Boolean);
+          if (!keys.includes('sk_kp9erlr9_KNPOzulHyWvwno8unZykydgb')) {
+            keys.push('sk_kp9erlr9_KNPOzulHyWvwno8unZykydgb');
+          }
           const targetLang = (lang && (lang.includes('te') || lang === 'te'))
             ? 'te-IN'
             : ((lang && (lang.includes('hi') || lang === 'hi')) ? 'hi-IN' : 'en-IN');
@@ -312,54 +316,58 @@
 
           // Sarvam Bulbul v3 Indian AI Voice Synthesis (Ultra-realistic, HD 22050 Hz)
           let sarvamAudioPlayed = false;
-          try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 8000);
+          for (const key of keys) {
+            if (sarvamAudioPlayed) break;
+            try {
+              const controller = new AbortController();
+              const timeoutId = setTimeout(() => controller.abort(), 6000);
 
-            const res = await fetch('https://api.sarvam.ai/text-to-speech', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'api-subscription-key': key
-              },
-              body: JSON.stringify({
-                inputs: [cleanText.length > 500 ? cleanText.substring(0, 500) : cleanText],
-                target_language_code: targetLang,
-                speaker: speakerVoice,
-                pitch: 0,
-                pace: 1.05,
-                loudness: 1.5,
-                speech_sample_rate: 22050,
-                enable_preprocessing: true,
-                model: 'bulbul:v3'
-              }),
-              signal: controller.signal
-            });
-            clearTimeout(timeoutId);
+              const res = await fetch('https://api.sarvam.ai/text-to-speech', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'api-subscription-key': key
+                },
+                body: JSON.stringify({
+                  inputs: [cleanText.length > 500 ? cleanText.substring(0, 500) : cleanText],
+                  target_language_code: targetLang,
+                  speaker: speakerVoice,
+                  pitch: 0,
+                  pace: 1.05,
+                  loudness: 1.5,
+                  speech_sample_rate: 22050,
+                  enable_preprocessing: true,
+                  model: 'bulbul:v3'
+                }),
+                signal: controller.signal
+              });
+              clearTimeout(timeoutId);
 
-            if (res.ok) {
-              const data = await res.json();
-              if (data && data.audios && data.audios.length > 0 && data.audios[0]) {
-                const audio = new Audio("data:audio/wav;base64," + data.audios[0]);
-                this.currentAudio = audio;
-                this.isSpeaking = true;
-                audio.onended = () => {
-                  this.isSpeaking = false;
-                  this.currentAudio = null;
-                  this.speechJustEnded = true;
-                  if (window.onSpeechEvent) window.onSpeechEvent('speaking_end', '');
-                };
-                audio.onerror = () => {
-                  this.isSpeaking = false;
-                  this.currentAudio = null;
-                  this._fallbackWebSpeech(cleanText, targetLang);
-                };
-                await audio.play();
-                sarvamAudioPlayed = true;
+              if (res.ok) {
+                const data = await res.json();
+                if (data && data.audios && data.audios.length > 0 && data.audios[0]) {
+                  const audio = new Audio("data:audio/wav;base64," + data.audios[0]);
+                  this.currentAudio = audio;
+                  this.isSpeaking = true;
+                  audio.onended = () => {
+                    this.isSpeaking = false;
+                    this.currentAudio = null;
+                    this.speechJustEnded = true;
+                    if (window.onSpeechEvent) window.onSpeechEvent('speaking_end', '');
+                  };
+                  audio.onerror = () => {
+                    this.isSpeaking = false;
+                    this.currentAudio = null;
+                    this._fallbackWebSpeech(cleanText, targetLang);
+                  };
+                  await audio.play();
+                  sarvamAudioPlayed = true;
+                  break;
+                }
               }
+            } catch (sarvamErr) {
+              console.warn('Sarvam TTS notice for key, trying next fallback key:', sarvamErr);
             }
-          } catch (sarvamErr) {
-            console.warn('Sarvam TTS notice, switching to browser speaker synthesis:', sarvamErr);
           }
 
           // Seamless fallback to browser Web SpeechSynthesis if Sarvam is unavailable or busy
@@ -587,35 +595,43 @@
 
               const wavBlob = new Blob([view], { type: 'audio/wav' });
 
-              try {
-                const formData = new FormData();
-                formData.append('file', wavBlob, 'voice_query.wav');
-                formData.append('model', 'saaras:v3');
-                formData.append('language_code', langCode || 'en-IN');
+              const rawKeys = apiKey ? (apiKey.includes(',') ? apiKey.split(',') : [apiKey]) : ['sk_n4tzuy3c_JIUK6l5ExNHHGoiiAGwvroYh', 'sk_kp9erlr9_KNPOzulHyWvwno8unZykydgb'];
+              const keys = rawKeys.map(k => k.trim()).filter(Boolean);
+              if (!keys.includes('sk_kp9erlr9_KNPOzulHyWvwno8unZykydgb')) {
+                keys.push('sk_kp9erlr9_KNPOzulHyWvwno8unZykydgb');
+              }
 
-                const res = await fetch('https://api.sarvam.ai/speech-to-text', {
-                  method: 'POST',
-                  headers: {
-                    'api-subscription-key': apiKey
-                  },
-                  body: formData
-                });
+              for (const key of keys) {
+                try {
+                  const formData = new FormData();
+                  formData.append('file', wavBlob, 'voice_query.wav');
+                  formData.append('model', 'saaras:v3');
+                  formData.append('language_code', langCode || 'en-IN');
 
-                if (res.ok) {
-                  const data = await res.json();
-                  const sarvamTranscript = (data.transcript || '').trim();
-                  if (sarvamTranscript) {
-                    resolve(JSON.stringify({
-                      success: true,
-                      transcript: sarvamTranscript,
-                      language_code: data.language_code || langCode,
-                      source: 'sarvam'
-                    }));
-                    return;
+                  const res = await fetch('https://api.sarvam.ai/speech-to-text', {
+                    method: 'POST',
+                    headers: {
+                      'api-subscription-key': key
+                    },
+                    body: formData
+                  });
+
+                  if (res.ok) {
+                    const data = await res.json();
+                    const sarvamTranscript = (data.transcript || '').trim();
+                    if (sarvamTranscript) {
+                      resolve(JSON.stringify({
+                        success: true,
+                        transcript: sarvamTranscript,
+                        language_code: data.language_code || langCode,
+                        source: 'sarvam'
+                      }));
+                      return;
+                    }
                   }
+                } catch (apiErr) {
+                  console.warn('Sarvam cloud STT key notice, trying next fallback key:', apiErr);
                 }
-              } catch (apiErr) {
-                console.warn('Sarvam cloud STT network notice, using Web Speech fallback:', apiErr);
               }
             }
 
