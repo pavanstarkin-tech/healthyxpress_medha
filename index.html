@@ -135,6 +135,31 @@
       isListening: false,
       lastTranscript: '',
       interimTranscript: '',
+      silenceTimer: null,
+      silenceCutoffTriggered: false,
+      lastSpeechTimestamp: 0,
+      hasSpoken: false,
+      speechJustEnded: false,
+
+      isSilenceCutoffTriggered: function() {
+        if (this.silenceCutoffTriggered) {
+          this.silenceCutoffTriggered = false;
+          return true;
+        }
+        if (this.isListening && this.hasSpoken && (Date.now() - this.lastSpeechTimestamp > 950) && this.lastTranscript && this.lastTranscript.trim().length > 0) {
+          this.hasSpoken = false;
+          return true;
+        }
+        return false;
+      },
+
+      isSpeechJustEnded: function() {
+        if (this.speechJustEnded) {
+          this.speechJustEnded = false;
+          return true;
+        }
+        return false;
+      },
 
       getLiveInterim: function() {
         return this.interimTranscript || this.lastTranscript || '';
@@ -149,6 +174,11 @@
           }
           this.lastTranscript = '';
           this.interimTranscript = '';
+          this.silenceCutoffTriggered = false;
+          this.hasSpoken = false;
+          this.lastSpeechTimestamp = 0;
+          if (this.silenceTimer) clearTimeout(this.silenceTimer);
+
           const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
           if (!SpeechRecognition) {
             console.warn('Speech Recognition not supported in this browser');
@@ -166,6 +196,7 @@
 
           rec.onstart = () => {
             this.isListening = true;
+            this.hasSpoken = false;
             if (window.onSpeechEvent) window.onSpeechEvent('start', '');
           };
 
@@ -183,10 +214,28 @@
                 interim += res[0].transcript;
               }
             }
-            this.lastTranscript = (final + interim).trim();
-            this.interimTranscript = this.lastTranscript;
+            const current = (final + interim).trim();
+            if (current.length > 0) {
+              this.lastTranscript = current;
+              this.interimTranscript = current;
+              this.hasSpoken = true;
+              this.lastSpeechTimestamp = Date.now();
 
-            if (window.onSpeechEvent) window.onSpeechEvent('result', this.lastTranscript);
+              if (window.onSpeechEvent) window.onSpeechEvent('result', this.lastTranscript);
+
+              // Real-Time Voice Activity Detection (VAD) Auto-Cut:
+              // Whenever the user speaks and then stops/pauses for 900ms, auto-trigger cutoff!
+              if (this.silenceTimer) clearTimeout(this.silenceTimer);
+              this.silenceTimer = setTimeout(() => {
+                if (this.isListening && this.hasSpoken && this.lastTranscript && this.lastTranscript.trim().length > 0 && !this.isSpeakingNow()) {
+                  console.log("⚡ VAD Auto-Cut: Speech gap detected. Auto-stopping mic & processing instantly!", this.lastTranscript);
+                  this.silenceCutoffTriggered = true;
+                  if (window.onSpeechSilenceCutoff) {
+                    window.onSpeechSilenceCutoff(this.lastTranscript);
+                  }
+                }
+              }, 950);
+            }
           };
 
           rec.onerror = (event) => {
@@ -211,6 +260,7 @@
       },
 
       stopListening: function() {
+        if (this.silenceTimer) clearTimeout(this.silenceTimer);
         if (this.recognition) {
           try { this.recognition.stop(); } catch (_) {}
           this.isListening = false;
@@ -277,7 +327,7 @@
                 target_language_code: targetLang,
                 speaker: speakerVoice,
                 pitch: 0,
-                pace: 1.0,
+                pace: 1.05,
                 loudness: 1.5,
                 speech_sample_rate: 22050,
                 enable_preprocessing: true,
@@ -296,6 +346,7 @@
                 audio.onended = () => {
                   this.isSpeaking = false;
                   this.currentAudio = null;
+                  this.speechJustEnded = true;
                   if (window.onSpeechEvent) window.onSpeechEvent('speaking_end', '');
                 };
                 audio.onerror = () => {
@@ -349,6 +400,7 @@
           utterance.onstart = () => { this.isSpeaking = true; };
           utterance.onend = () => {
             this.isSpeaking = false;
+            this.speechJustEnded = true;
             if (window.onSpeechEvent) window.onSpeechEvent('speaking_end', '');
           };
           utterance.onerror = () => { this.isSpeaking = false; };
@@ -382,6 +434,8 @@
       input: null,
       pcmData: [],
       isRecording: false,
+      hasVoiceEnergy: false,
+      lastVoiceEnergyTime: 0,
 
       startRecording: async function(lang) {
         try {
@@ -390,6 +444,8 @@
             return JSON.stringify({ success: false, isSpeaking: true });
           }
           this.pcmData = [];
+          this.hasVoiceEnergy = false;
+          this.lastVoiceEnergyTime = 0;
           
           // Always start Web Speech API simultaneously for instant local recognition
           if (window.healthExpressSpeech) {
@@ -421,6 +477,21 @@
                   if (!this.isRecording) return;
                   const channel = e.inputBuffer.getChannelData(0);
                   this.pcmData.push(new Float32Array(channel));
+
+                  // Real-time audio energy VAD
+                  let sum = 0;
+                  for (let i = 0; i < channel.length; i++) {
+                    sum += channel[i] * channel[i];
+                  }
+                  const rms = Math.sqrt(sum / channel.length);
+                  if (rms > 0.015) {
+                    this.hasVoiceEnergy = true;
+                    this.lastVoiceEnergyTime = Date.now();
+                  } else if (this.hasVoiceEnergy && (Date.now() - this.lastVoiceEnergyTime > 1000) && this.pcmData.length > 8) {
+                    if (window.healthExpressSpeech && window.healthExpressSpeech.lastTranscript && window.healthExpressSpeech.lastTranscript.length > 0) {
+                      window.healthExpressSpeech.silenceCutoffTriggered = true;
+                    }
+                  }
                 };
 
                 // Connect to a silent gain node to prevent raw microphone audio loopback into speakers while recording
