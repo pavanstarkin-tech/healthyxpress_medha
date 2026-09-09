@@ -318,10 +318,10 @@
             return;
           }
 
-          const rawKeys = apiKey ? (apiKey.includes(',') ? apiKey.split(',') : [apiKey]) : ['sk_n4tzuy3c_JIUK6l5ExNHHGoiiAGwvroYh', 'sk_kp9erlr9_KNPOzulHyWvwno8unZykydgb'];
+          const rawKeys = apiKey ? (apiKey.includes(',') ? apiKey.split(',') : [apiKey]) : ['sk_n4tzuy3c_JIUK6l5ExNHHGoiiAGwvroYh', 'sk_hr3tv6ew_UBzXjEc9RqZLGuMpzyctBUQC'];
           const keys = rawKeys.map(k => k.trim()).filter(Boolean);
-          if (!keys.includes('sk_kp9erlr9_KNPOzulHyWvwno8unZykydgb')) {
-            keys.push('sk_kp9erlr9_KNPOzulHyWvwno8unZykydgb');
+          if (!keys.includes('sk_hr3tv6ew_UBzXjEc9RqZLGuMpzyctBUQC')) {
+            keys.push('sk_hr3tv6ew_UBzXjEc9RqZLGuMpzyctBUQC');
           }
           const targetLang = (lang && (lang.includes('te') || lang === 'te'))
             ? 'te-IN'
@@ -612,10 +612,10 @@
 
               const wavBlob = new Blob([view], { type: 'audio/wav' });
 
-              const rawKeys = apiKey ? (apiKey.includes(',') ? apiKey.split(',') : [apiKey]) : ['sk_n4tzuy3c_JIUK6l5ExNHHGoiiAGwvroYh', 'sk_kp9erlr9_KNPOzulHyWvwno8unZykydgb'];
+              const rawKeys = apiKey ? (apiKey.includes(',') ? apiKey.split(',') : [apiKey]) : ['sk_n4tzuy3c_JIUK6l5ExNHHGoiiAGwvroYh', 'sk_hr3tv6ew_UBzXjEc9RqZLGuMpzyctBUQC'];
               const keys = rawKeys.map(k => k.trim()).filter(Boolean);
-              if (!keys.includes('sk_kp9erlr9_KNPOzulHyWvwno8unZykydgb')) {
-                keys.push('sk_kp9erlr9_KNPOzulHyWvwno8unZykydgb');
+              if (!keys.includes('sk_hr3tv6ew_UBzXjEc9RqZLGuMpzyctBUQC')) {
+                keys.push('sk_hr3tv6ew_UBzXjEc9RqZLGuMpzyctBUQC');
               }
 
               for (const key of keys) {

@@ -355,7 +355,7 @@ b0Z(a){var s,r,q=a.graphemeLayoutBounds,p=B.d.ep(q,t.i)
 q=p.a
 s=J.bX(q)
 r=p.$ti.y[1]
-return new A.rP(new A.D(r.a(s.i(q,0)),r.a(s.i(q,1)),r.a(s.i(q,2)),r.a(s.i(q,3))),new A.cJ(J.aH(a.graphemeClusterTextRange.start),J.aH(a.graphemeClusterTextRange.end)),B.qp[J.aH(a.dir.value)])},
+return new A.rP(new A.D(r.a(s.i(q,0)),r.a(s.i(q,1)),r.a(s.i(q,2)),r.a(s.i(q,3))),new A.cJ(J.aH(a.graphemeClusterTextRange.start),J.aH(a.graphemeClusterTextRange.end)),B.qq[J.aH(a.dir.value)])},
 bjR(a){var s,r="chromium/canvaskit.js"
 switch(a.a){case 0:s=A.a([],t.s)
 if(A.b3T())s.push(r)
@@ -18717,7 +18717,7 @@ _.dx=$},
 L5:function L5(){},
 a1o:function a1o(){},
 b0A(a,b){var s,r,q,p,o,n,m,l,k,j,i,h,g,f
-if(a==null)a=B.qr
+if(a==null)a=B.qs
 s=J.bX(a)
 r=s.gH(a)-1
 q=A.bV(0,null,!1,t.LQ)
@@ -18894,7 +18894,7 @@ r.gNU()
 q.sNU(r.gNU())
 r.gNQ()
 q.sNQ(r.gNQ())
-s.n1(B.qr,q)
+s.n1(B.qs,q)
 s.sbl(b.gbl())
 s.scC(b.gcC())
 s.dy=b.gaFB()
@@ -31498,7 +31498,7 @@ bcc(a1,a2){var s=0,r=A.Q(t.ob),q,p=2,o=[],n,m,l,k,j,i,h,g,f,e,d,c,b,a,a0
 var $async$amn=A.R(function(a3,a4){if(a3===1){o.push(a4)
 s=p}for(;;)switch(s){case 0:h=t.N,g=t.K,f=t.kc,e=0
 case 3:if(!(e<2)){s=5
-break}n=B.qw[e]
+break}n=B.qp[e]
 p=7
 d=A.dY("https://api.sarvam.ai/v1/chat/completions",0,null)
 c=A.a4(["api-subscription-key",n,"Content-Type","application/json"],h,h)
@@ -33699,7 +33699,7 @@ bdr(a){var s=0,r=A.Q(t.ob),q,p=2,o=[],n,m,l,k,j,i,h,g,f,e,d,c
 var $async$apT=A.R(function(b,a0){if(b===1){o.push(a0)
 s=p}for(;;)switch(s){case 0:p=4
 n=A.aWa(a)
-m=B.d.bf(B.qw,",")
+m=B.d.bf(B.qp,",")
 l=v.G.stopSarvamLiveRecording(m,n)
 s=7
 return A.H(A.dk(l,t.N),$async$apT)
@@ -33735,7 +33735,7 @@ case 2:return A.N(o.at(-1),r)}})
 return A.P($async$apT,r)},
 bdo(a,b){var s,r,q,p
 try{s=A.aWa(b)
-r=B.d.bf(B.qw,",")
+r=B.d.bf(B.qp,",")
 v.G.healthExpressSpeech.speakText(a,s,r)}catch(p){q=A.av(p)
 A.dS().$1("Error speaking text: "+A.r(q))}},
 aWb(){var s,r
@@ -35219,7 +35219,7 @@ Q1(a){var s,r,q,p,o,n,m,l=A.a([],t.Lx)
 for(s=a.a,r=J.bX(s),q=a.$ti.y[1],p=0;p<r.gH(s);++p){o=q.a(r.i(s,p))
 n=o.rect
 m=J.aH(o.dir.value)
-l.push(new A.hf(n[0],n[1],n[2],n[3],B.qp[m]))}return l},
+l.push(new A.hf(n[0],n[1],n[2],n[3],B.qq[m]))}return l},
 dX(a){var s,r,q=this.a
 q===$&&A.b()
 s=q.a.getGlyphPositionAtCoordinate(a.a,a.b)
@@ -41630,7 +41630,7 @@ m=A.fV(s.i(0,"fontWeightIndex"))
 l=m!=null?A.bjM(m):"normal"
 r=A.aX4(s.i(0,"fontSize"))
 if(r==null)r=null
-p=new A.au7(new A.adI(r,l,A.by(s.i(0,"fontFamily")),B.a36[o],B.qp[n]))
+p=new A.au7(new A.adI(r,l,A.by(s.i(0,"fontFamily")),B.a36[o],B.qq[n]))
 break
 case"TextInput.clearClient":p=B.NS
 break
@@ -78539,7 +78539,7 @@ q.aP=b.bj
 q.aQ=b.be
 q.q=b.br
 q.CW=b.c
-q.ap4(a==null?B.qr:a)
+q.ap4(a==null?B.qs:a)
 if(s!==r)q.YL()},
 a4K(a){return this.n1(null,a)},
 a5v(){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c,b,a,a0,a1,a2,a3,a4,a5,a6=this,a7={}
@@ -95556,7 +95556,7 @@ gx4(){return A.bkG()},
 ak7(){if(this.x)return
 this.C_()},
 a5u(){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c=this,b=null,a=c.c
-if(a===-1||c.d===-1||c.b.length===0)return new A.pD(b,b,B.fw,B.qs,c.b.length!==0)
+if(a===-1||c.d===-1||c.b.length===0)return new A.pD(b,b,B.fw,B.qt,c.b.length!==0)
 if(!c.as){a=c.Rq(c.d,a)
 c.d=a
 c.c=c.Rq(c.c,a)}s=c.b[c.d].gp()
@@ -99780,7 +99780,7 @@ g1=a0.cy>0?a0.cy:600
 g2=a0.cy>0?a0.cy+49:649
 d4=d4.length!==0?B.d.bf(d4,", "):"Clinical Consultation"
 g3=B.b.bM(B.o.k(Date.now()),7)
-a1=A.a8r(!0,"AROG-TG-44910",g1,new A.cN(Date.now(),0,!1),g0,0,f3,f4,null,f5,f6,f7,f9,f8,"#BK"+f1,!1,"room-"+g3,B.qZ,49,B.qq,B.M,B.fK,d4,"10:30 AM",g2,B.c0,"USR-101",f2,"9848022338")
+a1=A.a8r(!0,"AROG-TG-44910",g1,new A.cN(Date.now(),0,!1),g0,0,f3,f4,null,f5,f6,f7,f9,f8,"#BK"+f1,!1,"room-"+g3,B.qZ,49,B.qr,B.M,B.fK,d4,"10:30 AM",g2,B.c0,"USR-101",f2,"9848022338")
 f2=$.j4()
 B.d.je(f2.a,0,a1)
 f2.P()
@@ -103043,7 +103043,7 @@ if(o==null){s=B.b.bM(B.o.k(Date.now()),7)
 p=p.c
 r=Date.now()
 q=B.b.bM(B.o.k(Date.now()),8)
-o=A.a8r(!1,p.f,800,new A.cN(Date.now(),0,!1),new A.cN(r,0,!1),0,"DOC-01","Dr. Sunil Kumar N",null,u.E,"Neurology","HOSP-01","Secunderabad","KIMS Hospitals","BK-"+s,!1,"ROOM-"+q,B.qZ,49,B.qq,B.M,B.fK,"Clinical Aarogyasri Evaluation","Live Consultation",849,B.cU,p.a,p.b,p.d)}A.a_(this.b,!1).aR(A.aA(new A.ach(o),null,t.z))},
+o=A.a8r(!1,p.f,800,new A.cN(Date.now(),0,!1),new A.cN(r,0,!1),0,"DOC-01","Dr. Sunil Kumar N",null,u.E,"Neurology","HOSP-01","Secunderabad","KIMS Hospitals","BK-"+s,!1,"ROOM-"+q,B.qZ,49,B.qr,B.M,B.fK,"Clinical Aarogyasri Evaluation","Live Consultation",849,B.cU,p.a,p.b,p.d)}A.a_(this.b,!1).aR(A.aA(new A.ach(o),null,t.z))},
 $S:0}
 A.ach.prototype={
 $1(a){return new A.li(this.a,null)},
@@ -106680,7 +106680,7 @@ g=B.b.bM(B.o.k(Date.now()),7)
 f=o.a
 e=o.ax
 d=Date.now()
-c=A.a8r(k,a.f,j,new A.cN(Date.now(),0,!1),n,i,f,o.b,null,o.e,o.f,e,o.ch,o.ay,"BK"+g,p,"ROOM-HEAL-"+d,B.qZ,50,B.qq,B.M,B.fK,"General Consultation & Health Evaluation",m,h,l,q,a.b,a.d)
+c=A.a8r(k,a.f,j,new A.cN(Date.now(),0,!1),n,i,f,o.b,null,o.e,o.f,e,o.ch,o.ay,"BK"+g,p,"ROOM-HEAL-"+d,B.qZ,50,B.qr,B.M,B.fK,"General Consultation & Health Evaluation",m,h,l,q,a.b,a.d)
 a=r.a
 B.d.je(a.a,0,c)
 a.P()
@@ -116196,6 +116196,7 @@ B.a3h=s([B.o3,B.o5],A.aL("J<C_>"))
 B.a3k=s(["BC","AD"],t.s)
 B.aA3=s(["Redcliffe Labs","Thyrocare","Metropolis","Apollo Diagnostics"],t.s)
 B.yh=s(["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],t.s)
+B.qp=s(["sk_n4tzuy3c_JIUK6l5ExNHHGoiiAGwvroYh","sk_hr3tv6ew_UBzXjEc9RqZLGuMpzyctBUQC"],t.s)
 B.d5=new A.m2(0,"label")
 B.cB=new A.m2(1,"avatar")
 B.ez=new A.m2(2,"deleteIcon")
@@ -116291,7 +116292,7 @@ B.bG=new A.HE(0,"upstream")
 B.a5a=s([B.bG,B.B],A.aL("J<HE>"))
 B.bS=new A.uy(0,"rtl")
 B.b3=new A.uy(1,"ltr")
-B.qp=s([B.bS,B.b3],A.aL("J<uy>"))
+B.qq=s([B.bS,B.b3],A.aL("J<uy>"))
 B.fE=new A.kS(0,"leading")
 B.dG=new A.kS(1,"title")
 B.fF=new A.kS(2,"subtitle")
@@ -116524,10 +116525,10 @@ B.a6y=s([],t.tc)
 B.mj=s([],t.jl)
 B.a6A=s([],t.wi)
 B.a6z=s([],A.aL("J<b04<@>>"))
-B.qq=s([],t.up)
-B.qs=s([],t.AO)
+B.qr=s([],t.up)
+B.qt=s([],t.AO)
 B.a6E=s([],t.D1)
-B.qr=s([],t.QF)
+B.qs=s([],t.QF)
 B.a6D=s([],t.Lx)
 B.a6x=s([],t.fm)
 B.a6G=s([],t.p)
@@ -116553,9 +116554,9 @@ B.a75=s([B.apS,B.K,B.Yc],t.p)
 B.Mj=new A.al(0.75,B.y,B.uN,B.c4,1.5)
 B.a7b=s([B.Mj],t.V)
 B.a7o=s(["Cardiology","Neurology","Oncology","Pulmonology","Dialysis","General Medicine"],t.s)
-B.qt=s([B.cU,B.c0],t.bL)
+B.qu=s([B.cU,B.c0],t.bL)
 B.jT=s([B.fJ,B.fb,B.kO,B.kP,B.o1],t.QP)
-B.qu=s([B.c1,B.c0],t.bL)
+B.qv=s([B.c1,B.c0],t.bL)
 B.a7w=s(["name"],t.s)
 B.a7x=s(["newPassword"],t.s)
 B.a7G=s(["password"],t.s)
@@ -116594,7 +116595,7 @@ B.DF=new A.iR(8,"symbolModifier")
 B.yw=s([B.ir,B.is,B.it,B.iu,B.qO,B.qP,B.qQ,B.qR,B.DF],A.aL("J<iR>"))
 B.a82=s(["1st quarter","2nd quarter","3rd quarter","4th quarter"],t.s)
 B.a84=s(["telephoneNumber"],t.s)
-B.qv=s([!0,!1],t.HZ)
+B.qw=s([!0,!1],t.HZ)
 B.a86=s(["Gastroenterology","Hepatology","GI Surgery","Cardiology","Oncology","Nephrology"],t.s)
 B.di=s(["Mon","Tue","Wed","Thu","Fri","Sat"],t.s)
 B.OZ=new A.p(0.14901960784313725,0,0,0,B.l)
@@ -116604,7 +116605,6 @@ B.Rh=new A.p(0.058823529411764705,0,0,0,B.l)
 B.MA=new A.al(0,B.y,B.Rh,B.cl,1)
 B.a8c=s([B.Mn,B.MA],t.V)
 B.a8k=s(["pointerdown","pointermove","pointerleave","pointerup","pointercancel","touchstart","touchend","touchmove","touchcancel","mousedown","mousemove","mouseleave","mouseup","wheel"],t.s)
-B.qw=s(["sk_n4tzuy3c_JIUK6l5ExNHHGoiiAGwvroYh","sk_kp9erlr9_KNPOzulHyWvwno8unZykydgb"],t.s)
 B.a8q=s(["Before Christ","Anno Domini"],t.s)
 B.a8s=s(["Emergency 24x7","Blood Bank","Pharmacy","Ambulance"],t.s)
 B.a8G=s(["24x7 Emergency","Advanced ICU","Pathology Lab","24x7 Pharmacy","Ambulance Support","Cath Lab"],t.s)
@@ -118087,8 +118087,8 @@ B.rb=new A.yp(1,"nextLine")
 B.mW=new A.yp(2,"forward")
 B.mX=new A.yp(3,"backward")
 B.fw=new A.GI(2,"none")
-B.I4=new A.pD(null,null,B.fw,B.qs,!0)
-B.I5=new A.pD(null,null,B.fw,B.qs,!1)
+B.I4=new A.pD(null,null,B.fw,B.qt,!0)
+B.I5=new A.pD(null,null,B.fw,B.qt,!1)
 B.aE=new A.pE(0,"next")
 B.aJ=new A.pE(1,"previous")
 B.aP=new A.pE(2,"end")
@@ -120063,7 +120063,7 @@ return q})
 r($,"bnz","b61",()=>{var q=A.aL("~(bz<bs>)")
 return A.a4([B.awI,A.aZr(!0),B.awv,A.aZr(!1),B.ax8,new A.U0(A.Ff(q)),B.awZ,new A.Sh(A.Ff(q)),B.ax3,new A.SZ(A.Ff(q)),B.Ko,new A.D4(!1,A.Ff(q)),B.t5,A.bdA(),B.ax4,new A.T1(A.Ff(q)),B.axo,new A.Wn(A.Ff(q))],t.v,t.od)})
 s($,"blj","aU3",()=>{var q,p,o,n=t.vz,m=A.L(t.Vz,n)
-for(q=A.aL("aE"),p=0;p<2;++p){o=B.qv[p]
+for(q=A.aL("aE"),p=0;p<2;++p){o=B.qw[p]
 m.O(0,A.a4([A.ff(B.cw,!1,!1,!1,o),B.oK,A.ff(B.cw,!1,!0,!1,o),B.oN,A.ff(B.cw,!0,!1,!1,o),B.oL,A.ff(B.ck,!1,!1,!1,o),B.ju,A.ff(B.ck,!1,!0,!1,o),B.jv,A.ff(B.ck,!0,!1,!1,o),B.oM],q,n))}m.n(0,B.iI,B.i2)
 m.n(0,B.iJ,B.i3)
 m.n(0,B.iK,B.i6)
@@ -120123,7 +120123,7 @@ q.n(0,B.ro,B.lK)
 q.n(0,B.rp,B.lL)
 return q})
 s($,"blp","aXQ",()=>{var q,p,o,n=t.vz,m=A.L(t.Vz,n)
-for(q=A.aL("aE"),p=0;p<2;++p){o=B.qv[p]
+for(q=A.aL("aE"),p=0;p<2;++p){o=B.qw[p]
 m.O(0,A.a4([A.ff(B.cw,!1,!1,!1,o),B.oK,A.ff(B.cw,!0,!1,!1,o),B.oN,A.ff(B.cw,!1,!1,!0,o),B.oL,A.ff(B.ck,!1,!1,!1,o),B.ju,A.ff(B.ck,!0,!1,!1,o),B.jv,A.ff(B.ck,!1,!1,!0,o),B.oM],q,n))}m.n(0,B.iI,B.i2)
 m.n(0,B.iJ,B.i3)
 m.n(0,B.iK,B.i6)
@@ -120186,7 +120186,7 @@ q.n(0,B.ro,B.lK)
 q.n(0,B.rp,B.lL)
 return q})
 s($,"blq","aXR",()=>{var q,p,o,n=t.vz,m=A.L(t.Vz,n)
-for(q=A.aL("aE"),p=0;p<2;++p){o=B.qv[p]
+for(q=A.aL("aE"),p=0;p<2;++p){o=B.qw[p]
 m.O(0,A.a4([A.ff(B.cw,!1,!1,!1,o),B.a3,A.ff(B.ck,!1,!1,!1,o),B.a3,A.ff(B.cw,!0,!1,!1,o),B.a3,A.ff(B.ck,!0,!1,!1,o),B.a3,A.ff(B.cw,!1,!0,!1,o),B.a3,A.ff(B.ck,!1,!0,!1,o),B.a3,A.ff(B.cw,!1,!1,!0,o),B.a3,A.ff(B.ck,!1,!1,!0,o),B.a3],q,n))}m.O(0,B.Dp)
 m.n(0,B.It,B.a3)
 m.n(0,B.Iq,B.a3)
@@ -120241,7 +120241,7 @@ return A.a([A.kH("AROG-TG-44910","Plot 42, Road No 36, Jubilee Hills, Hyderabad,
 r($,"bcO","aU8",()=>{var q="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=80&w=400",p="Telangana",o="info@kims.in",n="https://www.kimshospitals.com",m="24/7 Emergency & 08:00 AM - 09:00 PM OPD",l="https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&q=80&w=800",k="Banjara Hills, Hyderabad",j="Hyderabad",i="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=400"
 return A.a([A.DX("Alexander Road, Secunderabad, Telangana 500003","https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&q=80&w=800",550,"Secunderabad",B.a7o,"Yashoda Hospitals provides holistic medical care with dedicated centers of excellence, 24/7 trauma emergency, and expert clinical faculty.",3.5,120,o,"108 / +91 40 4567 4108",B.a5u,"Multi Super Specialty Hospital","HOSP-03",!0,17.4399,"Alexander Road, Secunderabad",q,78.4983,"Yashoda Hospitals","+91 9848033300","500003",4.7,870,B.jU,28,p,n,m),A.DX("1-8-31/1, Minister Rd, Krishna Nagar Colony, Begumpet, Hyderabad, Telangana 500003",l,500,j,B.a1g,"Krishna Institute of Medical Sciences (KIMS) is one of the largest multi-specialty healthcare groups in South India with world-class medical amenities.",2.3,150,o,"108 / +91 40 4488 5108",B.a8G,"Super Specialty Hospital","HOSP-01",!0,17.4265,k,q,78.4124,"KIMS Hospitals","+91 40 4488 5000","500003",4.6,1240,B.jU,25,p,n,m),A.DX("Road No 72, Opp. Bharatiya Vidya Bhavan School, Jubilee Hills, Hyderabad, Telangana 500033","https://images.unsplash.com/photo-1512678080530-7760d81faba6?auto=format&fit=crop&q=80&w=800",650,j,B.a4w,"Apollo Health City in Hyderabad is Asia\u2019s first integrated healthcare hub, providing international healthcare standards.",3.1,180,o,"1066 / +91 40 2360 7108",B.a6Z,"Quaternary Healthcare Hub","HOSP-02",!0,17.4184,"Jubilee Hills, Hyderabad",i,78.4116,"Apollo Hospitals","+91 40 2360 7777","500033",4.8,1980,B.jU,30,p,n,m),A.DX("Road No 1, Banjara Hills, Hyderabad, Telangana 500034",l,350,j,B.a2d,"CARE Hospitals is a multi-specialty healthcare provider recognized for clinical excellence and affordable care.",4.2,95,o,"+91 40 6165 6108",B.a6O,"Multi Specialty Hospital","HOSP-04",!0,17.4156,k,i,78.435,"CARE Hospitals","+91 40 6165 6565","500034",4.5,760,B.jU,20,p,n,m),A.DX("1-66/AIG/1 to 5, Mindspace Rd, Gachibowli, Hyderabad, Telangana 500032",l,800,j,B.a86,"AIG Hospitals is a global referral center for gastroenterology and comprehensive multi-specialty healthcare.",4.8,220,o,"+91 40 4244 4108",B.a4Y,"Center of Excellence & Multi Specialty","HOSP-05",!0,17.4435,"Gachibowli, Hyderabad",q,78.3662,"AIG Hospitals (Asian Institute of Gastroenterology)","+91 40 4244 4222","500032",4.9,2150,B.jU,35,p,n,m)],t.ps)})
 r($,"bcN","cU",()=>{var q=u.E,p="HOSP-01",o="KIMS Hospitals",n="Banjara Hills, Hyderabad",m="MCI-TS-2012-88421",l="Internal Medicine",k="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=400",j="https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=400",i="HOSP-04",h="CARE Hospitals",g="https://images.unsplash.com/photo-1594824813589-9a2d82998394?auto=format&fit=crop&q=80&w=400",f="General Physician",e="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400",d="Jubilee Hills, Hyderabad",c="HealthExpress Doorstep Care Unit"
-return A.a([A.iE(B.dh,600,B.di,B.dg,"Leading Cardiologist with over 15 years of clinical excellence in interventional cardiology, heart failure management, and preventive cardiac wellness.",800,2.3,"sandeep.attawar@kims.com",15,400,1200,p,o,"DOC-01",!0,!1,!0,n,"Dr. Sandeep Attawar","9848011223",q,B.dk,"MBBS, MD, DM (Cardiology)",4.8,m,430,"Cardiologist",l,B.im,650),A.iE(B.dh,600,B.di,B.dg,"Renowned Neurologist specializing in headache disorders, epilepsy, stroke rehabilitation, and neuro-muscular conditions.",750,2.3,"sunil.kumar@kims.com",15,400,1100,p,o,"DOC-02",!0,!1,!0,n,"Dr. Sunil Kumar N","9848022334",k,B.dk,"MBBS, MD, DM (Neurology)",4.7,m,312,"Neurologist",l,B.qt,600),A.iE(B.dh,600,B.di,B.dg,"Orthopedic expert specializing in joint replacements, sports injuries, fracture management, and spine rehabilitation.",700,4.2,"naveen.thota@care.com",12,400,1000,i,h,"DOC-03",!0,!1,!0,n,"Dr. Naveen Thota","9848033445",j,B.dk,"MBBS, MS (Ortho), Fellowship Joint Replacement",4.6,m,215,"Orthopedic Surgeon",l,B.im,550),A.iE(B.dh,600,B.di,B.dg,"Senior consultant gynecologist & obstetrician dedicated to women health, prenatal care, high-risk pregnancies, and infertility management.",600,3.5,"madhavi.latha@yashoda.com",11,400,900,"HOSP-03","Yashoda Hospitals","DOC-04",!0,!1,!0,"Somajiguda, Hyderabad","Dr. Madhavi Latha","9848044556",g,B.dk,"MBBS, DGO, DNB (OBG)",4.6,m,198,"Gynecologist",l,B.qt,500),A.iE(B.dh,600,B.di,B.dg,"Experienced physician handling acute fevers, viral infections, diabetes control, hypertension, and preventive health screenings.",500,2.3,"prashant.reddy@kims.com",9,400,800,p,o,"DOC-05",!0,!1,!0,n,"Dr. Prashant Reddy","9848055667","https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&q=80&w=400",B.dk,"MBBS, MD (General Medicine)",4.5,m,156,f,l,B.im,400),A.iE(B.dh,600,B.di,B.dg,"Patient-centric doctor specialized in comprehensive family healthcare, seasonal illness management, and lifestyle medicine.",600,2.1,"priya.nair@apollo.com",8,400,900,"HOSP-02","Apollo Hospitals","DOC-06",!0,!1,!0,d,"Dr. Priya Nair","9848066778",e,B.dk,"MBBS, DNB (Family Medicine)",4.8,m,350,f,l,B.im,500),A.iE(B.dh,600,B.di,B.dg,"Immediate doorstep care specialist for injections, saline, dressing, fever checks, and basic medication delivery.",250,2.8,"suresh.rmp@healthyxpress.ai",10,400,300,"RMP-01","Doorstep Healthcare Service","DOC-08",!0,!0,!0,"Madhapur, Hyderabad","Dr. Suresh RMP","9848088990",k,B.dk,"Certified Rural Medical Practitioner",4.7,m,300,"RMP Doctor (Home Visit)",l,B.qu,200),A.iE(B.dh,600,B.di,B.dg,"Specialist in sinus conditions, throat infections, hearing tests, allergic rhinitis, and tonsil ailments.",700,4.2,"vikram.ent@care.com",8,400,950,i,h,"DOC-09",!0,!1,!0,n,"Dr. Vikram ENT","9848099001",j,B.dk,"MBBS, MS (ENT)",4.7,m,180,"ENT Specialist",l,B.qt,550),A.iE(B.dh,600,B.di,B.dg,"Child health expert specializing in newborn care, vaccination, pediatric nutrition, and seasonal flu management.",600,4.2,"kavya.s@care.com",7,400,850,i,h,"DOC-10",!0,!1,!0,n,"Dr. Kavya S","9848000112",g,B.dk,"MBBS, MD (Pediatrics)",4.6,m,220,"Pediatrician",l,B.im,450),A.iE(B.dh,600,B.di,B.dg,"Fast-response doorstep practitioner equipped with emergency vitals monitor, nebulizer, and injectable kits.",200,1.4,"ramesh.rmp@healthyxpress.ai",14,400,299,"RMP-02",c,"DOC-11",!0,!0,!0,d,"Dr. Ramesh Babu RMP","9848077881",q,B.dk,"Registered Medical Practitioner (14 Yrs)",4.9,m,420,"RMP Doorstep Practitioner",l,B.qu,200),A.iE(B.dh,600,B.di,B.dg,"Specialist in elderly home care, post-op dressing, IV saline administration, and routine diabetic monitoring.",250,2.1,"anjali.rmp@healthyxpress.ai",9,400,349,"RMP-03",c,"DOC-12",!0,!0,!0,"Gachibowli, Hyderabad","Dr. Anjali Devi RMP","9848066554",e,B.dk,"Certified RMP & Critical Care Nursing",4.8,m,290,"Home Nursing & RMP Care",l,B.qu,200)],t.uu)})
+return A.a([A.iE(B.dh,600,B.di,B.dg,"Leading Cardiologist with over 15 years of clinical excellence in interventional cardiology, heart failure management, and preventive cardiac wellness.",800,2.3,"sandeep.attawar@kims.com",15,400,1200,p,o,"DOC-01",!0,!1,!0,n,"Dr. Sandeep Attawar","9848011223",q,B.dk,"MBBS, MD, DM (Cardiology)",4.8,m,430,"Cardiologist",l,B.im,650),A.iE(B.dh,600,B.di,B.dg,"Renowned Neurologist specializing in headache disorders, epilepsy, stroke rehabilitation, and neuro-muscular conditions.",750,2.3,"sunil.kumar@kims.com",15,400,1100,p,o,"DOC-02",!0,!1,!0,n,"Dr. Sunil Kumar N","9848022334",k,B.dk,"MBBS, MD, DM (Neurology)",4.7,m,312,"Neurologist",l,B.qu,600),A.iE(B.dh,600,B.di,B.dg,"Orthopedic expert specializing in joint replacements, sports injuries, fracture management, and spine rehabilitation.",700,4.2,"naveen.thota@care.com",12,400,1000,i,h,"DOC-03",!0,!1,!0,n,"Dr. Naveen Thota","9848033445",j,B.dk,"MBBS, MS (Ortho), Fellowship Joint Replacement",4.6,m,215,"Orthopedic Surgeon",l,B.im,550),A.iE(B.dh,600,B.di,B.dg,"Senior consultant gynecologist & obstetrician dedicated to women health, prenatal care, high-risk pregnancies, and infertility management.",600,3.5,"madhavi.latha@yashoda.com",11,400,900,"HOSP-03","Yashoda Hospitals","DOC-04",!0,!1,!0,"Somajiguda, Hyderabad","Dr. Madhavi Latha","9848044556",g,B.dk,"MBBS, DGO, DNB (OBG)",4.6,m,198,"Gynecologist",l,B.qu,500),A.iE(B.dh,600,B.di,B.dg,"Experienced physician handling acute fevers, viral infections, diabetes control, hypertension, and preventive health screenings.",500,2.3,"prashant.reddy@kims.com",9,400,800,p,o,"DOC-05",!0,!1,!0,n,"Dr. Prashant Reddy","9848055667","https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&q=80&w=400",B.dk,"MBBS, MD (General Medicine)",4.5,m,156,f,l,B.im,400),A.iE(B.dh,600,B.di,B.dg,"Patient-centric doctor specialized in comprehensive family healthcare, seasonal illness management, and lifestyle medicine.",600,2.1,"priya.nair@apollo.com",8,400,900,"HOSP-02","Apollo Hospitals","DOC-06",!0,!1,!0,d,"Dr. Priya Nair","9848066778",e,B.dk,"MBBS, DNB (Family Medicine)",4.8,m,350,f,l,B.im,500),A.iE(B.dh,600,B.di,B.dg,"Immediate doorstep care specialist for injections, saline, dressing, fever checks, and basic medication delivery.",250,2.8,"suresh.rmp@healthyxpress.ai",10,400,300,"RMP-01","Doorstep Healthcare Service","DOC-08",!0,!0,!0,"Madhapur, Hyderabad","Dr. Suresh RMP","9848088990",k,B.dk,"Certified Rural Medical Practitioner",4.7,m,300,"RMP Doctor (Home Visit)",l,B.qv,200),A.iE(B.dh,600,B.di,B.dg,"Specialist in sinus conditions, throat infections, hearing tests, allergic rhinitis, and tonsil ailments.",700,4.2,"vikram.ent@care.com",8,400,950,i,h,"DOC-09",!0,!1,!0,n,"Dr. Vikram ENT","9848099001",j,B.dk,"MBBS, MS (ENT)",4.7,m,180,"ENT Specialist",l,B.qu,550),A.iE(B.dh,600,B.di,B.dg,"Child health expert specializing in newborn care, vaccination, pediatric nutrition, and seasonal flu management.",600,4.2,"kavya.s@care.com",7,400,850,i,h,"DOC-10",!0,!1,!0,n,"Dr. Kavya S","9848000112",g,B.dk,"MBBS, MD (Pediatrics)",4.6,m,220,"Pediatrician",l,B.im,450),A.iE(B.dh,600,B.di,B.dg,"Fast-response doorstep practitioner equipped with emergency vitals monitor, nebulizer, and injectable kits.",200,1.4,"ramesh.rmp@healthyxpress.ai",14,400,299,"RMP-02",c,"DOC-11",!0,!0,!0,d,"Dr. Ramesh Babu RMP","9848077881",q,B.dk,"Registered Medical Practitioner (14 Yrs)",4.9,m,420,"RMP Doorstep Practitioner",l,B.qv,200),A.iE(B.dh,600,B.di,B.dg,"Specialist in elderly home care, post-op dressing, IV saline administration, and routine diabetic monitoring.",250,2.1,"anjali.rmp@healthyxpress.ai",9,400,349,"RMP-03",c,"DOC-12",!0,!0,!0,"Gachibowli, Hyderabad","Dr. Anjali Devi RMP","9848066554",e,B.dk,"Certified RMP & Critical Care Nursing",4.8,m,290,"Home Nursing & RMP Care",l,B.qv,200)],t.uu)})
 r($,"bcP","mk",()=>{var q="Strip of 15 Tablets",p=u.I,o="Alkem Laboratories",n="Strip of 10 Tablets",m="Glenmark Pharmaceuticals"
 return A.a([A.n4("Fever & Pain Relief","Used for fast relief from high fever, body pain, headache, and mild muscle ache.","Paracetamol 650mg","MED-101",p,"Micro Labs Ltd","Dolo 650 Tablet",35,q,31.5,!1),A.n4("Gastrointestinal & Acidity","Reduces stomach acid, prevents heartburn, acid reflux, and nausea.","Pantoprazole 40mg + Domperidone 30mg","MED-103",p,o,"Pan-D Capsule",165,"Strip of 15 Capsules",145,!1),A.n4("Allergy & Cold","Provides 24-hour relief from runny nose, sneezing, itchy eyes, and throat allergies.","Cetirizine 10mg","MED-102",p,"Dr. Reddy's Laboratories","Cetzine 10mg Tablet",28,n,24,!1),A.n4("Cough Relief","Soothes dry and productive cough, clears congested airways, and eases throat irritation.","Dextromethorphan + Chlorpheniramine","MED-03",p,m,"Cough Relief Syrup (100ml)",110,"Bottle of 100ml",85,!1),A.n4("Hydration & Nutrition","Restores vital body fluids and electrolytes lost due to dehydration, fever, or diarrhea.","WHO Oral Rehydration Salts","MED-104",p,"FDC Limited","Electral ORS Sachet 21.8g",25,"Single Sachet of 21.8g",22,!1),A.n4("Immunity Boost","Enhances immune defense against seasonal infections and supports cellular repair.","Ascorbic Acid + Zinc","MED-06",p,"Abbott Healthcare","Vitamin C 500mg Chewable",50,"Bottle of 30 Chewables",35,!1),A.n4("Antibiotics","Prescription antibiotic used to treat bacterial throat, chest, and sinus infections.","Amoxicillin Trihydrate","MED-05",p,"Cipla Ltd","Amoxicillin 500mg",145,"Strip of 10 Capsules",110,!0),A.n4("Diabetes Care","Oral anti-diabetic medicine used to manage Type-2 diabetes and maintain normal blood glucose.","Metformin 500mg + Glimepiride 1mg","MED-106",p,"USV Private Limited","Glycomet-GP 1 Tablet",115,q,95,!0),A.n4("Cardiac & Blood Pressure","Prescribed for essential hypertension to control elevated blood pressure and protect heart health.","Telmisartan 40mg","MED-105",p,m,"Telma 40 Tablet",130,q,110,!0),A.n4("Digestive & Acidity","Reduces stomach acid, prevents heartburn, and provides gastroprotection during medications.","Pan 40","MED-08",p,o,"Pantoprazole 40mg",105,n,80,!1)],t.qQ)})
 r($,"bmO","a6h",()=>{var q="10:00 PM",p=null,o="08:00 AM",n="verified"
