@@ -28,6 +28,9 @@
   <!-- Mapbox GL JS Official SDK for Real Vector Tile Maps -->
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+  <!-- Leaflet & OpenStreetMap Fallback Engine -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <!-- jsQR Universal Real-Time Camera QR Code Decoder -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Firebase Web SDK for Real Google Sign-In Popup with COOP Fallback -->
@@ -847,204 +850,343 @@
     };
 
     // ==========================================
-    // Real Mapbox GL JS Engine Integration
     // ==========================================
+    // Real Mapbox GL JS & Leaflet Map Engine
+    // ==========================================
+    window._mapboxDomContainers = {};
+
     window.healthExpressMapbox = {
       maps: {},
       markers: {},
+      domContainers: window._mapboxDomContainers,
+
+      registerContainer: function(containerId, domElement) {
+        if (containerId && domElement) {
+          this.domContainers[containerId] = domElement;
+        }
+      },
+
+      findContainer: function(id) {
+        if (this.domContainers[id]) {
+          return this.domContainers[id];
+        }
+        let el = document.getElementById(id);
+        if (el) return el;
+
+        // Recursive shadow DOM search for Flutter Web
+        const searchShadow = function(root) {
+          if (!root) return null;
+          if (root.getElementById) {
+            const found = root.getElementById(id);
+            if (found) return found;
+          }
+          if (root.querySelector) {
+            const found = root.querySelector('#' + id);
+            if (found) return found;
+          }
+          const children = root.querySelectorAll ? root.querySelectorAll('*') : [];
+          for (let i = 0; i < children.length; i++) {
+            if (children[i].shadowRoot) {
+              const f = searchShadow(children[i].shadowRoot);
+              if (f) return f;
+            }
+          }
+          return null;
+        };
+
+        return searchShadow(document);
+      },
+
       initMap: function(containerId, optionsStr) {
         try {
           const opts = JSON.parse(optionsStr || "{}");
-          mapboxgl.accessToken = opts.accessToken || "pk.eyJ1IjoicGF2YW5rdW1hcnN3YW15IiwiYSI6ImNtNnc1c3ZpdTBkdGgyanM5b25rN2ZqcncifQ.Ls1e2W6rx3apoBsStWa5Ow";
-
+          const defaultToken = "pk.eyJ1IjoicGF2YW5rdW1hcnN3YW15IiwiYSI6ImNtNnc1c3ZpdTBkdGgyanM5b25rN2ZqcncifQ.Ls1e2W6rx3apoBsStWa5Ow";
           const self = this;
           let attempts = 0;
 
           function tryAttach() {
-            const container = document.getElementById(containerId);
+            const container = self.findContainer(containerId);
             if (!container) {
-              if (attempts < 30) {
+              if (attempts < 40) {
                 attempts++;
                 setTimeout(tryAttach, 50);
               }
               return;
             }
 
+            container.style.width = "100%";
+            container.style.height = "100%";
+            container.style.position = "relative";
+            container.style.overflow = "hidden";
+
             if (self.maps[containerId]) {
-              try { self.maps[containerId].remove(); } catch (_) {}
+              try {
+                if (self.maps[containerId].remove) self.maps[containerId].remove();
+              } catch (_) {}
               delete self.maps[containerId];
             }
 
-            const map = new mapboxgl.Map({
-              container: containerId,
-              style: opts.style || "mapbox://styles/mapbox/streets-v12",
-              center: [opts.centerLng || 78.3880, opts.centerLat || 17.4420],
-              zoom: opts.zoom || 14,
-              pitch: opts.pitch || 0,
-              bearing: opts.bearing || 0,
-              interactive: opts.interactive !== false,
-            });
+            const centerLng = opts.centerLng || 78.3880;
+            const centerLat = opts.centerLat || 17.4420;
+            const zoom = opts.zoom || 14;
 
-            if (opts.showControls !== false) {
-              map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), "top-right");
-            }
+            // Try Mapbox GL JS First
+            let mapCreated = false;
+            if (window.mapboxgl) {
+              try {
+                mapboxgl.accessToken = opts.accessToken || defaultToken;
+                const map = new mapboxgl.Map({
+                  container: container,
+                  style: opts.style || "mapbox://styles/mapbox/streets-v12",
+                  center: [centerLng, centerLat],
+                  zoom: zoom,
+                  pitch: opts.pitch || 0,
+                  bearing: opts.bearing || 0,
+                  interactive: opts.interactive !== false,
+                });
 
-            map.on("load", () => {
-              map.resize();
-              if (opts.routeCoords && opts.routeCoords.length > 1) {
-                self.renderRoute(containerId, opts.routeCoords);
+                if (opts.showControls !== false) {
+                  map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), "top-right");
+                }
+
+                map.on("load", () => {
+                  map.resize();
+                  if (opts.routeCoords && opts.routeCoords.length > 1) {
+                    self.renderRoute(containerId, opts.routeCoords);
+                  }
+                });
+
+                if (window.ResizeObserver) {
+                  const ro = new ResizeObserver(() => {
+                    try { map.resize(); } catch (_) {}
+                  });
+                  ro.observe(container);
+                }
+
+                setTimeout(() => map.resize(), 100);
+                setTimeout(() => map.resize(), 300);
+                setTimeout(() => map.resize(), 600);
+                setTimeout(() => map.resize(), 1200);
+
+                self.maps[containerId] = { type: 'mapbox', instance: map };
+                self.markers[containerId] = {};
+                mapCreated = true;
+              } catch (mapboxErr) {
+                console.warn("Mapbox GL init fallback to Leaflet:", mapboxErr);
               }
-            });
-
-            // Automatically resize whenever container size changes
-            if (window.ResizeObserver) {
-              const ro = new ResizeObserver(() => {
-                try { map.resize(); } catch (_) {}
-              });
-              ro.observe(container);
             }
 
-            setTimeout(() => map.resize(), 100);
-            setTimeout(() => map.resize(), 300);
-            setTimeout(() => map.resize(), 800);
-            setTimeout(() => map.resize(), 1500);
+            // Fallback to Leaflet if Mapbox is unavailable or WebGL failed
+            if (!mapCreated && window.L) {
+              try {
+                const lmap = L.map(container, {
+                  center: [centerLat, centerLng],
+                  zoom: zoom,
+                  zoomControl: opts.showControls !== false,
+                  attributionControl: false
+                });
 
-            self.maps[containerId] = map;
-            self.markers[containerId] = {};
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                  maxZoom: 19,
+                  subdomains: 'abcd',
+                }).addTo(lmap);
+
+                if (window.ResizeObserver) {
+                  const ro = new ResizeObserver(() => {
+                    try { lmap.invalidateSize(); } catch (_) {}
+                  });
+                  ro.observe(container);
+                }
+
+                setTimeout(() => lmap.invalidateSize(), 200);
+                setTimeout(() => lmap.invalidateSize(), 600);
+
+                self.maps[containerId] = { type: 'leaflet', instance: lmap };
+                self.markers[containerId] = {};
+                mapCreated = true;
+              } catch (leafletErr) {
+                console.error("Leaflet init error:", leafletErr);
+              }
+            }
           }
 
           tryAttach();
           return JSON.stringify({ success: true });
         } catch (e) {
-          console.error("Mapbox init error:", e);
+          console.error("Map initialization error:", e);
           return JSON.stringify({ success: false, error: e.toString() });
         }
       },
 
       flyTo: function(containerId, lng, lat, zoom) {
-        const map = this.maps[containerId];
-        if (map) {
-          map.flyTo({
+        const entry = this.maps[containerId];
+        if (!entry) return false;
+        const targetZoom = zoom || 15;
+        if (entry.type === 'mapbox') {
+          entry.instance.flyTo({
             center: [lng, lat],
-            zoom: zoom || 15,
+            zoom: targetZoom,
             essential: true,
           });
-          setTimeout(() => map.resize(), 300);
+          setTimeout(() => entry.instance.resize(), 300);
+          return true;
+        } else if (entry.type === 'leaflet') {
+          entry.instance.flyTo([lat, lng], targetZoom, { animate: true, duration: 1.2 });
+          setTimeout(() => entry.instance.invalidateSize(), 300);
           return true;
         }
         return false;
       },
 
       addCustomMarker: function(containerId, markerId, lng, lat, optionsJson) {
-        const map = this.maps[containerId];
-        if (!map) return false;
+        const entry = this.maps[containerId];
+        if (!entry) return false;
 
         const opts = JSON.parse(optionsJson || "{}");
         if (this.markers[containerId] && this.markers[containerId][markerId]) {
-          try { this.markers[containerId][markerId].remove(); } catch (_) {}
+          try {
+            if (this.markers[containerId][markerId].remove) {
+              this.markers[containerId][markerId].remove();
+            }
+          } catch (_) {}
         }
 
         const el = document.createElement("div");
         el.className = "healthexpress-mapbox-marker";
-        el.style.width = opts.size ? (opts.size + "px") : "44px";
-        el.style.height = opts.size ? (opts.size + "px") : "44px";
-        el.style.borderRadius = opts.borderRadius || "14px";
+        el.style.width = opts.size ? (opts.size + "px") : "42px";
+        el.style.height = opts.size ? (opts.size + "px") : "42px";
+        el.style.borderRadius = opts.borderRadius || "12px";
         el.style.display = "flex";
         el.style.alignItems = "center";
         el.style.justifyContent = "center";
         el.style.cursor = "pointer";
-        el.style.boxShadow = "0 6px 18px rgba(0,0,0,0.25)";
+        el.style.boxShadow = "0 6px 18px rgba(0,0,0,0.22)";
         el.style.backgroundColor = opts.color || "#FFFFFF";
         el.style.border = opts.border || "2.5px solid #2563EB";
-        el.style.padding = "4px";
-        el.style.transition = "transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)";
+        el.style.padding = "3px";
+        el.style.transition = "transform 0.2s ease";
         el.innerHTML = opts.iconHtml || "📍";
 
-        const marker = new mapboxgl.Marker({
-          element: el,
-          draggable: opts.draggable === true
-        })
-          .setLngLat([lng, lat])
-          .addTo(map);
+        if (entry.type === 'mapbox') {
+          const marker = new mapboxgl.Marker({
+            element: el,
+            draggable: opts.draggable === true
+          })
+            .setLngLat([lng, lat])
+            .addTo(entry.instance);
 
-        if (opts.popupHtml) {
-          const popup = new mapboxgl.Popup({ offset: 25, maxWidth: "320px", closeButton: true }).setHTML(opts.popupHtml);
-          marker.setPopup(popup);
-        } else if (opts.popupText) {
-          const popup = new mapboxgl.Popup({ offset: 25 }).setHTML("<strong>" + opts.popupText + "</strong>");
-          marker.setPopup(popup);
+          if (opts.popupHtml) {
+            const popup = new mapboxgl.Popup({ offset: 25, maxWidth: "320px", closeButton: true }).setHTML(opts.popupHtml);
+            marker.setPopup(popup);
+          } else if (opts.popupText) {
+            const popup = new mapboxgl.Popup({ offset: 25 }).setHTML("<strong>" + opts.popupText + "</strong>");
+            marker.setPopup(popup);
+          }
+
+          if (!this.markers[containerId]) this.markers[containerId] = {};
+          this.markers[containerId][markerId] = marker;
+          return true;
+        } else if (entry.type === 'leaflet') {
+          const customIcon = L.divIcon({
+            className: 'healthexpress-leaflet-custom',
+            html: el.outerHTML,
+            iconSize: [42, 42],
+            iconAnchor: [21, 21],
+            popupAnchor: [0, -21]
+          });
+
+          const lmarker = L.marker([lat, lng], { icon: customIcon }).addTo(entry.instance);
+          if (opts.popupHtml) {
+            lmarker.bindPopup(opts.popupHtml);
+          } else if (opts.popupText) {
+            lmarker.bindPopup("<strong>" + opts.popupText + "</strong>");
+          }
+
+          if (!this.markers[containerId]) this.markers[containerId] = {};
+          this.markers[containerId][markerId] = lmarker;
+          return true;
         }
-
-        if (!this.markers[containerId]) this.markers[containerId] = {};
-        this.markers[containerId][markerId] = marker;
-        return true;
+        return false;
       },
 
       clearAllMarkers: function(containerId) {
         if (this.markers[containerId]) {
           Object.values(this.markers[containerId]).forEach(function(m) {
-            try { m.remove(); } catch (_) {}
+            try { if (m.remove) m.remove(); } catch (_) {}
           });
           this.markers[containerId] = {};
         }
       },
 
       renderRoute: function(containerId, coordinates) {
-        const map = this.maps[containerId];
-        if (!map) return;
+        const entry = this.maps[containerId];
+        if (!entry) return;
 
-        const routeGeoJson = {
-          type: "Feature",
-          properties: {},
-          geometry: {
-            type: "LineString",
-            coordinates: coordinates
-          }
-        };
-
-        if (map.getSource("delivery-route")) {
-          map.getSource("delivery-route").setData(routeGeoJson);
-        } else {
-          map.addSource("delivery-route", {
-            type: "geojson",
-            data: routeGeoJson
-          });
-
-          map.addLayer({
-            id: "delivery-route-layer",
-            type: "line",
-            source: "delivery-route",
-            layout: {
-              "line-join": "round",
-              "line-cap": "round"
-            },
-            paint: {
-              "line-color": "#0D9488",
-              "line-width": 5,
-              "line-dasharray": [1, 1.5]
+        if (entry.type === 'mapbox') {
+          const map = entry.instance;
+          const routeGeoJson = {
+            type: "Feature",
+            properties: {},
+            geometry: {
+              type: "LineString",
+              coordinates: coordinates
             }
-          });
-        }
+          };
 
-        try {
-          const bounds = new mapboxgl.LngLatBounds();
-          coordinates.forEach(coord => bounds.extend(coord));
-          map.fitBounds(bounds, { padding: 40 });
-        } catch (_) {}
+          if (map.getSource("delivery-route")) {
+            map.getSource("delivery-route").setData(routeGeoJson);
+          } else {
+            map.addSource("delivery-route", {
+              type: "geojson",
+              data: routeGeoJson
+            });
+
+            map.addLayer({
+              id: "delivery-route-layer",
+              type: "line",
+              source: "delivery-route",
+              layout: {
+                "line-join": "round",
+                "line-cap": "round"
+              },
+              paint: {
+                "line-color": "#0D9488",
+                "line-width": 5,
+                "line-dasharray": [1, 1.5]
+              }
+            });
+          }
+
+          try {
+            const bounds = new mapboxgl.LngLatBounds();
+            coordinates.forEach(coord => bounds.extend(coord));
+            map.fitBounds(bounds, { padding: 40 });
+          } catch (_) {}
+        } else if (entry.type === 'leaflet') {
+          const latLngs = coordinates.map(c => [c[1], c[0]]);
+          const polyline = L.polyline(latLngs, { color: '#0D9488', weight: 5, dashArray: '5, 8' }).addTo(entry.instance);
+          entry.instance.fitBounds(polyline.getBounds(), { padding: [40, 40] });
+        }
       },
 
       resizeMap: function(containerId) {
-        if (this.maps[containerId]) {
-          this.maps[containerId].resize();
+        const entry = this.maps[containerId];
+        if (entry) {
+          if (entry.type === 'mapbox') entry.instance.resize();
+          else if (entry.type === 'leaflet') entry.instance.invalidateSize();
         }
       },
 
       destroyMap: function(containerId) {
-        if (this.maps[containerId]) {
-          try { this.maps[containerId].remove(); } catch (_) {}
+        const entry = this.maps[containerId];
+        if (entry) {
+          try {
+            if (entry.instance.remove) entry.instance.remove();
+          } catch (_) {}
           delete this.maps[containerId];
         }
         delete this.markers[containerId];
+        delete this.domContainers[containerId];
       }
     };
   </script>
