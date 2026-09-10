@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_colors.dart';
 import '../../models/appointment_model.dart';
 import '../../services/agora_rtc_service.dart';
+import '../../widgets/real_ai_lens_camera_view.dart';
 import 'chat_screen.dart';
 
 class VideoConsultationScreen extends StatefulWidget {
@@ -15,6 +16,7 @@ class VideoConsultationScreen extends StatefulWidget {
 }
 
 class _VideoConsultationScreenState extends State<VideoConsultationScreen> with SingleTickerProviderStateMixin {
+  final GlobalKey<RealAiLensCameraViewState> _patientCameraKey = GlobalKey<RealAiLensCameraViewState>();
   bool _isMuted = false;
   bool _isVideoOff = false;
   bool _isSpeakerOn = true;
@@ -25,6 +27,9 @@ class _VideoConsultationScreenState extends State<VideoConsultationScreen> with 
   Timer? _timer;
   late AnimationController _pulseController;
   bool _isAgoraConnected = false;
+  double _micVolume = 0.0;
+  Timer? _volumeTimer;
+
 
   @override
   void initState() {
@@ -32,6 +37,15 @@ class _VideoConsultationScreenState extends State<VideoConsultationScreen> with 
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) {
         setState(() => _callSeconds++);
+      }
+    });
+
+    _volumeTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
+      if (mounted && _isAgoraConnected && !_isMuted) {
+        final vol = AgoraRtcService.getLiveAudioVolume();
+        if ((vol - _micVolume).abs() > 0.05) {
+          setState(() => _micVolume = vol);
+        }
       }
     });
 
@@ -56,10 +70,12 @@ class _VideoConsultationScreenState extends State<VideoConsultationScreen> with 
   @override
   void dispose() {
     _timer?.cancel();
+    _volumeTimer?.cancel();
     _pulseController.dispose();
     AgoraRtcService.leaveCall();
     super.dispose();
   }
+
 
   String _formatDuration(int seconds) {
     final m = (seconds ~/ 60).toString().padLeft(2, '0');
@@ -490,14 +506,18 @@ class _VideoConsultationScreenState extends State<VideoConsultationScreen> with 
             top: 75,
             right: 16,
             child: GestureDetector(
-              onTap: () {
+              onTap: () async {
+                final messenger = ScaffoldMessenger.of(context);
                 setState(() => _isFrontCamera = !_isFrontCamera);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(_isFrontCamera ? 'Switched to Front Camera' : 'Switched to Rear Camera'),
-                    duration: const Duration(seconds: 1),
-                  ),
-                );
+                await _patientCameraKey.currentState?.switchCamera();
+                if (mounted) {
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text(_isFrontCamera ? 'Switched to Front Camera' : 'Switched to Rear Camera'),
+                      duration: const Duration(seconds: 1),
+                    ),
+                  );
+                }
               },
               child: Container(
                 width: 95,
@@ -527,13 +547,8 @@ class _VideoConsultationScreenState extends State<VideoConsultationScreen> with 
                                 ],
                               ),
                             )
-                          : Image.network(
-                              'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=300',
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => Container(
-                                color: const Color(0xFF334155),
-                                child: const Icon(Icons.person_rounded, color: Colors.white54),
-                              ),
+                          : RealAiLensCameraView(
+                              key: _patientCameraKey,
                             ),
                       // Patient Label + Flip Hint
                       Positioned(
@@ -543,13 +558,13 @@ class _VideoConsultationScreenState extends State<VideoConsultationScreen> with 
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                           decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.6),
+                            color: Colors.black.withValues(alpha: 0.65),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('You', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+                              Text('You (Live)', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
                               Icon(Icons.flip_camera_ios_rounded, color: Colors.white70, size: 10),
                             ],
                           ),
@@ -561,6 +576,7 @@ class _VideoConsultationScreenState extends State<VideoConsultationScreen> with 
               ),
             ),
           ),
+
 
           // 5. Live Vitals HUD (Floating Overlay on Left Side)
           if (_showVitalsHud)
@@ -684,13 +700,12 @@ class _VideoConsultationScreenState extends State<VideoConsultationScreen> with 
                   _ControlCircleButton(
                     icon: Icons.flip_camera_ios_rounded,
                     tooltip: 'Flip Camera',
-                    onTap: () {
+                    onTap: () async {
                       setState(() => _isFrontCamera = !_isFrontCamera);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Switched camera source'), duration: Duration(milliseconds: 700)),
-                      );
+                      await _patientCameraKey.currentState?.switchCamera();
                     },
                   ),
+
 
                   // Speaker Toggle
                   _ControlCircleButton(

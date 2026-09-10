@@ -14,9 +14,23 @@ external void _jsAgoraToggleMuteVideo(JSBoolean isMuted);
 @JS('agoraLeaveCall')
 external JSPromise<JSString> _jsAgoraLeaveCall();
 
+@JS('getTeleconsultationLiveVolume')
+external JSNumber _jsGetTeleconsultationLiveVolume();
+
 class AgoraRtcService {
   static bool _isConnected = false;
   static bool get isConnected => _isConnected;
+
+  /// Returns real-time audio input volume (0.0 to 1.0) from user's live microphone
+  static double getLiveAudioVolume() {
+    try {
+      final numVal = _jsGetTeleconsultationLiveVolume().toDartDouble;
+      return numVal.clamp(0.0, 1.0);
+    } catch (_) {
+      return 0.0;
+    }
+  }
+
 
   /// Connect to live Agora WebRTC channel
   static Future<Map<String, dynamic>> joinCall({

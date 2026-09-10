@@ -22,12 +22,23 @@ class _AudioCallScreenState extends State<AudioCallScreen> with SingleTickerProv
   Timer? _timer;
   late AnimationController _waveController;
   bool _isAgoraConnected = false;
+  double _micVolume = 0.0;
+  Timer? _volumeTimer;
 
   @override
   void initState() {
     super.initState();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) setState(() => _callSeconds++);
+    });
+
+    _volumeTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
+      if (mounted && _isAgoraConnected && !_isMuted) {
+        final vol = AgoraRtcService.getLiveAudioVolume();
+        if ((vol - _micVolume).abs() > 0.04) {
+          setState(() => _micVolume = vol);
+        }
+      }
     });
 
     _waveController = AnimationController(
@@ -51,10 +62,12 @@ class _AudioCallScreenState extends State<AudioCallScreen> with SingleTickerProv
   @override
   void dispose() {
     _timer?.cancel();
+    _volumeTimer?.cancel();
     _waveController.dispose();
     AgoraRtcService.leaveCall();
     super.dispose();
   }
+
 
   String _formatDuration(int seconds) {
     final m = (seconds ~/ 60).toString().padLeft(2, '0');

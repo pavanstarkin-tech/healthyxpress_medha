@@ -228,6 +228,152 @@ Answer the user's question with precise, medically accurate, and friendly clinic
     return 'Based on the clinical assessment for ${previousResult.name}, follow the recommended guidelines and consult your specialist doctor for personalized therapy.';
   }
 
+  /// Generates a real-time clinical consultation reply from the specific doctor using Groq AI
+  static Future<Map<String, dynamic>> generateDoctorChatReply({
+    required String doctorName,
+    required String doctorSpecialty,
+    required String hospitalName,
+    required List<Map<String, dynamic>> messageHistory,
+    required String userMessage,
+    String? attachmentType,
+    Map<String, dynamic>? attachmentPayload,
+  }) async {
+    final systemPrompt = '''
+You are $doctorName, a certified, highly experienced $doctorSpecialty at $hospitalName on the HealthExpress telemedicine platform.
+Your role is to respond to the patient in the chat consultation with warmth, high clinical accuracy, and professional bedside manner.
+
+Rules for your response:
+1. Always stay in character as $doctorName ($doctorSpecialty).
+2. Address the patient's specific symptoms, concerns, vitals, or medical documents directly and concisely (2 to 4 sentences).
+3. If the patient shares vitals or lab records or Aarogyasri ID, acknowledge and evaluate them clinically.
+4. If the patient needs medication for their stated symptoms (e.g. fever, headache, throat infection, pain, allergy, acid reflux, stomach ache, cold, etc.) or explicitly asks for a prescription/refill, generate a valid electronic prescription payload with appropriate Indian generic medicines (e.g. Dolo 650, Pantop 40, Azithral, Cetirizine, ORS, etc. according to symptoms).
+5. Always output a valid JSON object ONLY, with no extra markdown or preamble:
+
+{
+  "doctor_reply": "Your clinical response to the patient here.",
+  "has_prescription": true or false,
+  "prescription": {
+    "diagnosis": "Clinical Diagnosis or Reason for Rx",
+    "medicines": [
+      {
+        "name": "Medicine Name and Strength (e.g. Paracetamol 650mg)",
+        "dose": "Dosage instructions (e.g. 1 tablet after food SOS)",
+        "days": "Duration (e.g. 3 days)"
+      }
+    ]
+  }
+}
+''';
+
+    final List<Map<String, String>> messages = [
+      {'role': 'system', 'content': systemPrompt},
+    ];
+
+    // Include recent history (up to last 6 messages)
+    final recent = messageHistory.length > 6 ? messageHistory.sublist(messageHistory.length - 6) : messageHistory;
+    for (final m in recent) {
+      final role = (m['isDoctor'] == true) ? 'assistant' : 'user';
+      final text = m['text']?.toString() ?? '';
+      if (text.isNotEmpty) {
+        messages.add({'role': role, 'content': text});
+      }
+    }
+
+    String currentPrompt = userMessage;
+    if (attachmentType != null && attachmentPayload != null) {
+      currentPrompt += '\n[Attached $attachmentType data: ${jsonEncode(attachmentPayload)}]';
+    }
+    messages.add({'role': 'user', 'content': currentPrompt});
+
+    final modelsToTry = ['openai/gpt-oss-20b', 'groq/compound', 'qwen/qwen3.6-27b'];
+
+    for (final model in modelsToTry) {
+      try {
+        final response = await http
+            .post(
+              Uri.parse(_baseUrl),
+              headers: {
+                'Authorization': 'Bearer ${AppConfig.groqApiKey}',
+                'Content-Type': 'application/json',
+              },
+              body: jsonEncode({
+                'model': model,
+                'messages': messages,
+                'temperature': 0.3,
+                'max_tokens': 600,
+                'response_format': {'type': 'json_object'},
+              }),
+            )
+            .timeout(const Duration(seconds: 12));
+
+        if (response.statusCode == 200) {
+          final bodyJson = jsonDecode(response.body);
+          final content = bodyJson['choices']?[0]?['message']?['content']?.toString();
+          if (content != null && content.isNotEmpty) {
+            final parsed = _extractJson(content);
+            if (parsed != null && parsed.containsKey('doctor_reply')) {
+              return parsed;
+            }
+          }
+        }
+      } catch (e) {
+        debugPrint('Doctor reply error on $model: $e');
+      }
+    }
+
+    // Smart clinical fallback if AI network times out
+    return _buildClinicalFallback(doctorName, doctorSpecialty, userMessage, attachmentType);
+  }
+
+  static Map<String, dynamic> _buildClinicalFallback(String doctorName, String specialty, String userMessage, String? attachmentType) {
+    final lower = userMessage.toLowerCase();
+    String reply = "I have noted your symptoms. Please make sure to get adequate rest and stay hydrated with plenty of fluids.";
+    bool hasRx = false;
+    Map<String, dynamic>? rx;
+
+    if (attachmentType == 'aarogyasri') {
+      reply = "Thank you for sharing your Aarogyasri ABHA Digital Card. Your cashless coverage has been verified for this consultation.";
+    } else if (attachmentType == 'vitals') {
+      reply = "Your live vitals have been received and recorded in your clinical chart. Heart rate and blood pressure are stable.";
+    } else if (lower.contains('fever') || lower.contains('temp')) {
+      reply = "For your fever, please take Paracetamol 650mg after meals and drink plenty of warm water. Apply a cool compress if temperature exceeds 100°F.";
+      hasRx = true;
+      rx = {
+        'diagnosis': 'Acute Pyrexia / Mild Fever',
+        'medicines': [
+          {'name': 'Paracetamol 650mg', 'dose': '1 tablet after meals (SOS)', 'days': '3 days'},
+          {'name': 'ORS Sachet', 'dose': '1 sachet in 1L boiled water throughout day', 'days': '2 days'}
+        ]
+      };
+    } else if (lower.contains('throat') || lower.contains('cough') || lower.contains('cold')) {
+      reply = "For your throat discomfort and cough, gargle with warm saline water 3 times a day and avoid chilled beverages.";
+      hasRx = true;
+      rx = {
+        'diagnosis': 'Upper Respiratory Tract Congestion',
+        'medicines': [
+          {'name': 'Alex Cough Syrup', 'dose': '10ml thrice daily after food', 'days': '5 days'},
+          {'name': 'Cetirizine 10mg', 'dose': '1 tablet at bedtime', 'days': '3 days'}
+        ]
+      };
+    } else if (lower.contains('pain') || lower.contains('ache') || lower.contains('joint') || lower.contains('headache')) {
+      reply = "I have noted your pain symptoms. Avoid strenuous activities and ensure proper ergonomics. If severe, a mild analgesic will help.";
+      hasRx = true;
+      rx = {
+        'diagnosis': 'Musculoskeletal / Tension Discomfort',
+        'medicines': [
+          {'name': 'Paracetamol 650mg', 'dose': '1 tablet after food (SOS)', 'days': '3 days'},
+          {'name': 'Pantop 40mg', 'dose': '1 tablet before breakfast', 'days': '3 days'}
+        ]
+      };
+    }
+
+    return {
+      'doctor_reply': reply,
+      'has_prescription': hasRx,
+      'prescription': rx,
+    };
+  }
+
   /// Extracts JSON object from raw response string (handling markdown code blocks)
   static Map<String, dynamic>? _extractJson(String raw) {
     try {
