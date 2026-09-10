@@ -741,37 +741,40 @@ class _NearbyHospitalsMapScreenState extends State<NearbyHospitalsMapScreen> {
           ),
         ),
 
-        // 3. Compact Horizontal Carousel of Hospital Cards (Reduced height: 140px, bottom: 12)
+        // 3. Compact Horizontal Carousel of Hospital Cards (Docked Flush at bottom)
         if (filtered.isNotEmpty)
           Positioned(
             left: 0,
             right: 0,
-            bottom: 12,
-            child: SizedBox(
-              height: 142,
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: filtered.length,
-                onPageChanged: (index) {
-                  final h = filtered[index];
-                  setState(() => _selectedHospitalIndex = index);
-                  _mapKey.currentState?.flyTo(h.longitude, h.latitude, zoom: 15.8);
-                },
-                itemBuilder: (context, index) {
-                  final hospital = filtered[index];
-                  final isSelected = index == _selectedHospitalIndex;
-                  return _buildCompactHospitalCard(hospital, index, isSelected);
-                },
+            bottom: 0,
+            child: Container(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: SizedBox(
+                height: 138,
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: filtered.length,
+                  onPageChanged: (index) {
+                    final h = filtered[index];
+                    setState(() => _selectedHospitalIndex = index);
+                    _mapKey.currentState?.flyTo(h.longitude, h.latitude, zoom: 15.8);
+                  },
+                  itemBuilder: (context, index) {
+                    final hospital = filtered[index];
+                    final isSelected = index == _selectedHospitalIndex;
+                    return _buildCompactHospitalCard(hospital, index, isSelected);
+                  },
+                ),
               ),
             ),
           )
         else
           Positioned(
-            bottom: 20,
-            left: 20,
-            right: 20,
+            bottom: 8,
+            left: 16,
+            right: 16,
             child: Container(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(14),
@@ -800,7 +803,7 @@ class _NearbyHospitalsMapScreenState extends State<NearbyHospitalsMapScreen> {
   Widget _buildCompactHospitalCard(HospitalModel hospital, int index, bool isSelected) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
-      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+      margin: const EdgeInsets.fromLTRB(4, 0, 4, 2),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -812,7 +815,7 @@ class _NearbyHospitalsMapScreenState extends State<NearbyHospitalsMapScreen> {
           BoxShadow(
             color: isSelected ? AppColors.primary.withValues(alpha: 0.22) : Colors.black.withValues(alpha: 0.07),
             blurRadius: isSelected ? 12 : 6,
-            offset: const Offset(0, 3),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
