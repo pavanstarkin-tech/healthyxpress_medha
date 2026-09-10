@@ -155,83 +155,123 @@ class _UserMainNavState extends State<UserMainNav> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          border: const Border(
+            top: BorderSide(color: Color(0xFFF1F5F9), width: 1.5),
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 20,
-              offset: const Offset(0, -4),
+              color: const Color(0xFF0F172A).withValues(alpha: 0.08),
+              blurRadius: 24,
+              offset: const Offset(0, -6),
+            ),
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, -2),
             ),
           ],
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _NavItem(
-                  icon: Icons.home_rounded,
-                  label: 'Home',
-                  isSelected: _currentIndex == 0,
-                  onTap: () => setState(() => _currentIndex = 0),
+                Expanded(
+                  child: _NavItem(
+                    icon: Icons.home_rounded,
+                    label: 'Home',
+                    isSelected: _currentIndex == 0,
+                    onTap: () => setState(() => _currentIndex = 0),
+                  ),
                 ),
-                _NavItem(
-                  icon: Icons.calendar_month_rounded,
-                  label: 'Appointments',
-                  isSelected: _currentIndex == 1,
-                  onTap: () => setState(() => _currentIndex = 1),
+                Expanded(
+                  child: _NavItem(
+                    icon: Icons.calendar_month_rounded,
+                    label: 'Appointments',
+                    isSelected: _currentIndex == 1,
+                    onTap: () => setState(() => _currentIndex = 1),
+                  ),
                 ),
 
-                // Center AI Assistant Hero Button with Hover Glow Effect
-                MouseRegion(
-                  onEnter: (_) => setState(() => _isCenterHovered = true),
-                  onExit: (_) => setState(() => _isCenterHovered = false),
-                  child: GestureDetector(
-                    onTap: _showAiCenterMenu,
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      transform: Matrix4.diagonal3Values(
-                        _isCenterHovered ? 1.12 : 1.0,
-                        _isCenterHovered ? 1.12 : 1.0,
-                        1.0,
-                      ),
-                      padding: const EdgeInsets.all(13),
-                      decoration: BoxDecoration(
-                        gradient: AppColors.aiAssistantGradient,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withValues(alpha: _isCenterHovered ? 0.6 : 0.35),
-                            blurRadius: _isCenterHovered ? 18 : 12,
-                            spreadRadius: _isCenterHovered ? 2 : 0,
-                            offset: const Offset(0, 4),
+                // Center AI Assistant Hero Button with Elevated Glow
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  child: MouseRegion(
+                    onEnter: (_) => setState(() => _isCenterHovered = true),
+                    onExit: (_) => setState(() => _isCenterHovered = false),
+                    child: GestureDetector(
+                      onTap: _showAiCenterMenu,
+                      child: Transform.translate(
+                        offset: const Offset(0, -10),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 220),
+                          curve: Curves.easeOutBack,
+                          transform: Matrix4.diagonal3Values(
+                            _isCenterHovered ? 1.08 : 1.0,
+                            _isCenterHovered ? 1.08 : 1.0,
+                            1.0,
                           ),
-                        ],
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.8),
-                          width: 2,
+                          padding: const EdgeInsets.all(3.5),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF2563EB), Color(0xFF7C3AED), Color(0xFF06B6D4)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF2563EB).withValues(alpha: _isCenterHovered ? 0.65 : 0.42),
+                                blurRadius: _isCenterHovered ? 20 : 14,
+                                spreadRadius: _isCenterHovered ? 3 : 1,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [Color(0xFF1E40AF), Color(0xFF4F46E5)],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.auto_awesome_rounded,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                      child: const Icon(
-                        Icons.auto_awesome_rounded,
-                        color: Colors.white,
-                        size: 26,
                       ),
                     ),
                   ),
                 ),
 
-                _NavItem(
-                  icon: Icons.local_hospital_rounded,
-                  label: 'Hospitals',
-                  isSelected: _currentIndex == 3,
-                  onTap: () => setState(() => _currentIndex = 3),
+                Expanded(
+                  child: _NavItem(
+                    icon: Icons.local_hospital_rounded,
+                    label: 'Hospitals',
+                    isSelected: _currentIndex == 3,
+                    onTap: () => setState(() => _currentIndex = 3),
+                  ),
                 ),
-                _NavItem(
-                  icon: Icons.person_rounded,
-                  label: 'Profile',
-                  isSelected: _currentIndex == 4,
-                  onTap: () => setState(() => _currentIndex = 4),
+                Expanded(
+                  child: _NavItem(
+                    icon: Icons.person_rounded,
+                    label: 'Profile',
+                    isSelected: _currentIndex == 4,
+                    onTap: () => setState(() => _currentIndex = 4),
+                  ),
                 ),
               ],
             ),
@@ -259,24 +299,42 @@ class _NavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      borderRadius: BorderRadius.circular(16),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFFEFF6FF) : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: isSelected ? 12 : 0,
+              height: 3,
+              margin: const EdgeInsets.only(bottom: 3),
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primary : Colors.transparent,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
             Icon(
               icon,
-              size: 24,
-              color: isSelected ? AppColors.primary : AppColors.textMuted,
+              size: isSelected ? 23 : 22,
+              color: isSelected ? AppColors.primary : const Color(0xFF94A3B8),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 3),
             Text(
               label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 10.5,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? AppColors.primary : AppColors.textMuted,
+                color: isSelected ? AppColors.primary : const Color(0xFF64748B),
+                letterSpacing: isSelected ? 0.1 : 0,
               ),
             ),
           ],
