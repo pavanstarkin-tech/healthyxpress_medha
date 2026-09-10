@@ -287,34 +287,46 @@ class _AiLensScannerScreenState extends State<AiLensScannerScreen>
       body: SafeArea(
         child: Column(
           children: [
-            // Scope Selector Switcher (3 Scopes)
+            // Scope Selector Switcher (3 Clean Words: Food, Infection, Medicine)
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              margin: const EdgeInsets.fromLTRB(16, 4, 16, 10),
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: const Color(0xFF1E293B),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: const Color(0xFF334155)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
                   Expanded(
                     child: _ScopeTab(
-                      title: '🥗 Food / Calories',
+                      emoji: '🥗',
+                      title: 'Food',
                       isSelected: _selectedScope == VisionScope.food,
                       onTap: () => setState(() => _selectedScope = VisionScope.food),
                     ),
                   ),
+                  const SizedBox(width: 4),
                   Expanded(
                     child: _ScopeTab(
-                      title: '🦠 Infection / Disease',
+                      emoji: '🦠',
+                      title: 'Infection',
                       isSelected: _selectedScope == VisionScope.infection,
                       onTap: () => setState(() => _selectedScope = VisionScope.infection),
                     ),
                   ),
+                  const SizedBox(width: 4),
                   Expanded(
                     child: _ScopeTab(
-                      title: '💊 Medicines / Rx',
+                      emoji: '💊',
+                      title: 'Medicine',
                       isSelected: _selectedScope == VisionScope.medicine,
                       onTap: () => setState(() => _selectedScope = VisionScope.medicine),
                     ),
@@ -1419,11 +1431,13 @@ class _AiLensScannerScreenState extends State<AiLensScannerScreen>
 }
 
 class _ScopeTab extends StatelessWidget {
+  final String emoji;
   final String title;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _ScopeTab({
+    required this.emoji,
     required this.title,
     required this.isSelected,
     required this.onTap,
@@ -1433,27 +1447,50 @@ class _ScopeTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 8),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.4),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
         ),
-        child: Center(
-          child: Text(
-            title,
-            style: TextStyle(
-              color: isSelected ? Colors.white : Colors.white70,
-              fontSize: 11.5,
-              fontWeight: FontWeight.bold,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              emoji,
+              style: const TextStyle(fontSize: 14),
             ),
-            textAlign: TextAlign.center,
-          ),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.white70,
+                  fontSize: 12.5,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                  letterSpacing: 0.2,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
+
 
 class _MacroCard extends StatelessWidget {
   final String label;
