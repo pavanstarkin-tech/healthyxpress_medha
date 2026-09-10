@@ -32079,56 +32079,63 @@ break
 case 1:return A.N(q,r)
 case 2:return A.M(o.at(-1),r)}})
 return A.O($async$agw,r)},
-agx(a3,a4,a5){var s=0,r=A.P(t.N),q,p=2,o=[],n,m,l,k,j,i,h,g,f,e,d,c,b,a,a0,a1,a2
-var $async$agx=A.Q(function(a6,a7){if(a6===1){o.push(a7)
-s=p}for(;;)switch(s){case 0:a=a4.b
-a0=a4.a
-a1=a0===B.dk
-if(a1)i="Food & Nutrition"
-else i=a0===B.cX?"Disease & Infection Diagnosis":"Medicine / Clinical Tablet"
-if(a1){a1=a4.r
-a1="- Calories: "+a4.e+" kcal, Protein: "+A.p(a1.a)+"g, Carbs: "+A.p(a1.b)+"g, Fat: "+A.p(a1.c)+"g\n- Glycemic Index: "+a4.w+"\n- Health Score: "+a4.x+"/10"}else a1=""
-if(a0===B.cX){h=a4.k2
-h="- Severity: "+a4.fx+"\n- Category: "+a4.fy+"\n- Causes: "+B.d.b6(a4.go,", ")+"\n- Recommended Specialist: "+a4.k1+"\n- Medications: "+new A.S(h,new A.agy(),A.R(h).i("S<1,w>")).b6(0,", ")}else h=""
-a0=a0===B.fR?"- Active Composition: "+a4.ax+"\n- Drug Class: "+a4.ay+"\n- Clinical Uses: "+B.d.b6(a4.ch,", ")+"\n- Warnings: "+B.d.b6(a4.cy,", "):""
-g=t.N
-f=t.z
-n=A.a([A.a_(["role","system","content","You are HealthExpress Clinical AI. The user is asking an interactive follow-up question about an item they just scanned.\nItem Details:\n- Name: "+a+"\n- Scope: "+i+"\n- Description: "+a4.c+"\n"+a1+"\n"+h+"\n"+a0+"\n\nAnswer the user's question with precise, medically accurate, and friendly clinical advice. Keep response concise, structured with bullet points where helpful.\n"],g,f)],t.H7)
-for(a0=a3.length,e=0;e<a3.length;a3.length===a0||(0,A.V)(a3),++e){d=a3[e]
-a1=d.h(0,"role")
-if(a1==null)a1="user"
-i=d.h(0,"content")
-J.e0(n,A.a_(["role",a1,"content",i==null?"":i],g,f))}J.e0(n,A.a_(["role","user","content",a5],g,f))
-p=4
-a0=A.d7(u.n,0,null)
-a1=A.a_(["Authorization","Bearer "+B.d.un(B.z2),"Content-Type","application/json"],g,g)
-s=7
-return A.A(A.k3(a0,B.ah.fP(A.a_(["model","qwen/qwen3.6-27b","messages",n,"temperature",0.3,"max_tokens",600],g,t.K),null),a1).eJ(B.ps),$async$agx)
-case 7:m=a7
-if(m.b===200){a0=m
-l=B.ah.cZ(A.em(A.el(a0.e)).cs(a0.w),null)
-a0=J.am(l,"choices")
-c=null
-if(!(a0==null)){a0=J.am(a0,0)
-if(!(a0==null)){a0=J.am(a0,"message")
-if(a0==null)a0=c
-else{a0=J.am(a0,"content")
-a0=a0==null?null:J.aD(a0)}c=a0}}k=c
-if(k!=null&&B.b.R(k).length!==0){a0=A.b1y(B.b.R(k))
-q=a0
+agx(a5,a6,a7){var s=0,r=A.P(t.N),q,p=2,o=[],n,m,l,k,j,i,h,g,f,e,d,c,b,a,a0,a1,a2,a3,a4
+var $async$agx=A.Q(function(a8,a9){if(a8===1){o.push(a9)
+s=p}for(;;)switch(s){case 0:a1=a6.b
+a2=a6.a
+a3=a2===B.dk
+if(a3)h="Food & Nutrition"
+else h=a2===B.cX?"Disease & Infection Diagnosis":"Medicine / Clinical Tablet"
+if(a3){a3=a6.r
+a3="- Calories: "+a6.e+" kcal, Protein: "+A.p(a3.a)+"g, Carbs: "+A.p(a3.b)+"g, Fat: "+A.p(a3.c)+"g\n- Glycemic Index: "+a6.w+"\n- Health Score: "+a6.x+"/10"}else a3=""
+if(a2===B.cX){g=a6.k2
+g="- Severity: "+a6.fx+"\n- Category: "+a6.fy+"\n- Causes: "+B.d.b6(a6.go,", ")+"\n- Recommended Specialist: "+a6.k1+"\n- Medications: "+new A.S(g,new A.agy(),A.R(g).i("S<1,w>")).b6(0,", ")}else g=""
+a2=a2===B.fR?"- Active Composition: "+a6.ax+"\n- Drug Class: "+a6.ay+"\n- Clinical Uses: "+B.d.b6(a6.ch,", ")+"\n- Warnings: "+B.d.b6(a6.cy,", "):""
+f=t.N
+e=t.z
+n=A.a([A.a_(["role","system","content","You are HealthExpress Clinical AI. The user is asking an interactive follow-up question about an item they just scanned.\nItem Details:\n- Name: "+a1+"\n- Scope: "+h+"\n- Description: "+a6.c+"\n"+a3+"\n"+g+"\n"+a2+"\n\nAnswer the user's question with precise, medically accurate, and friendly clinical advice. Keep response concise, structured with bullet points where helpful.\n"],f,e)],t.H7)
+for(a2=a5.length,d=0;d<a5.length;a5.length===a2||(0,A.V)(a5),++d){c=a5[d]
+a3=c.h(0,"role")
+if(a3==null)a3="user"
+h=c.h(0,"content")
+J.e0(n,A.a_(["role",a3,"content",h==null?"":h],f,e))}J.e0(n,A.a_(["role","user","content",a7],f,e))
+b=["openai/gpt-oss-20b","groq/compound","qwen/qwen3.6-27b"]
+a2=t.K,d=0
+case 3:if(!(d<3)){s=5
+break}m=b[d]
+p=7
+a3=A.d7(u.n,0,null)
+h=A.a_(["Authorization","Bearer "+B.d.un(B.z2),"Content-Type","application/json"],f,f)
+s=10
+return A.A(A.k3(a3,B.ah.fP(A.a_(["model",m,"messages",n,"temperature",0.3,"max_tokens",500],f,a2),null),h).eJ(B.ps),$async$agx)
+case 10:l=a9
+if(l.b===200){a3=l
+k=B.ah.cZ(A.em(A.el(a3.e)).cs(a3.w),null)
+a3=J.am(k,"choices")
+a=null
+if(!(a3==null)){a3=J.am(a3,0)
+if(!(a3==null)){a3=J.am(a3,"message")
+if(a3==null)a3=a
+else{a3=J.am(a3,"content")
+a3=a3==null?null:J.aD(a3)}a=a3}}j=a
+if(j!=null&&B.b.R(j).length!==0){a3=A.b1y(B.b.R(j))
+q=a3
 s=1
 break}}p=2
-s=6
+s=9
 break
-case 4:p=3
-a2=o.pop()
-j=A.ar(a2)
-A.cZ().$1("Groq follow-up error: "+A.p(j))
-s=6
+case 7:p=6
+a4=o.pop()
+i=A.ar(a4)
+A.cZ().$1("Groq follow-up error on "+A.p(m)+": "+A.p(i))
+s=9
 break
-case 3:s=2
+case 6:s=2
 break
-case 6:q="Based on the clinical assessment for "+a+", follow the recommended guidelines and consult your specialist doctor for personalized therapy."
+case 9:case 4:++d
+s=3
+break
+case 5:q="Based on the clinical assessment for "+a1+", follow the recommended guidelines and consult your specialist doctor for personalized therapy."
 s=1
 break
 case 1:return A.N(q,r)
