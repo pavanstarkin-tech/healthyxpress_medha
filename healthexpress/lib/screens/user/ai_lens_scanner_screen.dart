@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+
 import '../../models/vision_analysis_model.dart';
 import '../../services/device_native_service.dart';
 import '../../services/groq_vision_service.dart';
+import '../../widgets/real_ai_lens_camera_view.dart';
 import 'medication_reminders_screen.dart';
 import 'pharmacy_screen.dart';
 import 'doctor_search_screen.dart';
@@ -27,6 +29,7 @@ class AiLensScannerScreen extends StatefulWidget {
 
 class _AiLensScannerScreenState extends State<AiLensScannerScreen>
     with SingleTickerProviderStateMixin {
+  final GlobalKey<RealAiLensCameraViewState> _cameraKey = GlobalKey<RealAiLensCameraViewState>();
   late VisionScope _selectedScope;
   bool _isAnalyzing = false;
   String _analysisStatus = 'Ready to scan';
@@ -160,11 +163,23 @@ class _AiLensScannerScreenState extends State<AiLensScannerScreen>
   }
 
   Future<void> _captureFromCamera() async {
+    // 1. Grab snapshot from live camera viewfinder
+    final liveFrame = await _cameraKey.currentState?.captureFrame();
+    if (liveFrame != null && liveFrame.isNotEmpty) {
+      _processImage(liveFrame);
+      return;
+    }
+
+    // 2. Fallback to native camera snapshot file picker
     final res = await DeviceNativeService.capturePhoto(preferCamera: true);
     if (res['success'] == true && res['dataUrl'] != null) {
       final dataUrl = res['dataUrl'].toString();
       _processImage(dataUrl);
     }
+  }
+
+  Future<void> _switchCamera() async {
+    await _cameraKey.currentState?.switchCamera();
   }
 
   Future<void> _pickFromGallery() async {
@@ -174,6 +189,7 @@ class _AiLensScannerScreenState extends State<AiLensScannerScreen>
       _processImage(dataUrl);
     }
   }
+
 
   Future<void> _processImage(String base64Image, {String? hint}) async {
     setState(() {
@@ -280,8 +296,9 @@ class _AiLensScannerScreenState extends State<AiLensScannerScreen>
           IconButton(
             icon: const Icon(Icons.flip_camera_ios_rounded, color: Colors.white),
             tooltip: 'Switch Camera',
-            onPressed: _captureFromCamera,
+            onPressed: _switchCamera,
           ),
+
         ],
       ),
       body: SafeArea(
@@ -354,18 +371,18 @@ class _AiLensScannerScreenState extends State<AiLensScannerScreen>
 
     return Column(
       children: [
-        // Camera Viewfinder Box
+        // Camera Viewfinder Box with Live Real Video Stream
         Expanded(
           flex: 5,
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
               color: Colors.black,
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: AppColors.primary.withValues(alpha: 0.5), width: 2),
+              border: Border.all(color: AppColors.primary.withValues(alpha: 0.6), width: 2),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.15),
+                  color: AppColors.primary.withValues(alpha: 0.2),
                   blurRadius: 20,
                   spreadRadius: 2,
                 ),
@@ -373,146 +390,131 @@ class _AiLensScannerScreenState extends State<AiLensScannerScreen>
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(22),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  // Viewfinder Background Pattern
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 76,
-                          height: 76,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF1E293B),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: AppColors.primary, width: 2),
-                          ),
-                          child: Icon(
-                            _selectedScope == VisionScope.food
-                                ? Icons.restaurant_rounded
-                                : (_selectedScope == VisionScope.infection ? Icons.coronavirus_rounded : Icons.medication_rounded),
-                            size: 38,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        Text(
-                          _selectedScope == VisionScope.food
-                              ? 'Point at any dish, meal or food item'
-                              : (_selectedScope == VisionScope.infection
-                                  ? 'Point at skin rash, symptom, eye or infection'
-                                  : 'Point at tablet strip, pill, syrup or Rx'),
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: AppColors.primary),
-                          ),
-                          child: Text(
-                            _selectedScope == VisionScope.food
-                                ? '⚡ Calorie Counter • Macros • Glycemic Index'
-                                : (_selectedScope == VisionScope.infection
-                                    ? '🏥 Disease Diagnostics • Medications • Doctor Booking'
-                                    : '🛡️ Strict Medical Scope • Composition • Dosage'),
-                            style: const TextStyle(
-                              color: AppColors.primaryLight,
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Animated Scanning Line (HUD)
-                  AnimatedBuilder(
-                    animation: _scanLineController,
-                    builder: (context, child) {
-                      return Align(
-                        alignment: Alignment(0, (_scanLineController.value * 2) - 1),
+              child: RealAiLensCameraView(
+                key: _cameraKey,
+                overlayWidget: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // Guidance Pill at top of viewfinder
+                    Positioned(
+                      top: 14,
+                      left: 16,
+                      right: 16,
+                      child: Center(
                         child: Container(
-                          height: 3,
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.transparent,
-                                AppColors.primary,
-                                Colors.cyanAccent,
-                                AppColors.primary,
-                                Colors.transparent,
-                              ],
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.cyanAccent.withValues(alpha: 0.8),
-                                blurRadius: 10,
-                                spreadRadius: 2,
+                            color: Colors.black.withValues(alpha: 0.65),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: AppColors.primary.withValues(alpha: 0.5)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                _selectedScope == VisionScope.food
+                                    ? '🥗'
+                                    : (_selectedScope == VisionScope.infection ? '🦠' : '💊'),
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                _selectedScope == VisionScope.food
+                                    ? 'Align Food / Dish in Frame'
+                                    : (_selectedScope == VisionScope.infection
+                                        ? 'Align Skin / Infection in Frame'
+                                        : 'Align Medicine / Tablet in Frame'),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
                         ),
-                      );
-                    },
-                  ),
-
-                  // Viewfinder Corner Brackets
-                  const _ViewfinderCorners(),
-
-                  // Analyzing Loading Overlay
-                  if (_isAnalyzing)
-                    Container(
-                      color: Colors.black.withValues(alpha: 0.8),
-                      child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SizedBox(
-                              width: 50,
-                              height: 50,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 3.5,
-                                color: Colors.cyanAccent,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
-                              child: Text(
-                                _analysisStatus,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 13,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Powered by Groq Cloud Vision AI',
-                              style: TextStyle(color: Colors.white54, fontSize: 11),
-                            ),
-                          ],
-                        ),
                       ),
                     ),
-                ],
+
+                    // Animated Scanning Line (HUD)
+                    AnimatedBuilder(
+                      animation: _scanLineController,
+                      builder: (context, child) {
+                        return Align(
+                          alignment: Alignment(0, (_scanLineController.value * 2) - 1),
+                          child: Container(
+                            height: 3,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.transparent,
+                                  AppColors.primary,
+                                  Colors.cyanAccent,
+                                  AppColors.primary,
+                                  Colors.transparent,
+                                ],
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.cyanAccent.withValues(alpha: 0.8),
+                                  blurRadius: 10,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+
+                    // Viewfinder Corner Brackets
+                    const _ViewfinderCorners(),
+
+                    // Analyzing Loading Overlay
+                    if (_isAnalyzing)
+                      Container(
+                        color: Colors.black.withValues(alpha: 0.82),
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3.5,
+                                  color: Colors.cyanAccent,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                child: Text(
+                                  _analysisStatus,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Powered by Groq Cloud Vision AI',
+                                style: TextStyle(color: Colors.white54, fontSize: 11),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),
         ),
+
 
         // Quick Instant Demo Samples
         Padding(
