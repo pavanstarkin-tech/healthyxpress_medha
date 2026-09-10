@@ -185,6 +185,71 @@ class AiAssistantProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Auto-Detect Language (Telugu, Hindi, English) including Native Scripts & Romanized Tanglish/Hinglish
+  static String detectLanguage(String text, [String currentLang = 'en']) {
+    final trimmed = text.trim();
+    if (trimmed.isEmpty) return currentLang;
+
+    // 1. Script Match (Telugu Unicode: \u0C00-\u0C7F)
+    if (RegExp(r'[\u0C00-\u0C7F]').hasMatch(trimmed)) {
+      return 'te';
+    }
+
+    // Devanagari / Hindi Unicode: \u0900-\u097F
+    if (RegExp(r'[\u0900-\u097F]').hasMatch(trimmed)) {
+      return 'hi';
+    }
+
+    // 2. Romanized Lexical & Phonetic Matching (Tanglish vs Hinglish)
+    final lower = ' ${trimmed.toLowerCase().replaceAll(RegExp(r'[^\w\s]'), ' ')} ';
+
+    final teluguKeywords = [
+      'naku', 'naaku', 'undhi', 'undi', 'unna', 'unnaru', 'unnanu', 'unnayi', 'unte',
+      'jwaram', 'jvaram', 'thalanoppi', 'thala noppi', 'kadupu noppi', 'kadupulo', 'kadupu',
+      'gonthu', 'gonthulo', 'daggu', 'jalubu', 'nerasam', 'mandulu', 'mandhulu', 'mandu',
+      'ela', 'enti', 'entha', 'cheppandi', 'cheyali', 'namaskaram', 'namaste', 'garu',
+      'roju', 'rojulu', 'vastundi', 'vastondi', 'kavalenu', 'kavali', 'chudandi', 'chudu',
+      'baga', 'chala', 'ayindi', 'ayyindi', 'ayipoyindi', 'taggadam', 'taggadaniki',
+      'doctor ni', 'hospital ki', 'ippudu', 'evaru', 'enduku', 'yemi', 'emiti', 'vache',
+      'chesukovali', 'pampandi', 'ammayi', 'abbayi', 'peddalu', 'pillalu', 'valla', 'mari',
+      'gurinchi', 'cheppali', 'telusukovali', 'undi ga', 'ledu', 'ivvandi'
+    ];
+
+    final hindiKeywords = [
+      'mujhe', 'mera', 'meri', 'mere', 'hai', 'hain', 'hua', 'hui', 'huye', 'ho',
+      'raha', 'rahi', 'rahe', 'bukhar', 'dard', 'sar dard', 'sir dard', 'pait', 'pet',
+      'gale', 'gala', 'khansi', 'jukham', 'sardi', 'dawa', 'dawaii', 'dawayi', 'goli',
+      'kya', 'kare', 'karein', 'karna', 'chahiye', 'bataiye', 'batao', 'namaste',
+      'kaise', 'theek', 'bahut', 'zyada', 'jyada', 'kamzor', 'kamzori', 'chakkar',
+      'doctor ko', 'dikhao', 'kripya', 'kyun', 'kaha', 'aaj', 'kal', 'se', 'tha', 'thi',
+      'lag raha', 'ho gaya', 'khana', 'peena', 'bimar', 'bimari', 'aspatal', 'hona',
+      'madad', 'bataye', 'kuch', 'kijiye'
+    ];
+
+    int teluguScore = 0;
+    for (final kw in teluguKeywords) {
+      if (lower.contains(' $kw ') || lower.contains('$kw ') || lower.contains(' $kw')) {
+        teluguScore += 2;
+      }
+    }
+
+    int hindiScore = 0;
+    for (final kw in hindiKeywords) {
+      if (lower.contains(' $kw ') || lower.contains('$kw ') || lower.contains(' $kw')) {
+        hindiScore += 2;
+      }
+    }
+
+    if (teluguScore > 0 && teluguScore >= hindiScore) {
+      return 'te';
+    }
+    if (hindiScore > 0 && hindiScore > teluguScore) {
+      return 'hi';
+    }
+
+    return 'en';
+  }
+
   void setLanguage(String lang) {
     if (_selectedLanguage == lang) return;
     _selectedLanguage = lang;
@@ -241,7 +306,7 @@ class AiAssistantProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void speakText(String text) {
+  void speakText(String text, [String? targetLang]) {
     // Immediately stop microphone and recording before playing response
     _callAutoListenTimer?.cancel();
     _interimTimer?.cancel();
@@ -249,7 +314,15 @@ class AiAssistantProvider extends ChangeNotifier {
     stopSpeaking();
     _isSpeaking = true;
     notifyListeners();
-    SarvamLiveSttService.speakText(text, _selectedLanguage);
+
+    // Determine voice language (script inspection or detected language)
+    final voiceLang = targetLang ?? (
+      RegExp(r'[\u0C00-\u0C7F]').hasMatch(text)
+        ? 'te'
+        : (RegExp(r'[\u0900-\u097F]').hasMatch(text) ? 'hi' : _selectedLanguage)
+    );
+
+    SarvamLiveSttService.speakText(text, voiceLang);
 
     // Monitor speech playback completion cleanly with instant event detection
     int elapsedTicks = 0;
@@ -331,6 +404,10 @@ class AiAssistantProvider extends ChangeNotifier {
     _liveTranscription = '';
 
     if (transcript != null && transcript.trim().isNotEmpty) {
+      final autoLang = detectLanguage(transcript.trim(), _selectedLanguage);
+      if (autoLang != _selectedLanguage) {
+        _selectedLanguage = autoLang;
+      }
       await addUserMessage(transcript.trim(), isVoice: true);
     } else {
       notifyListeners();
@@ -349,6 +426,12 @@ class AiAssistantProvider extends ChangeNotifier {
   Future<void> addUserMessage(String text, {String? patientName, bool isVoice = false}) async {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return;
+
+    // Automatically Detect Language (Telugu / Hindi / English) and Auto-Respond ONLY in that language
+    final autoDetected = detectLanguage(trimmed, _selectedLanguage);
+    if (autoDetected != _selectedLanguage) {
+      _selectedLanguage = autoDetected;
+    }
 
     // 1. Entity Extraction - Name
     final nameRegex = RegExp(

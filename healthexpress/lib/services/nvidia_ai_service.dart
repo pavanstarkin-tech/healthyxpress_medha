@@ -334,10 +334,10 @@ class NvidiaAiService {
     bool isVoiceMode = false,
   }) {
     final languageDirective = lang == 'te'
-        ? 'Strictly reply in fluent, respectful, natural Telugu (తెలుగు).'
+        ? 'CRITICAL MANDATORY LANGUAGE INSTRUCTION: You MUST respond ONLY in fluent, natural, pure Telugu (తెలుగు script). Never respond in English or Hindi words. Every single sentence and question must be in Telugu.'
         : (lang == 'hi'
-            ? 'Strictly reply in fluent, natural, caring Hindi (हिंदी).'
-            : 'Reply in clear, professional, warm and conversational English.');
+            ? 'CRITICAL MANDATORY LANGUAGE INSTRUCTION: You MUST respond ONLY in fluent, natural, pure Hindi (हिंदी script). Never respond in English or Telugu words. Every single sentence and question must be in Hindi.'
+            : 'CRITICAL MANDATORY LANGUAGE INSTRUCTION: You MUST respond ONLY in clear, natural, professional English.');
 
     if (isVoiceMode) {
       return '''
@@ -345,7 +345,7 @@ You are HealthExpress AI, a caring, expert clinical voice assistant on a live re
 $languageDirective
 
 VOICE CALL RULES:
-1. Speak naturally like a real doctor speaking to a patient on the phone.
+1. Speak naturally like a real doctor speaking to a patient on the phone in the designated language ($lang).
 2. Be warm, empathetic, clear, and very concise (1 to 2 short sentences max).
 3. Do NOT use emojis, bullet points, asterisks, bold formatting, markdown, or numbered lists.
 4. STRICT QUESTION LIMIT: Ask at most 1 to 2 short questions per turn. NEVER ask multiple or long lists of questions at once.
@@ -515,17 +515,60 @@ STAGE-BY-STAGE GUIDELINES:
     final List<String> detected = [];
 
     final map = {
-      'Fever & Chills': ['fever', 'temperature', 'chills', 'shivering', '100', '101', '102', '103', '104', 'జ్వరం', 'చలి', 'బుఖార్', 'तापमान', 'बुखार', 'कपकपी'],
-      'Headache & Migraine': ['headache', 'head pain', 'migraine', 'throbbing head', 'తలనొప్పి', 'తల నొప్పి', 'మైగ్రేన్', 'सिरदर्द', 'सिर दर्द', 'माइग्रेन'],
-      'Cold, Cough & Throat': ['throat', 'cough', 'cold', 'sore throat', 'congestion', 'runny nose', 'pharyngitis', 'గొంతు', 'దగ్గు', 'జలుబు', 'ముక్కు కారడం', 'खांसी', 'जुकाम', 'गले में खराश', 'गला दर्द'],
-      'Body Ache & Fatigue': ['body pain', 'body ache', 'muscle pain', 'fatigue', 'weakness', 'tiredness', 'ఒంటి నొప్పులు', 'ఒళ్ళు నొప్పులు', 'నీరసం', 'బలహీనత', 'बदन दर्द', 'कमजोरी', 'थकान'],
-      'Acidity & Gastric': ['acidity', 'acid reflux', 'heartburn', 'gas', 'bloating', 'belching', 'gerd', 'ఎసిడిటీ', 'గ్యాస్', 'మంట', 'छाती में जलन', 'गैस', 'एसिडिटी'],
-      'Stomach Ache & Nausea': ['stomach', 'abdomen', 'cramps', 'vomit', 'nausea', 'loose motions', 'diarrhea', 'కడుపు నొప్పి', 'వాంతులు', 'విరేచనాలు', 'జీర్ణసమస్య', 'पेट दर्द', 'उल्टी', 'दस्त'],
-      'Joint & Knee Pain': ['joint', 'knee', 'backache', 'back pain', 'spine', 'arthritis', 'sciatica', 'మోకాలు', 'కీళ్ళ', 'నడుము నొప్పి', 'వెన్ను నొప్పి', 'घुटनों में दर्द', 'जोड़ों का दर्द', 'कमर दर्द'],
-      'Hypertension & Cardiac': ['bp', 'blood pressure', 'chest pain', 'chest tightness', 'palpitations', 'heart rate', 'రక్తపోటు', 'బ్లడ్ ప్రెషర్', 'ఛాతీ నొప్పి', 'గుండె దడ', 'बीपी', 'रक्तचाप'],
-      'Diabetes & High Sugar': ['sugar', 'diabetes', 'glucose', 'frequent thirst', 'frequent urination', 'షుగర్', 'మధుమేహం', 'డయాబెటిస్', 'शुगर', 'मधुमेह'],
-      'Skin Allergy & Rash': ['rash', 'itching', 'allergy', 'redness', 'hive', 'దురద', 'అలర్జీ', 'దద్దుర్లు', 'खुजली', 'एलर्जी'],
-      'Eye Irritation': ['eye pain', 'eye redness', 'burning eyes', 'కంటి నొప్పి', 'కళ్ళు ఎర్రబడటం', 'आंख में दर्द'],
+      'Fever & Chills': [
+        'fever', 'temperature', 'chills', 'shivering', '100', '101', '102', '103', '104',
+        'జ్వరం', 'చలి', 'బుఖార్', 'तापमान', 'बुखार', 'कपकपी',
+        'jwaram', 'jvaram', 'bukhar', 'tapman'
+      ],
+      'Headache & Migraine': [
+        'headache', 'head pain', 'migraine', 'throbbing head',
+        'తలనొప్పి', 'తల నొప్పి', 'మైగ్రేన్', 'सिरदर्द', 'सिर दर्द', 'माइग्रेन',
+        'thalanoppi', 'thala noppi', 'sar dard', 'sir dard'
+      ],
+      'Cold, Cough & Throat': [
+        'throat', 'cough', 'cold', 'sore throat', 'congestion', 'runny nose', 'pharyngitis',
+        'గొంతు', 'దగ్గు', 'జలుబు', 'ముక్కు కారడం', 'खांसी', 'जुकाम', 'गले में खराश', 'गला दर्द',
+        'gonthu', 'daggu', 'jalubu', 'khansi', 'jukham', 'sardi'
+      ],
+      'Body Ache & Fatigue': [
+        'body pain', 'body ache', 'muscle pain', 'fatigue', 'weakness', 'tiredness',
+        'ఒంటి నొప్పులు', 'ఒళ్ళు నొప్పులు', 'నీరసం', 'బలహీనత', 'बदन दर्द', 'कमजोरी', 'थकान',
+        'nerasam', 'onti noppulu', 'ollu noppi', 'badan dard', 'kamzori'
+      ],
+      'Acidity & Gastric': [
+        'acidity', 'acid reflux', 'heartburn', 'gas', 'bloating', 'belching', 'gerd',
+        'ఎసిడిటీ', 'గ్యాస్', 'మంట', 'छाती में जलन', 'गैस', 'एसिडिटी',
+        'kadupulo manta'
+      ],
+      'Stomach Ache & Nausea': [
+        'stomach', 'abdomen', 'cramps', 'vomit', 'nausea', 'loose motions', 'diarrhea',
+        'కడుపు నొప్పి', 'వాంతులు', 'విరేచనాలు', 'జీర్ణసమస్య', 'पेट दर्द', 'उल्टी', 'दस्त',
+        'kadupu noppi', 'pait dard', 'pet dard'
+      ],
+      'Joint & Knee Pain': [
+        'joint', 'knee', 'backache', 'back pain', 'spine', 'arthritis', 'sciatica',
+        'మోకాలు', 'కీళ్ళ', 'నడుము నొప్పి', 'వెన్ను నొప్పి', 'घुटनों में दर्द', 'जोड़ों का दर्द', 'कमर दर्द',
+        'mokalu', 'keella', 'nadumu noppi', 'ghutne'
+      ],
+      'Hypertension & Cardiac': [
+        'bp', 'blood pressure', 'chest pain', 'chest tightness', 'palpitations', 'heart rate',
+        'రక్తపోటు', 'బ్లడ్ ప్రెషర్', 'ఛాతీ నొప్పి', 'గుండె దడ', 'बीपी', 'रक्तचाप',
+        'chathi noppi', 'gunde noppi', 'seene me dard'
+      ],
+      'Diabetes & High Sugar': [
+        'sugar', 'diabetes', 'glucose', 'frequent thirst', 'frequent urination',
+        'షుగర్', 'మధుమేహం', 'డయాబెటిస్', 'शुगर', 'मधुमेह'
+      ],
+      'Skin Allergy & Rash': [
+        'rash', 'itching', 'allergy', 'redness', 'hive',
+        'దురద', 'అలర్జీ', 'దద్దుర్లు', 'खुजली', 'एलर्जी',
+        'durada', 'khujli'
+      ],
+      'Eye Irritation': [
+        'eye pain', 'eye redness', 'burning eyes',
+        'కంటి నొప్పి', 'కళ్ళు ఎర్రబడటం', 'आंख में दर्द',
+        'kanti noppi', 'aankh dard'
+      ],
     };
 
     map.forEach((symptom, keywords) {
@@ -542,22 +585,22 @@ STAGE-BY-STAGE GUIDELINES:
 
   static String _categorizeQuery(String text) {
     final lower = text.toLowerCase();
-    if (lower.contains('chest pain') || lower.contains('unconscious') || lower.contains('severe breath') || lower.contains('heart attack') || lower.contains('గుండె నొప్పి')) {
+    if (lower.contains('chest pain') || lower.contains('unconscious') || lower.contains('severe breath') || lower.contains('heart attack') || lower.contains('గుండె నొప్పి') || lower.contains('chathi noppi') || lower.contains('seene me dard')) {
       return 'Emergency Urgent';
     }
-    if (lower.contains('fever') || lower.contains('chills') || lower.contains('101') || lower.contains('102') || lower.contains('జ్వరం') || lower.contains('बुखार')) {
+    if (lower.contains('fever') || lower.contains('chills') || lower.contains('101') || lower.contains('102') || lower.contains('జ్వరం') || lower.contains('బుఖార్') || lower.contains('बुखार') || lower.contains('jwaram') || lower.contains('bukhar')) {
       return 'Fever & Viral Infection';
     }
-    if (lower.contains('throat') || lower.contains('cough') || lower.contains('cold') || lower.contains('congestion') || lower.contains('గొంతు') || lower.contains('దగ్గు') || lower.contains('खांसी')) {
+    if (lower.contains('throat') || lower.contains('cough') || lower.contains('cold') || lower.contains('congestion') || lower.contains('గొంతు') || lower.contains('దగ్గు') || lower.contains('खांसी') || lower.contains('gonthu') || lower.contains('daggu') || lower.contains('khansi')) {
       return 'Upper Respiratory & ENT';
     }
-    if (lower.contains('headache') || lower.contains('migraine') || lower.contains('తలనొప్పి') || lower.contains('सिरदर्द')) {
+    if (lower.contains('headache') || lower.contains('migraine') || lower.contains('తలనొప్పి') || lower.contains('सिरदर्द') || lower.contains('thalanoppi') || lower.contains('sar dard')) {
       return 'Headache & Neurological';
     }
-    if (lower.contains('stomach') || lower.contains('acidity') || lower.contains('gas') || lower.contains('vomit') || lower.contains('loose motions') || lower.contains('కడుపు') || lower.contains('ఎసిడిటీ') || lower.contains('पेट')) {
+    if (lower.contains('stomach') || lower.contains('acidity') || lower.contains('gas') || lower.contains('vomit') || lower.contains('loose motions') || lower.contains('కడుపు') || lower.contains('ఎసిడిటీ') || lower.contains('पेट') || lower.contains('kadupu') || lower.contains('pait dard') || lower.contains('pet dard')) {
       return 'Gastroenterology & Acidity';
     }
-    if (lower.contains('knee') || lower.contains('joint') || lower.contains('back') || lower.contains('arthritis') || lower.contains('మోకాలు') || lower.contains('కీళ్ళ') || lower.contains('घुटनों') || lower.contains('जोड़ों')) {
+    if (lower.contains('knee') || lower.contains('joint') || lower.contains('back') || lower.contains('arthritis') || lower.contains('మోకాలు') || lower.contains('కీళ్ళ') || lower.contains('घुटनों') || lower.contains('जोड़ों') || lower.contains('mokalu') || lower.contains('ghutne')) {
       return 'Orthopedic & Joint Care';
     }
     if (lower.contains('sugar') || lower.contains('diabetes') || lower.contains('షుగర్') || lower.contains('मधुमेह')) {
