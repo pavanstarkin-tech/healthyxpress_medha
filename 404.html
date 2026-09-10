@@ -1052,34 +1052,40 @@
         }
 
         const el = document.createElement("div");
-        el.className = "healthexpress-mapbox-marker";
-        el.style.width = opts.size ? (opts.size + "px") : "42px";
-        el.style.height = opts.size ? (opts.size + "px") : "42px";
-        el.style.borderRadius = opts.borderRadius || "12px";
+        el.className = "healthexpress-pin-marker";
         el.style.display = "flex";
         el.style.alignItems = "center";
         el.style.justifyContent = "center";
         el.style.cursor = "pointer";
-        el.style.boxShadow = "0 6px 18px rgba(0,0,0,0.22)";
-        el.style.backgroundColor = opts.color || "#FFFFFF";
-        el.style.border = opts.border || "2.5px solid #2563EB";
-        el.style.padding = "3px";
         el.style.transition = "transform 0.2s ease";
+        el.style.background = "transparent";
+        el.style.border = "none";
+        el.style.padding = "0";
+
+        if (!opts.isRawHtml) {
+          el.style.width = opts.size ? (opts.size + "px") : "38px";
+          el.style.height = opts.size ? (opts.size + "px") : "38px";
+        }
+
         el.innerHTML = opts.iconHtml || "📍";
+
+        const mWidth = opts.width || 38;
+        const mHeight = opts.height || 48;
 
         if (entry.type === 'mapbox') {
           const marker = new mapboxgl.Marker({
             element: el,
+            anchor: opts.anchor || 'bottom',
             draggable: opts.draggable === true
           })
             .setLngLat([lng, lat])
             .addTo(entry.instance);
 
           if (opts.popupHtml) {
-            const popup = new mapboxgl.Popup({ offset: 25, maxWidth: "320px", closeButton: true }).setHTML(opts.popupHtml);
+            const popup = new mapboxgl.Popup({ offset: [0, -mHeight], maxWidth: "320px", closeButton: true }).setHTML(opts.popupHtml);
             marker.setPopup(popup);
           } else if (opts.popupText) {
-            const popup = new mapboxgl.Popup({ offset: 25 }).setHTML("<strong>" + opts.popupText + "</strong>");
+            const popup = new mapboxgl.Popup({ offset: [0, -mHeight] }).setHTML("<strong>" + opts.popupText + "</strong>");
             marker.setPopup(popup);
           }
 
@@ -1090,9 +1096,9 @@
           const customIcon = L.divIcon({
             className: 'healthexpress-leaflet-custom',
             html: el.outerHTML,
-            iconSize: [42, 42],
-            iconAnchor: [21, 21],
-            popupAnchor: [0, -21]
+            iconSize: [mWidth, mHeight],
+            iconAnchor: [mWidth / 2, mHeight],
+            popupAnchor: [0, -mHeight]
           });
 
           const lmarker = L.marker([lat, lng], { icon: customIcon }).addTo(entry.instance);
