@@ -1517,6 +1517,151 @@
       }
     };
 
+    // Real-Time Live Camera Streamer & Frame Grabber for HealthExpress AI Vision Lens
+    window.healthExpressAiLensCamera = {
+      stream: null,
+      videoElem: null,
+      facingMode: 'environment',
+      activeContainerId: '',
+      canvas: null,
+      ctx: null,
+
+      findElement: function(id, root = document) {
+        if (!id) return null;
+        if (root.getElementById) {
+          const direct = root.getElementById(id);
+          if (direct) return direct;
+        }
+        const all = root.querySelectorAll ? root.querySelectorAll('*') : [];
+        for (const el of all) {
+          if (el.id === id) return el;
+          if (el.shadowRoot) {
+            const found = this.findElement(id, el.shadowRoot);
+            if (found) return found;
+          }
+        }
+        return null;
+      },
+
+      start: async function(containerId, requestedFacing) {
+        if (requestedFacing) this.facingMode = requestedFacing;
+        if (containerId) this.activeContainerId = containerId;
+        this.stop();
+
+        try {
+          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            return JSON.stringify({ success: false, error: 'Camera API not supported on this browser' });
+          }
+
+          let stream;
+          try {
+            stream = await navigator.mediaDevices.getUserMedia({
+              video: {
+                facingMode: { ideal: this.facingMode },
+                width: { ideal: 1280, min: 480 },
+                height: { ideal: 720, min: 360 }
+              },
+              audio: false
+            });
+          } catch (e1) {
+            // Fallback for laptops/webcams without environment lens
+            stream = await navigator.mediaDevices.getUserMedia({
+              video: true,
+              audio: false
+            });
+          }
+
+          this.stream = stream;
+
+          // Find video element across regular DOM and Flutter Shadow DOMs
+          let video = this.findElement(this.activeContainerId);
+          if (!video) {
+            // Search by video tag if ID is not yet attached
+            const allVideos = document.querySelectorAll('video');
+            if (allVideos.length > 0) {
+              video = allVideos[allVideos.length - 1];
+            }
+          }
+
+          if (video) {
+            video.srcObject = stream;
+            video.setAttribute('playsinline', 'true');
+            video.setAttribute('autoplay', 'true');
+            video.setAttribute('muted', 'true');
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.objectFit = 'cover';
+            try {
+              await video.play();
+            } catch(pErr) {
+              console.warn("Video autoplay notice:", pErr);
+            }
+            this.videoElem = video;
+          }
+
+          console.log("📸 HealthExpress AI Lens Live Camera active:", stream.id);
+          return JSON.stringify({ success: true, facingMode: this.facingMode });
+        } catch (err) {
+          console.error("Camera stream error:", err);
+          const msg = err.name === 'NotAllowedError'
+            ? 'Camera access denied. Please allow camera permissions in your browser URL bar.'
+            : 'Unable to access camera: ' + (err.message || 'Device camera unavailable');
+          return JSON.stringify({ success: false, error: msg });
+        }
+      },
+
+      captureFrame: function(containerId) {
+        try {
+          let video = this.videoElem;
+          if (!video || !video.srcObject) {
+            video = this.findElement(containerId || this.activeContainerId);
+          }
+          if (!video || video.readyState < 2) {
+            return JSON.stringify({ success: false, error: 'Camera stream not ready yet. Please wait 1 second.' });
+          }
+
+          if (!this.canvas) {
+            this.canvas = document.createElement('canvas');
+            this.ctx = this.canvas.getContext('2d');
+          }
+
+          const w = video.videoWidth || 1280;
+          const h = video.videoHeight || 720;
+          this.canvas.width = w;
+          this.canvas.height = h;
+
+          this.ctx.drawImage(video, 0, 0, w, h);
+          const dataUrl = this.canvas.toDataURL('image/jpeg', 0.88);
+
+          return JSON.stringify({
+            success: true,
+            dataUrl: dataUrl,
+            width: w,
+            height: h
+          });
+        } catch (err) {
+          console.error("Frame capture error:", err);
+          return JSON.stringify({ success: false, error: err.message });
+        }
+      },
+
+      switchCamera: async function() {
+        this.facingMode = this.facingMode === 'environment' ? 'user' : 'environment';
+        return await this.start(this.activeContainerId, this.facingMode);
+      },
+
+      stop: function() {
+        if (this.stream) {
+          this.stream.getTracks().forEach(t => t.stop());
+          this.stream = null;
+        }
+        if (this.videoElem) {
+          this.videoElem.srcObject = null;
+        }
+        return JSON.stringify({ success: true });
+      }
+    };
+
     // Camera Capture & Image Upload for AI Food / Medicine Lens
     window.captureCameraPhotoOrGallery = function(useCamera) {
       return new Promise((resolve) => {
@@ -1557,6 +1702,7 @@
       });
     };
   </script>
+
 
   <script src="flutter_bootstrap.js" async></script>
 </body>
