@@ -110142,15 +110142,14 @@ apj(){$.a6T()
 var s=this.e
 s===$&&A.b()
 $.qZ().uJ(s,new A.aoL(this),!0)},
-kg(){var s=0,r=A.L(t.H),q=1,p=[],o=this,n,m,l,k,j,i,h,g
+kg(){var s=0,r=A.L(t.H),q=1,p=[],o=this,n,m,l,k,j,i,h
 var $async$kg=A.M(function(a,b){if(a===1){p.push(b)
 s=q}for(;;)switch(s){case 0:if(o.c!=null)o.D(new A.aoM(o))
 q=3
-j=v.G.healthExpressAiLensCamera
-i=o.d
-i===$&&A.b()
+j=o.d
+j===$&&A.b()
 s=6
-return A.A(A.d8(j.start(i,o.x),t.N),$async$kg)
+return A.A(A.d8(v.G.aiLensCameraStart(j,o.x),t.N),$async$kg)
 case 6:n=b
 m=n
 l=t.P.a(B.aa.cE(m,null))
@@ -110160,8 +110159,8 @@ o.a.toString}q=1
 s=5
 break
 case 3:q=2
-g=p.pop()
-k=A.ao(g)
+h=p.pop()
+k=A.ao(h)
 if(o.c!=null)o.D(new A.aoP(o,k))
 s=5
 break
@@ -110170,18 +110169,17 @@ break
 case 5:return A.J(null,r)
 case 1:return A.I(p.at(-1),r)}})
 return A.K($async$kg,r)},
-Lz(){var s=0,r=A.L(t.ob),q,p=this,o,n,m,l,k,j,i
+Lz(){var s=0,r=A.L(t.ob),q,p=this,o,n,m,l,k,j
 var $async$Lz=A.M(function(a,b){if(a===1)return A.I(b,r)
-for(;;)switch(s){case 0:try{k=v.G.healthExpressAiLensCamera
-j=p.d
-j===$&&A.b()
-o=k.captureFrame(j)
+for(;;)switch(s){case 0:try{k=p.d
+k===$&&A.b()
+o=v.G.aiLensCameraCaptureFrame(k)
 n=o
 m=t.P.a(B.aa.cE(n,null))
 if(J.d(J.ah(m,"success"),!0)&&J.ah(m,"dataUrl")!=null){k=A.bb(J.ah(m,"dataUrl"))
 q=k
 s=1
-break}}catch(h){l=A.ao(h)
+break}}catch(i){l=A.ao(i)
 A.cO().$1("Snapshot capture error: "+A.p(l))}q=null
 s=1
 break
@@ -110191,7 +110189,7 @@ kj(){var s=0,r=A.L(t.H),q=1,p=[],o=this,n,m,l,k,j,i
 var $async$kj=A.M(function(a,b){if(a===1){p.push(b)
 s=q}for(;;)switch(s){case 0:q=3
 s=6
-return A.A(A.d8(v.G.healthExpressAiLensCamera.switchCamera(),t.N),$async$kj)
+return A.A(A.d8(v.G.aiLensCameraSwitch(),t.N),$async$kj)
 case 6:n=b
 m=n
 l=t.P.a(B.aa.cE(m,null))
@@ -110211,7 +110209,7 @@ case 5:return A.J(null,r)
 case 1:return A.I(p.at(-1),r)}})
 return A.K($async$kj,r)},
 GI(){var s
-try{v.G.healthExpressAiLensCamera.stop()
+try{v.G.aiLensCameraStop()
 if(this.c!=null)this.D(new A.aoQ(this))}catch(s){}},
 m(){this.GI()
 this.ap()},
