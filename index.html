@@ -146,8 +146,9 @@
           this.silenceCutoffTriggered = false;
           return true;
         }
-        if (this.isListening && this.hasSpoken && (Date.now() - this.lastSpeechTimestamp > 950) && this.lastTranscript && this.lastTranscript.trim().length > 0) {
+        if (this.isListening && this.hasSpoken && this.lastSpeechTimestamp > 0 && (Date.now() - this.lastSpeechTimestamp > 1400) && this.lastTranscript && this.lastTranscript.trim().length >= 3) {
           this.hasSpoken = false;
+          this.lastSpeechTimestamp = 0;
           return true;
         }
         return false;
@@ -471,9 +472,12 @@
           this.pcmData = [];
           this.hasVoiceEnergy = false;
           this.lastVoiceEnergyTime = 0;
-          
-          // Always start Web Speech API simultaneously for instant local recognition
           if (window.healthExpressSpeech) {
+            window.healthExpressSpeech.silenceCutoffTriggered = false;
+            window.healthExpressSpeech.hasSpoken = false;
+            window.healthExpressSpeech.lastSpeechTimestamp = 0;
+            window.healthExpressSpeech.lastTranscript = '';
+            window.healthExpressSpeech.interimTranscript = '';
             window.healthExpressSpeech.startListening(lang || 'en-IN');
           }
 
@@ -512,8 +516,8 @@
                   if (rms > 0.015) {
                     this.hasVoiceEnergy = true;
                     this.lastVoiceEnergyTime = Date.now();
-                  } else if (this.hasVoiceEnergy && (Date.now() - this.lastVoiceEnergyTime > 1000) && this.pcmData.length > 8) {
-                    if (window.healthExpressSpeech && window.healthExpressSpeech.lastTranscript && window.healthExpressSpeech.lastTranscript.length > 0) {
+                  } else if (this.hasVoiceEnergy && this.lastVoiceEnergyTime > 0 && (Date.now() - this.lastVoiceEnergyTime > 1400) && this.pcmData.length > 12) {
+                    if (window.healthExpressSpeech && window.healthExpressSpeech.lastTranscript && window.healthExpressSpeech.lastTranscript.trim().length >= 3) {
                       window.healthExpressSpeech.silenceCutoffTriggered = true;
                     }
                   }
