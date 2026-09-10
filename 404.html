@@ -946,7 +946,10 @@
           .setLngLat([lng, lat])
           .addTo(map);
 
-        if (opts.popupText) {
+        if (opts.popupHtml) {
+          const popup = new mapboxgl.Popup({ offset: 25, maxWidth: "320px", closeButton: true }).setHTML(opts.popupHtml);
+          marker.setPopup(popup);
+        } else if (opts.popupText) {
           const popup = new mapboxgl.Popup({ offset: 25 }).setHTML("<strong>" + opts.popupText + "</strong>");
           marker.setPopup(popup);
         }
@@ -954,6 +957,15 @@
         if (!this.markers[containerId]) this.markers[containerId] = {};
         this.markers[containerId][markerId] = marker;
         return true;
+      },
+
+      clearAllMarkers: function(containerId) {
+        if (this.markers[containerId]) {
+          Object.values(this.markers[containerId]).forEach(function(m) {
+            try { m.remove(); } catch (_) {}
+          });
+          this.markers[containerId] = {};
+        }
       },
 
       renderRoute: function(containerId, coordinates) {
