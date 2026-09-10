@@ -857,42 +857,63 @@
           const opts = JSON.parse(optionsStr || "{}");
           mapboxgl.accessToken = opts.accessToken || "pk.eyJ1IjoicGF2YW5rdW1hcnN3YW15IiwiYSI6ImNtNnc1c3ZpdTBkdGgyanM5b25rN2ZqcncifQ.Ls1e2W6rx3apoBsStWa5Ow";
 
-          const container = document.getElementById(containerId);
-          if (!container) return JSON.stringify({ success: false, error: "Container not found" });
+          const self = this;
+          let attempts = 0;
 
-          if (this.maps[containerId]) {
-            try { this.maps[containerId].remove(); } catch (_) {}
-            delete this.maps[containerId];
-          }
-
-          const map = new mapboxgl.Map({
-            container: containerId,
-            style: opts.style || "mapbox://styles/mapbox/streets-v12",
-            center: [opts.centerLng || 78.3880, opts.centerLat || 17.4420],
-            zoom: opts.zoom || 14,
-            pitch: opts.pitch || 0,
-            bearing: opts.bearing || 0,
-            interactive: opts.interactive !== false,
-          });
-
-          if (opts.showControls !== false) {
-            map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), "top-right");
-          }
-
-          map.on("load", () => {
-            map.resize();
-            if (opts.routeCoords && opts.routeCoords.length > 1) {
-              window.healthExpressMapbox.renderRoute(containerId, opts.routeCoords);
+          function tryAttach() {
+            const container = document.getElementById(containerId);
+            if (!container) {
+              if (attempts < 30) {
+                attempts++;
+                setTimeout(tryAttach, 50);
+              }
+              return;
             }
-          });
 
-          setTimeout(() => map.resize(), 150);
-          setTimeout(() => map.resize(), 600);
-          setTimeout(() => map.resize(), 1500);
+            if (self.maps[containerId]) {
+              try { self.maps[containerId].remove(); } catch (_) {}
+              delete self.maps[containerId];
+            }
 
-          this.maps[containerId] = map;
-          this.markers[containerId] = {};
+            const map = new mapboxgl.Map({
+              container: containerId,
+              style: opts.style || "mapbox://styles/mapbox/streets-v12",
+              center: [opts.centerLng || 78.3880, opts.centerLat || 17.4420],
+              zoom: opts.zoom || 14,
+              pitch: opts.pitch || 0,
+              bearing: opts.bearing || 0,
+              interactive: opts.interactive !== false,
+            });
 
+            if (opts.showControls !== false) {
+              map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), "top-right");
+            }
+
+            map.on("load", () => {
+              map.resize();
+              if (opts.routeCoords && opts.routeCoords.length > 1) {
+                self.renderRoute(containerId, opts.routeCoords);
+              }
+            });
+
+            // Automatically resize whenever container size changes
+            if (window.ResizeObserver) {
+              const ro = new ResizeObserver(() => {
+                try { map.resize(); } catch (_) {}
+              });
+              ro.observe(container);
+            }
+
+            setTimeout(() => map.resize(), 100);
+            setTimeout(() => map.resize(), 300);
+            setTimeout(() => map.resize(), 800);
+            setTimeout(() => map.resize(), 1500);
+
+            self.maps[containerId] = map;
+            self.markers[containerId] = {};
+          }
+
+          tryAttach();
           return JSON.stringify({ success: true });
         } catch (e) {
           console.error("Mapbox init error:", e);
