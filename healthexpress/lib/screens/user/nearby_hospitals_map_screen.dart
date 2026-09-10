@@ -741,14 +741,37 @@ class _NearbyHospitalsMapScreenState extends State<NearbyHospitalsMapScreen> {
           ),
         ),
 
-        // 3. Compact Horizontal Carousel of Hospital Cards (Docked Flush at bottom)
+        // 3. Bottom Crop & Gradient Veil (Seamlessly blends bottom 60px into nav bar)
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: 60,
+          child: IgnorePointer(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.white.withValues(alpha: 0.0),
+                    Colors.white.withValues(alpha: 0.75),
+                    Colors.white,
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // 4. Compact Horizontal Carousel of Hospital Cards (Docked Flush at bottom)
         if (filtered.isNotEmpty)
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.only(bottom: 6),
+              padding: const EdgeInsets.only(bottom: 4),
               child: SizedBox(
                 height: 138,
                 child: PageView.builder(
