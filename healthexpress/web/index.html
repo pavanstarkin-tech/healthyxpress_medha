@@ -921,6 +921,167 @@
 
     // ==========================================
     // ==========================================
+    // Real HTML5 Camera Stream Engine for AI Lens & Video Consultations
+    // ==========================================
+    window.healthExpressAiLensCamera = {
+      stream: null,
+      facingMode: 'environment',
+      activeContainerId: null,
+
+      _findVideoElement: function(id) {
+        if (!id) return null;
+        let el = document.getElementById(id);
+        if (el && el.tagName === 'VIDEO') return el;
+
+        // Recursive shadow DOM search
+        const searchShadow = function(root) {
+          if (!root) return null;
+          if (root.getElementById) {
+            const found = root.getElementById(id);
+            if (found && found.tagName === 'VIDEO') return found;
+          }
+          if (root.querySelector) {
+            const found = root.querySelector('#' + id);
+            if (found && found.tagName === 'VIDEO') return found;
+          }
+          const children = root.querySelectorAll ? root.querySelectorAll('*') : [];
+          for (let i = 0; i < children.length; i++) {
+            if (children[i].shadowRoot) {
+              const res = searchShadow(children[i].shadowRoot);
+              if (res) return res;
+            }
+          }
+          return null;
+        };
+
+        const shadowRes = searchShadow(document);
+        if (shadowRes) return shadowRes;
+
+        // Fallback: look for video elements on page
+        const videos = document.querySelectorAll('video');
+        if (videos && videos.length > 0) {
+          for (let i = 0; i < videos.length; i++) {
+            if (videos[i].id === id || videos[i].getAttribute('data-container-id') === id) {
+              return videos[i];
+            }
+          }
+          return videos[videos.length - 1];
+        }
+        return null;
+      },
+
+      start: async function(containerId, facing) {
+        try {
+          this.activeContainerId = containerId;
+          this.facingMode = facing || this.facingMode || 'environment';
+
+          if (this.stream) {
+            this.stream.getTracks().forEach(t => t.stop());
+            this.stream = null;
+          }
+
+          let stream = null;
+          try {
+            stream = await navigator.mediaDevices.getUserMedia({
+              video: {
+                facingMode: { ideal: this.facingMode },
+                width: { ideal: 1920 },
+                height: { ideal: 1080 }
+              },
+              audio: false
+            });
+          } catch (e1) {
+            console.warn("Retrying camera with generic constraints:", e1);
+            stream = await navigator.mediaDevices.getUserMedia({
+              video: true,
+              audio: false
+            });
+          }
+
+          this.stream = stream;
+
+          // Attach stream to video element
+          const attachToDom = () => {
+            const videoEl = this._findVideoElement(this.activeContainerId);
+            if (videoEl) {
+              videoEl.srcObject = stream;
+              videoEl.setAttribute('playsinline', 'true');
+              videoEl.setAttribute('autoplay', 'true');
+              videoEl.setAttribute('muted', 'true');
+              videoEl.play().catch(() => {});
+              return true;
+            }
+            return false;
+          };
+
+          if (!attachToDom()) {
+            let attempts = 0;
+            const interval = setInterval(() => {
+              attempts++;
+              if (attachToDom() || attempts > 25) {
+                clearInterval(interval);
+              }
+            }, 50);
+          }
+
+          return JSON.stringify({ success: true, facingMode: this.facingMode });
+        } catch (err) {
+          console.error("Camera start error:", err);
+          return JSON.stringify({ success: false, error: err.message || err.toString() });
+        }
+      },
+
+      captureFrame: function(containerId) {
+        try {
+          const videoEl = this._findVideoElement(containerId || this.activeContainerId);
+          const canvas = document.createElement('canvas');
+          
+          if (videoEl && videoEl.videoWidth > 0 && videoEl.videoHeight > 0) {
+            canvas.width = videoEl.videoWidth;
+            canvas.height = videoEl.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            return JSON.stringify({ success: true, dataUrl: dataUrl });
+          }
+
+          return JSON.stringify({ success: false, error: 'Camera stream not active or video frame not ready' });
+        } catch (err) {
+          return JSON.stringify({ success: false, error: err.toString() });
+        }
+      },
+
+      switchCamera: async function() {
+        this.facingMode = (this.facingMode === 'environment' || this.facingMode === 'back') ? 'user' : 'environment';
+        return await this.start(this.activeContainerId, this.facingMode);
+      },
+
+      stop: function() {
+        if (this.stream) {
+          this.stream.getTracks().forEach(t => t.stop());
+          this.stream = null;
+        }
+        return JSON.stringify({ success: true });
+      }
+    };
+
+    window.aiLensCameraStart = function(containerId, facingMode) {
+      return window.healthExpressAiLensCamera.start(containerId, facingMode);
+    };
+
+    window.aiLensCameraCaptureFrame = function(containerId) {
+      return window.healthExpressAiLensCamera.captureFrame(containerId);
+    };
+
+    window.aiLensCameraSwitch = function() {
+      return window.healthExpressAiLensCamera.switchCamera();
+    };
+
+    window.aiLensCameraStop = function() {
+      return window.healthExpressAiLensCamera.stop();
+    };
+
+    // ==========================================
     // Real Mapbox GL JS & Leaflet Map Engine
     // ==========================================
     window._mapboxDomContainers = {};

@@ -7,16 +7,16 @@ import 'package:web/web.dart' as web;
 import 'dart:ui_web' as ui_web;
 import '../core/theme/app_colors.dart';
 
-@JS('healthExpressAiLensCamera.start')
+@JS('aiLensCameraStart')
 external JSPromise<JSString> _jsCameraStart(JSString containerId, JSString facingMode);
 
-@JS('healthExpressAiLensCamera.captureFrame')
+@JS('aiLensCameraCaptureFrame')
 external JSString _jsCameraCaptureFrame(JSString containerId);
 
-@JS('healthExpressAiLensCamera.switchCamera')
+@JS('aiLensCameraSwitch')
 external JSPromise<JSString> _jsCameraSwitch();
 
-@JS('healthExpressAiLensCamera.stop')
+@JS('aiLensCameraStop')
 external JSString _jsCameraStop();
 
 typedef OnSnapshotCapturedCallback = void Function(String base64DataUri);
