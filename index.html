@@ -357,9 +357,16 @@
           if (!keys.includes('sk_hr3tv6ew_UBzXjEc9RqZLGuMpzyctBUQC')) {
             keys.push('sk_hr3tv6ew_UBzXjEc9RqZLGuMpzyctBUQC');
           }
-          const targetLang = (lang && (lang.includes('te') || lang === 'te'))
+          let targetLang = (lang && (lang.includes('te') || lang === 'te'))
             ? 'te-IN'
             : ((lang && (lang.includes('hi') || lang === 'hi')) ? 'hi-IN' : 'en-IN');
+          
+          // Auto-detect script in text as primary truth for TTS voice & pronunciation
+          if (/[\u0C00-\u0C7F]/.test(cleanText)) {
+            targetLang = 'te-IN';
+          } else if (/[\u0900-\u097F]/.test(cleanText)) {
+            targetLang = 'hi-IN';
+          }
           
           // Realistic Indian Clinical Voice Selection for Sarvam bulbul:v3
           // Telugu: kavitha | Hindi: kavya | English: priya
