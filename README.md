@@ -105,34 +105,52 @@ flowchart TD
 
 ## 1. User Interface & Screen Gallery
 
-### 📱 A. Patient Super-App — Home, Hospital Beds & Live Mapbox GPS
+### 📱 Patient Super-App & Doctor Telehealth Console (5 screens per row)
+
+#### Row 1: Patient Discovery, Hospital Beds & Live Mapbox GPS
 | Splash & Welcome | Patient Super-App Home | Nearby Hospitals & Beds | Mapbox GL GPS Map | Hospital Facility Details |
 | :---: | :---: | :---: | :---: | :---: |
 | <img src="ui/splash.png" width="180" alt="Splash Screen" /> | <img src="ui/home.png" width="180" alt="Patient Home Dashboard" /> | <img src="ui/nearbyhospitals.png" width="180" alt="Nearby Hospital Beds" /> | <img src="ui/hospitals-map.png" width="180" alt="Mapbox GPS Map" /> | <img src="ui/hospital.png" width="180" alt="Hospital Facility Details" /> |
 
-### 🧠 B. Multilingual Voice AI Triage & Groq AI Vision Scanner
-| Multilingual AI Chat | Live AI Voice Call | Auto-Language Selection | AI Lens Scanner | Live Camera Capture | Instant AI Vision Diagnosis |
-| :---: | :---: | :---: | :---: | :---: | :---: |
-| <img src="ui/ai-chat.png" width="180" alt="Multilingual AI Chat" /> | <img src="ui/ai-call.png" width="180" alt="Live AI Voice Call" /> | <img src="ui/ai-call-lang.png" width="180" alt="Auto-Language Selection" /> | <img src="ui/ai-vision.png" width="180" alt="AI Lens Scanner" /> | <img src="ui/ai-capture.png" width="180" alt="Live Camera Capture" /> | <img src="ui/ai vision responses.png" width="180" alt="Instant AI Diagnosis" /> |
+#### Row 2: Multilingual Voice AI Triage & Groq AI Vision Scanner
+| Multilingual AI Chat | Live AI Voice Call | Auto-Language Selection | AI Lens Scanner | Live Camera Capture |
+| :---: | :---: | :---: | :---: | :---: |
+| <img src="ui/ai-chat.png" width="180" alt="Multilingual AI Chat" /> | <img src="ui/ai-call.png" width="180" alt="Live AI Voice Call" /> | <img src="ui/ai-call-lang.png" width="180" alt="Auto-Language Selection" /> | <img src="ui/ai-vision.png" width="180" alt="AI Lens Scanner" /> | <img src="ui/ai-capture.png" width="180" alt="Live Camera Capture" /> |
 
-### 🩺 C. Doctor Discovery, Teleconsultation & Digital E-Prescriptions
-| Doctor Discovery | Slot Selection & Booking | Booking Confirmation | Patient Appointments | Agora HD Video Call | Live Audio Telehealth | Doctor-Patient Chat | Digital E-Prescription |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| <img src="ui/docters.png" width="180" alt="Doctor Discovery" /> | <img src="ui/docters-book.png" width="180" alt="Doctor Slot Booking" /> | <img src="ui/boking-confirm.png" width="180" alt="Booking Confirmation" /> | <img src="ui/appintments.png" width="180" alt="Patient Appointments" /> | <img src="ui/videocall.png" width="180" alt="Agora Video Call" /> | <img src="ui/call.png" width="180" alt="Audio Telehealth Call" /> | <img src="ui/doc chat.png" width="180" alt="Doctor-Patient Chat" /> | <img src="ui/medicene-suggestion by docter.png" width="180" alt="Digital E-Prescription" /> |
+#### Row 3: Instant AI Diagnosis, Doctor Discovery & Appointments
+| Instant AI Diagnosis | Doctor Discovery | Slot Selection & Booking | Booking Confirmation | Patient Appointments |
+| :---: | :---: | :---: | :---: | :---: |
+| <img src="ui/ai vision responses.png" width="180" alt="Instant AI Diagnosis" /> | <img src="ui/docters.png" width="180" alt="Doctor Discovery" /> | <img src="ui/docters-book.png" width="180" alt="Doctor Slot Booking" /> | <img src="ui/boking-confirm.png" width="180" alt="Booking Confirmation" /> | <img src="ui/appintments.png" width="180" alt="Patient Appointments" /> |
 
-### 👨‍⚕️ D. Doctor Telehealth Console, ABDM EHR Vault & Aarogyasri Health Pass
-| Doctor Portal Home | Doctor Appointment Queue | AI Clinical Analysis | Doctor Practice Profile | ABDM Patient EHR Records | Aarogyasri 5L Health Pass | ABDM Health Locker |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| <img src="ui/doc-home.png" width="180" alt="Doctor Portal Home" /> | <img src="ui/doc-appoinbtsmnts.png" width="180" alt="Doctor Appointment Queue" /> | <img src="ui/doc-analysis.png" width="180" alt="AI Clinical Analysis" /> | <img src="ui/doc profile.png" width="180" alt="Doctor Profile" /> | <img src="ui/patint records.png" width="180" alt="ABDM Patient Records" /> | <img src="ui/arogyasree card.png" width="180" alt="Aarogyasri Health Pass" /> | <img src="ui/more info.png" width="180" alt="ABDM Health Locker" /> |
+#### Row 4: Telehealth Consultations, Chat & E-Prescriptions
+| Agora HD Video Call | Live Audio Telehealth | Doctor-Patient Chat | Digital E-Prescription | Doctor Portal Home |
+| :---: | :---: | :---: | :---: | :---: |
+| <img src="ui/videocall.png" width="180" alt="Agora Video Call" /> | <img src="ui/call.png" width="180" alt="Audio Telehealth Call" /> | <img src="ui/doc chat.png" width="180" alt="Doctor-Patient Chat" /> | <img src="ui/medicene-suggestion by docter.png" width="180" alt="Digital E-Prescription" /> | <img src="ui/doc-home.png" width="180" alt="Doctor Portal Home" /> |
 
-### 💻 E. Super Admin & Hospital Operations Command Center (React 19 Dashboard)
-| 1. Platform Telemetry & KPIs | 2. Hospital Beds & ICU Tracking | 3. Doctor Credentials Verification | 4. Pharmacy Dark Store KYC Queue |
-| :---: | :---: | :---: | :---: |
-| <img src="ui/admin-panal-tabs (1).png" width="280" alt="Super Admin Telemetry" /> | <img src="ui/admin-panal-tabs (2).png" width="280" alt="Hospital Bed Tracking" /> | <img src="ui/admin-panal-tabs (3).png" width="280" alt="Doctor Verification" /> | <img src="ui/admin-panal-tabs (4).png" width="280" alt="Store KYC Queue" /> |
+#### Row 5: Doctor Clinical Console, ABDM Records & Aarogyasri Health Pass
+| Doctor Appointment Queue | AI Clinical Analysis | Doctor Practice Profile | ABDM Patient Records | Aarogyasri 5L Health Pass |
+| :---: | :---: | :---: | :---: | :---: |
+| <img src="ui/doc-appoinbtsmnts.png" width="180" alt="Doctor Appointment Queue" /> | <img src="ui/doc-analysis.png" width="180" alt="AI Clinical Analysis" /> | <img src="ui/doc profile.png" width="180" alt="Doctor Profile" /> | <img src="ui/patint records.png" width="180" alt="ABDM Patient Records" /> | <img src="ui/arogyasree card.png" width="180" alt="Aarogyasri Health Pass" /> |
 
-| 5. 15-Min Pharmacy Inventory | 6. Emergency 108 GPS Dispatch | 7. Diagnostic Lab Test Orders | 8. Revenue Ledger & Settlements |
-| :---: | :---: | :---: | :---: |
-| <img src="ui/admin-panal-tabs (5).png" width="280" alt="Pharmacy Inventory" /> | <img src="ui/admin-panal-tabs (6).png" width="280" alt="Emergency 108 Dispatch" /> | <img src="ui/admin-panal-tabs (7).png" width="280" alt="Lab Test Orders" /> | <img src="ui/admin-panal-tabs (8).png" width="280" alt="Revenue Ledger" /> |
+---
+
+### 💻 Super Admin & Hospital Operations Command Center (2 screens per row)
+
+| 1. Platform Telemetry & Live KPIs | 2. Hospital Operations & Bed Allocation Tracker |
+| :---: | :---: |
+| <img src="ui/admin-panal-tabs (1).png" width="480" alt="Super Admin Telemetry" /> | <img src="ui/admin-panal-tabs (2).png" width="480" alt="Hospital Bed Tracking" /> |
+
+| 3. Doctor Credentials & Medical Council Verification | 4. Pharmacy Dark Store Drug License & KYC Audit |
+| :---: | :---: |
+| <img src="ui/admin-panal-tabs (3).png" width="480" alt="Doctor Verification" /> | <img src="ui/admin-panal-tabs (4).png" width="480" alt="Store KYC Queue" /> |
+
+| 5. 15-Minute Pharmacy Catalog & Stock Levels | 6. Emergency 108 Ambulance GPS Dispatch & Tracking |
+| :---: | :---: |
+| <img src="ui/admin-panal-tabs (5).png" width="480" alt="Pharmacy Inventory" /> | <img src="ui/admin-panal-tabs (6).png" width="480" alt="Emergency 108 Dispatch" /> |
+
+| 7. Diagnostic Lab Test Orders & Home Sample Queue | 8. Platform Revenue Ledger & Payment Settlements |
+| :---: | :---: |
+| <img src="ui/admin-panal-tabs (7).png" width="480" alt="Lab Test Orders" /> | <img src="ui/admin-panal-tabs (8).png" width="480" alt="Revenue Ledger" /> |
 
 ---
 
