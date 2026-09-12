@@ -20,14 +20,11 @@
 ## Executive Presentation Slide Slider
 
 <div align="center">
-  <p><strong>Scroll or Swipe Horizontally to Browse the Complete 12-Slide Deck</strong></p>
+  <p><strong>12-Slide Strategic & Technical Presentation Slider (Auto-Playing)</strong></p>
+  <img src="ppt/presentation_slider.gif" width="100%" alt="HealthExpress AI Executive Presentation Slider" />
 </div>
 
-| Slide 01: Platform Overview | Slide 02: Healthcare Crisis | Slide 03: 15-Minute Care Loop | Slide 04: Multi-Role Architecture | Slide 05: Voice AI Engine | Slide 06: Vision Lens Scanner | Slide 07: Telehealth & WebRTC | Slide 08: Dark Store Logistics | Slide 09: ABDM & Aarogyasri | Slide 10: Tech Matrix | Slide 11: IBM Bob Partnership | Slide 12: Summary & Roadmap |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| <img src="ppt/slides%20(1).png" width="720" alt="Slide 01: Platform Overview & Strategic Vision" /> | <img src="ppt/slides%20(2).png" width="720" alt="Slide 02: Healthcare Crisis vs. Solution" /> | <img src="ppt/slides%20(3).png" width="720" alt="Slide 03: The Golden 15-Minute Care Loop" /> | <img src="ppt/slides%20(4).png" width="720" alt="Slide 04: Multi-Role System Architecture" /> | <img src="ppt/slides%20(5).png" width="720" alt="Slide 05: Multilingual Voice AI & Triage" /> | <img src="ppt/slides%20(6).png" width="720" alt="Slide 06: AI Vision Lens & Prescription Scanner" /> | <img src="ppt/slides%20(7).png" width="720" alt="Slide 07: Real-Time Telehealth & Agora WebRTC" /> | <img src="ppt/slides%20(8).png" width="720" alt="Slide 08: 15-Minute Dark Store Logistics" /> | <img src="ppt/slides%20(9).png" width="720" alt="Slide 09: Government Health Schemes" /> | <img src="ppt/slides%20(10).png" width="720" alt="Slide 10: Full-Stack Technology Matrix" /> | <img src="ppt/slides%20(11).png" width="720" alt="Slide 11: Engineered with IBM Bob" /> | <img src="ppt/slides%20(12).png" width="720" alt="Slide 12: Platform Summary & Future Horizons" /> |
-
-<details open>
+<details>
   <summary><strong>Click to Expand / View Individual Slides Full Width</strong></summary>
   <br/>
 
