@@ -17,6 +17,38 @@
 
 ---
 
+## Executive Presentation & Slide Deck
+
+<div align="center">
+  <p><strong>Complete 12-Slide Strategic & Technical Presentation Deck</strong></p>
+</div>
+
+| Slide 01: Platform Overview & Vision | Slide 02: Healthcare Crisis vs. Solution |
+| :---: | :---: |
+| <a href="ppt/slides%20(1).png"><img src="ppt/slides%20(1).png" width="480" alt="Slide 1: Platform Overview & Vision" /></a> | <a href="ppt/slides%20(2).png"><img src="ppt/slides%20(2).png" width="480" alt="Slide 2: Healthcare Crisis vs. Solution" /></a> |
+
+| Slide 03: The Golden 15-Minute Care Loop | Slide 04: Multi-Role System Architecture |
+| :---: | :---: |
+| <a href="ppt/slides%20(3).png"><img src="ppt/slides%20(3).png" width="480" alt="Slide 3: The Golden 15-Minute Care Loop" /></a> | <a href="ppt/slides%20(4).png"><img src="ppt/slides%20(4).png" width="480" alt="Slide 4: Multi-Role System Architecture" /></a> |
+
+| Slide 05: Multilingual Voice AI & Triage | Slide 06: AI Vision Lens & Prescription Scanner |
+| :---: | :---: |
+| <a href="ppt/slides%20(5).png"><img src="ppt/slides%20(5).png" width="480" alt="Slide 5: Multilingual Voice AI & Triage" /></a> | <a href="ppt/slides%20(6).png"><img src="ppt/slides%20(6).png" width="480" alt="Slide 6: AI Vision Lens & Prescription Scanner" /></a> |
+
+| Slide 07: Real-Time Telehealth & Agora WebRTC | Slide 08: 15-Minute Dark Store Logistics |
+| :---: | :---: |
+| <a href="ppt/slides%20(7).png"><img src="ppt/slides%20(7).png" width="480" alt="Slide 7: Real-Time Telehealth & Agora WebRTC" /></a> | <a href="ppt/slides%20(8).png"><img src="ppt/slides%20(8).png" width="480" alt="Slide 8: 15-Minute Dark Store Logistics" /></a> |
+
+| Slide 09: Government Health Schemes (ABDM & Aarogyasri) | Slide 10: Full-Stack Technology Matrix |
+| :---: | :---: |
+| <a href="ppt/slides%20(9).png"><img src="ppt/slides%20(9).png" width="480" alt="Slide 9: Government Health Schemes" /></a> | <a href="ppt/slides%20(10).png"><img src="ppt/slides%20(10).png" width="480" alt="Slide 10: Full-Stack Technology Matrix" /></a> |
+
+| Slide 11: Engineered with IBM Bob | Slide 12: Platform Summary & Future Horizons |
+| :---: | :---: |
+| <a href="ppt/slides%20(11).png"><img src="ppt/slides%20(11).png" width="480" alt="Slide 11: Engineered with IBM Bob" /></a> | <a href="ppt/slides%20(12).png"><img src="ppt/slides%20(12).png" width="480" alt="Slide 12: Platform Summary & Future Horizons" /></a> |
+
+---
+
 ## Live Production Portals
 
 | Patient & Doctor Super-App | Super Admin Dashboard | Live Backend REST API |
@@ -94,6 +126,7 @@ flowchart LR
 
 ## Table of Contents
 
+* [Executive Presentation & Slide Deck](#executive-presentation--slide-deck)
 * [Core Engineering Team](#core-engineering-team)
 1. [User Interface & Screen Gallery](#1-user-interface--screen-gallery)
 2. [System Architecture](#2-system-architecture)
