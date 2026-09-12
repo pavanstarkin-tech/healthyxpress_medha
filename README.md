@@ -25,6 +25,15 @@
 
 ---
 
+## Core Engineering Team
+
+| Profile | Team Member | Role & Responsibilities | Contact & Profiles |
+| :---: | :--- | :--- | :--- |
+| <img src="https://github.com/pavanstarkin-tech.png" width="90" height="90" style="border-radius:50%" alt="S Pavan Kumar Swamy" /><br/>[@pavanstarkin-tech](https://github.com/pavanstarkin-tech) | **S Pavan Kumar Swamy** | Full-Stack Architecture, Multimodal AI & Mobile Engineering | Email: [`shesettipavankumarswamy@gmail.com`](mailto:shesettipavankumarswamy@gmail.com)<br/>Phone: `+91 8639122823`<br/>GitHub: [@pavanstarkin-tech](https://github.com/pavanstarkin-tech) |
+| <img src="https://github.com/venkatmalla6.png" width="90" height="90" style="border-radius:50%" alt="Malla Venkat" /><br/>[@venkatmalla6](https://github.com/venkatmalla6) | **Malla Venkat** | Cloud Infrastructure, Telehealth WebRTC & Backend Engineering | Email: [`venkatmallacs@gmail.com`](mailto:venkatmallacs@gmail.com)<br/>Phone: `+91 63031 48893`<br/>GitHub: [@venkatmalla6](https://github.com/venkatmalla6) |
+
+---
+
 ## How We Used IBM Bob to Implement This Project
 
 **HealthExpress AI** was architected, built, debugged, and deployed end-to-end utilizing **[IBM Bob](https://bob.ibm.com/)** as our AI software development partner across every layer of the technology stack.
@@ -84,6 +93,7 @@ flowchart LR
 
 ## Table of Contents
 
+* [Core Engineering Team](#core-engineering-team)
 1. [User Interface & Screen Gallery](#1-user-interface--screen-gallery)
 2. [System Architecture](#2-system-architecture)
 3. [Venn Diagram: HealthExpress Convergence](#3-venn-diagram-healthexpress-convergence)
@@ -103,7 +113,6 @@ flowchart LR
 9. [Technology Stack & Directory Structure](#9-technology-stack--directory-structure)
 10. [Setup, Local Development & Deployment Guide](#10-setup-local-development--deployment-guide)
 11. [Compliance & Clinical Standards](#11-compliance--clinical-standards)
-12. [Core Engineering Team](#12-core-engineering-team)
 
 ---
 
@@ -732,16 +741,8 @@ powershell -ExecutionPolicy Bypass -File .\deploy.ps1
 
 ---
 
-## 12. Core Engineering Team
-
-| Team Member | Role & Responsibilities | Contact & Profiles |
-| :--- | :--- | :--- |
-| **S Pavan Kumar Swamy** | Full-Stack Architecture, Multimodal AI & Mobile Engineering | Email: [`shesettipavankumarswamy@gmail.com`](mailto:shesettipavankumarswamy@gmail.com)<br/>Phone: `+91 8639122823`<br/>GitHub: [@pavanstarkin-tech](https://github.com/pavanstarkin-tech) |
-| **Malla Venkat** | Cloud Infrastructure, Telehealth WebRTC & Backend Engineering | Email: [`venkatmallacs@gmail.com`](mailto:venkatmallacs@gmail.com)<br/>Phone: `+91 63031 48893`<br/>GitHub: [@venkatmalla6](https://github.com/venkatmalla6) |
-
----
-
 <div align="center">
   <sub>Implemented with <strong><a href="https://bob.ibm.com/">IBM Bob</a></strong>, <strong>Sarvam AI</strong>, and <strong>NVIDIA NIM</strong>.</sub>
 </div>
+
 
