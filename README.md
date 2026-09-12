@@ -17,11 +17,12 @@
 
 ---
 
-## Live Production Links
+## Live Production Portals
 
-* **Patient & Doctor Web App**: [https://pavanstarkin-tech.github.io/healthyxpress_medha/](https://pavanstarkin-tech.github.io/healthyxpress_medha/)
-* **Super Admin & Hospital Operations Dashboard**: [https://pavanstarkin-tech.github.io/healthyxpress_medha/admin/](https://pavanstarkin-tech.github.io/healthyxpress_medha/admin/)
-* **Live Hostinger REST API Health**: [https://vedvaidyam.com/healthexpress/api/health](https://vedvaidyam.com/healthexpress/api/health)
+| Patient & Doctor Super-App | Super Admin Dashboard | Live Backend REST API |
+| :---: | :---: | :---: |
+| <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=https%3A%2F%2Fpavanstarkin-tech.github.io%2Fhealthyxpress_medha%2F" width="140" height="140" alt="Patient & Doctor Web App QR" /><br/><br/>[![Launch Patient & Doctor App](https://img.shields.io/badge/Launch_App-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://pavanstarkin-tech.github.io/healthyxpress_medha/) | <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=https%3A%2F%2Fpavanstarkin-tech.github.io%2Fhealthyxpress_medha%2Fadmin%2F" width="140" height="140" alt="Super Admin Dashboard QR" /><br/><br/>[![Open Admin Dashboard](https://img.shields.io/badge/Open_Dashboard-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://pavanstarkin-tech.github.io/healthyxpress_medha/admin/) | <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=https%3A%2F%2Fvedvaidyam.com%2Fhealthexpress%2Fapi%2Fhealth" width="140" height="140" alt="Live Hostinger API QR" /><br/><br/>[![Check API Health](https://img.shields.io/badge/Check_API_Health-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://vedvaidyam.com/healthexpress/api/health) |
+| **Flutter Web**<br/>Patient Intake & Doctor Telehealth | **React 19 + Vite**<br/>Hospital & Dark Store Operations | **PHP 8.2+ REST API**<br/>Production Cloud Gateway |
 
 ---
 
