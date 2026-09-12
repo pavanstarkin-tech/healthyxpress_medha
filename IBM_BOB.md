@@ -76,3 +76,16 @@ flowchart LR
 | **Video Telehealth** | Agora RTC Engine | Sub-200ms WebRTC video, dynamic token authentication |
 | **Geospatial Mapping** | Mapbox GL | Vector tiles, live rider GPS coordinates, hospital geofencing |
 | **Payment Gateway** | Razorpay Live | UPI, Cards, NetBanking with HMAC-SHA256 verification |
+
+---
+
+## 4. Developer Observations & Recommendations for IBM Bob
+
+### Task Granularity vs. Macro-Milestone Execution
+During development, we observed that when IBM Bob breaks down project objectives into an excessively high number of micro-subtasks, it can introduce context-switching overhead and slow down the user feedback loop.
+
+### Key Takeaways & Recommendations:
+1. **Focus on Sequential Macro-Milestones**: Rather than dividing work into dozens of minor subtasks, developer velocity is maximized when IBM Bob structures development around clear, sequential, well-scoped macro-milestones (e.g., Milestone 1: Core Relational Schema & Backend APIs, Milestone 2: Multilingual Voice AI Engine, Milestone 3: WebRTC Telehealth & Mapbox GPS, Milestone 4: Operations Console & CI/CD Dual-Deployment).
+2. **Rapid Iteration & Faster Feedback Loops**: Developers building fast-paced prototypes need rapid end-to-end execution on complete features. Executing coherent milestones sequentially ensures clean code delivery and immediate user verification without getting bogged down in micro-task overhead.
+3. **Autonomous End-to-End Delivery**: When IBM Bob is given full ownership of an entire milestone with clear input/output specifications, it produces robust, production-ready polyglot code with minimal back-and-forth friction.
+
