@@ -22,9 +22,6 @@
 <div align="center">
   <p><strong>12-Slide Strategic & Technical Presentation Slider (Auto-Playing)</strong></p>
   <img src="ppt/presentation_slider.gif" width="100%" alt="HealthExpress AI Executive Presentation Slider" />
-  <br/><br/>
-  <a href="ppt/HealthExpress_AI_Presentation.pdf"><img src="https://img.shields.io/badge/Download_Presentation_PDF-E11D48?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="Download Presentation PDF" /></a>
-  <br/><br/>
 </div>
 
 <details>
