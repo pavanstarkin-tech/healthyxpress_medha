@@ -136,21 +136,21 @@ flowchart TD
 
 ### 💻 Super Admin & Hospital Operations Command Center (2 screens per row)
 
-| 1. Platform Telemetry & Live KPIs | 2. Hospital Operations & Bed Allocation Tracker |
+| 1. Dashboard Overview & Real-Time Telemetry | 2. Hospitals & Facility Empanelment Management |
 | :---: | :---: |
-| <img src="ui/admin-panal-tabs (1).png" width="480" alt="Super Admin Telemetry" /> | <img src="ui/admin-panal-tabs (2).png" width="480" alt="Hospital Bed Tracking" /> |
+| <img src="ui/admin-panal-tabs (4).png" width="480" alt="Dashboard Overview & Real-Time Telemetry" /> | <img src="ui/admin-panal-tabs (5).png" width="480" alt="Hospitals & Facility Empanelment Management" /> |
 
-| 3. Doctor Credentials & Medical Council Verification | 4. Pharmacy Dark Store Drug License & KYC Audit |
+| 3. Doctors Directory & Medical Council KYC Verification | 4. Users & Patients Aarogyasri Health Pass Directory |
 | :---: | :---: |
-| <img src="ui/admin-panal-tabs (3).png" width="480" alt="Doctor Verification" /> | <img src="ui/admin-panal-tabs (4).png" width="480" alt="Store KYC Queue" /> |
+| <img src="ui/admin-panal-tabs (6).png" width="480" alt="Doctors Directory & Medical Council KYC Verification" /> | <img src="ui/admin-panal-tabs (7).png" width="480" alt="Users & Patients Aarogyasri Health Pass Directory" /> |
 
-| 5. 15-Minute Pharmacy Catalog & Stock Levels | 6. Emergency 108 Ambulance GPS Dispatch & Tracking |
+| 5. Central Appointments Queue & Consultation Dispatch | 6. Payments & Platform Revenue Ledger (Razorpay Live) |
 | :---: | :---: |
-| <img src="ui/admin-panal-tabs (5).png" width="480" alt="Pharmacy Inventory" /> | <img src="ui/admin-panal-tabs (6).png" width="480" alt="Emergency 108 Dispatch" /> |
+| <img src="ui/admin-panal-tabs (8).png" width="480" alt="Central Appointments Queue & Consultation Dispatch" /> | <img src="ui/admin-panal-tabs (1).png" width="480" alt="Payments & Platform Revenue Ledger" /> |
 
-| 7. Diagnostic Lab Test Orders & Home Sample Queue | 8. Platform Revenue Ledger & Payment Settlements |
+| 7. Customer Support & Dispute Desk (Aarogyasri Claims) | 8. AI Business Wing & Lead Monetization Workspace |
 | :---: | :---: |
-| <img src="ui/admin-panal-tabs (7).png" width="480" alt="Lab Test Orders" /> | <img src="ui/admin-panal-tabs (8).png" width="480" alt="Revenue Ledger" /> |
+| <img src="ui/admin-panal-tabs (2).png" width="480" alt="Customer Support & Dispute Desk" /> | <img src="ui/admin-panal-tabs (3).png" width="480" alt="AI Business Wing & Lead Monetization Workspace" /> |
 
 ---
 
