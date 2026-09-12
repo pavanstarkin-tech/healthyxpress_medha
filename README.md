@@ -17,35 +17,80 @@
 
 ---
 
-## Executive Presentation & Slide Deck
+## Executive Presentation Slide Slider
 
 <div align="center">
-  <p><strong>Complete 12-Slide Strategic & Technical Presentation Deck</strong></p>
+  <p><strong>Scroll or Swipe Horizontally to Browse the Complete 12-Slide Deck</strong></p>
 </div>
 
-| Slide 01: Platform Overview & Vision | Slide 02: Healthcare Crisis vs. Solution |
-| :---: | :---: |
-| <a href="ppt/slides%20(1).png"><img src="ppt/slides%20(1).png" width="480" alt="Slide 1: Platform Overview & Vision" /></a> | <a href="ppt/slides%20(2).png"><img src="ppt/slides%20(2).png" width="480" alt="Slide 2: Healthcare Crisis vs. Solution" /></a> |
+| Slide 01: Platform Overview | Slide 02: Healthcare Crisis | Slide 03: 15-Minute Care Loop | Slide 04: Multi-Role Architecture | Slide 05: Voice AI Engine | Slide 06: Vision Lens Scanner | Slide 07: Telehealth & WebRTC | Slide 08: Dark Store Logistics | Slide 09: ABDM & Aarogyasri | Slide 10: Tech Matrix | Slide 11: IBM Bob Partnership | Slide 12: Summary & Roadmap |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| <img src="ppt/slides%20(1).png" width="720" alt="Slide 01: Platform Overview & Strategic Vision" /> | <img src="ppt/slides%20(2).png" width="720" alt="Slide 02: Healthcare Crisis vs. Solution" /> | <img src="ppt/slides%20(3).png" width="720" alt="Slide 03: The Golden 15-Minute Care Loop" /> | <img src="ppt/slides%20(4).png" width="720" alt="Slide 04: Multi-Role System Architecture" /> | <img src="ppt/slides%20(5).png" width="720" alt="Slide 05: Multilingual Voice AI & Triage" /> | <img src="ppt/slides%20(6).png" width="720" alt="Slide 06: AI Vision Lens & Prescription Scanner" /> | <img src="ppt/slides%20(7).png" width="720" alt="Slide 07: Real-Time Telehealth & Agora WebRTC" /> | <img src="ppt/slides%20(8).png" width="720" alt="Slide 08: 15-Minute Dark Store Logistics" /> | <img src="ppt/slides%20(9).png" width="720" alt="Slide 09: Government Health Schemes" /> | <img src="ppt/slides%20(10).png" width="720" alt="Slide 10: Full-Stack Technology Matrix" /> | <img src="ppt/slides%20(11).png" width="720" alt="Slide 11: Engineered with IBM Bob" /> | <img src="ppt/slides%20(12).png" width="720" alt="Slide 12: Platform Summary & Future Horizons" /> |
 
-| Slide 03: The Golden 15-Minute Care Loop | Slide 04: Multi-Role System Architecture |
-| :---: | :---: |
-| <a href="ppt/slides%20(3).png"><img src="ppt/slides%20(3).png" width="480" alt="Slide 3: The Golden 15-Minute Care Loop" /></a> | <a href="ppt/slides%20(4).png"><img src="ppt/slides%20(4).png" width="480" alt="Slide 4: Multi-Role System Architecture" /></a> |
+<details open>
+  <summary><strong>Click to Expand / View Individual Slides Full Width</strong></summary>
+  <br/>
 
-| Slide 05: Multilingual Voice AI & Triage | Slide 06: AI Vision Lens & Prescription Scanner |
-| :---: | :---: |
-| <a href="ppt/slides%20(5).png"><img src="ppt/slides%20(5).png" width="480" alt="Slide 5: Multilingual Voice AI & Triage" /></a> | <a href="ppt/slides%20(6).png"><img src="ppt/slides%20(6).png" width="480" alt="Slide 6: AI Vision Lens & Prescription Scanner" /></a> |
+  <details open>
+    <summary><strong>Slide 01: Platform Overview & Strategic Vision</strong></summary>
+    <p align="center"><img src="ppt/slides%20(1).png" width="100%" alt="Slide 01" /></p>
+  </details>
 
-| Slide 07: Real-Time Telehealth & Agora WebRTC | Slide 08: 15-Minute Dark Store Logistics |
-| :---: | :---: |
-| <a href="ppt/slides%20(7).png"><img src="ppt/slides%20(7).png" width="480" alt="Slide 7: Real-Time Telehealth & Agora WebRTC" /></a> | <a href="ppt/slides%20(8).png"><img src="ppt/slides%20(8).png" width="480" alt="Slide 8: 15-Minute Dark Store Logistics" /></a> |
+  <details>
+    <summary><strong>Slide 02: Healthcare Crisis vs. HealthExpress Solution</strong></summary>
+    <p align="center"><img src="ppt/slides%20(2).png" width="100%" alt="Slide 02" /></p>
+  </details>
 
-| Slide 09: Government Health Schemes (ABDM & Aarogyasri) | Slide 10: Full-Stack Technology Matrix |
-| :---: | :---: |
-| <a href="ppt/slides%20(9).png"><img src="ppt/slides%20(9).png" width="480" alt="Slide 9: Government Health Schemes" /></a> | <a href="ppt/slides%20(10).png"><img src="ppt/slides%20(10).png" width="480" alt="Slide 10: Full-Stack Technology Matrix" /></a> |
+  <details>
+    <summary><strong>Slide 03: The Golden 15-Minute Care Loop Workflow</strong></summary>
+    <p align="center"><img src="ppt/slides%20(3).png" width="100%" alt="Slide 03" /></p>
+  </details>
 
-| Slide 11: Engineered with IBM Bob | Slide 12: Platform Summary & Future Horizons |
-| :---: | :---: |
-| <a href="ppt/slides%20(11).png"><img src="ppt/slides%20(11).png" width="480" alt="Slide 11: Engineered with IBM Bob" /></a> | <a href="ppt/slides%20(12).png"><img src="ppt/slides%20(12).png" width="480" alt="Slide 12: Platform Summary & Future Horizons" /></a> |
+  <details>
+    <summary><strong>Slide 04: Multi-Role Platform Ecosystem & Architecture</strong></summary>
+    <p align="center"><img src="ppt/slides%20(4).png" width="100%" alt="Slide 04" /></p>
+  </details>
+
+  <details>
+    <summary><strong>Slide 05: Multilingual Voice AI & Clinical Triage Engine</strong></summary>
+    <p align="center"><img src="ppt/slides%20(5).png" width="100%" alt="Slide 05" /></p>
+  </details>
+
+  <details>
+    <summary><strong>Slide 06: AI Vision Lens & Prescription Scanner</strong></summary>
+    <p align="center"><img src="ppt/slides%20(6).png" width="100%" alt="Slide 06" /></p>
+  </details>
+
+  <details>
+    <summary><strong>Slide 07: Real-Time Telehealth & Agora WebRTC Engine</strong></summary>
+    <p align="center"><img src="ppt/slides%20(7).png" width="100%" alt="Slide 07" /></p>
+  </details>
+
+  <details>
+    <summary><strong>Slide 08: Hyperlocal 15-Minute Dark Store Logistics</strong></summary>
+    <p align="center"><img src="ppt/slides%20(8).png" width="100%" alt="Slide 08" /></p>
+  </details>
+
+  <details>
+    <summary><strong>Slide 09: Government Health Schemes (ABDM & Aarogyasri)</strong></summary>
+    <p align="center"><img src="ppt/slides%20(9).png" width="100%" alt="Slide 09" /></p>
+  </details>
+
+  <details>
+    <summary><strong>Slide 10: Full-Stack Technology Matrix</strong></summary>
+    <p align="center"><img src="ppt/slides%20(10).png" width="100%" alt="Slide 10" /></p>
+  </details>
+
+  <details>
+    <summary><strong>Slide 11: Engineered with IBM Bob</strong></summary>
+    <p align="center"><img src="ppt/slides%20(11).png" width="100%" alt="Slide 11" /></p>
+  </details>
+
+  <details>
+    <summary><strong>Slide 12: Platform Summary & Future Horizons</strong></summary>
+    <p align="center"><img src="ppt/slides%20(12).png" width="100%" alt="Slide 12" /></p>
+  </details>
+</details>
 
 ---
 
@@ -126,7 +171,7 @@ flowchart LR
 
 ## Table of Contents
 
-* [Executive Presentation & Slide Deck](#executive-presentation--slide-deck)
+* [Executive Presentation Slide Slider](#executive-presentation-slide-slider)
 * [Core Engineering Team](#core-engineering-team)
 1. [User Interface & Screen Gallery](#1-user-interface--screen-gallery)
 2. [System Architecture](#2-system-architecture)
