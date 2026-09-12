@@ -1,5 +1,6 @@
 # 🏥 HealthExpress AI — Intelligent Healthcare Platform & Control Center
 
+[![IBM Bob](https://img.shields.io/badge/Implemented_With-IBM_Bob-052FAD?logo=ibm&logoColor=white)](https://bob.ibm.com/)
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
 [![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
@@ -24,21 +25,79 @@
 
 ---
 
+## 🤖 Implemented with IBM Bob
+
+This entire project was architected, developed, optimized, and deployed using **[IBM Bob](https://bob.ibm.com/)**.
+
+### What is IBM Bob?
+**[IBM Bob](https://bob.ibm.com/)** is an AI-powered software development partner from IBM. It helps developers build, understand, modify, test, and modernize software using natural-language instructions.
+
+> *In simple words: **IBM Bob is like an AI coding teammate** that can understand your project and help you go from **idea → planning → coding → testing → modernization**.* ([IBM Bob Documentation](https://bob.ibm.com/docs/ide/tutorials/introduction?utm_source=chatgpt.com))
+
+### Main Features of IBM Bob
+* ⚡ **Code Generation** – creates clean, idiomatic, production-grade code across Flutter, React, PHP, and SQL from plain-language instructions.
+* 🔍 **Code Debugging & Refactoring** – identifies edge cases, resolves WebRTC streaming bugs, optimizes SQL queries, and cleans asynchronous state management.
+* 🧠 **Codebase Understanding** – deeply maps and indexes existing cross-repository files, configurations, and API surfaces to provide contextual answers.
+* 🤖 **Autonomous AI Agents** – divides complex development milestones into parallelized sub-tasks (e.g., simultaneous Flutter UI and PHP REST API development).
+* 💻 **Bob Shell** – executes build tools, analyzes package trees, and runs deployment scripts directly from the command-line environment.
+* 📝 **Technical Documentation** – continuously produces comprehensive architecture diagrams, database schemas, and developer onboarding manuals.
+* 🔄 **Legacy Modernization** – bridges modern WebRTC & AI microservices with traditional database architectures and enterprise systems.
+
+### 🛠️ How IBM Bob Powered HealthExpress AI Development
+
+```mermaid
+flowchart TD
+    subgraph Phase1["1. Ideation & Planning"]
+        Idea["💡 Natural Language Project Spec<br/>(15-Min Healthcare Super-App)"] --> BobPlan["🤖 IBM Bob Architecture Planner<br/>(ABDM, Aarogyasri, Multi-tier Schema)"]
+    end
+
+    subgraph Phase2["2. Full-Stack Code Generation"]
+        BobPlan --> BobFlutter["📱 Flutter Web & Mobile App<br/>(Voice AI, Agora WebRTC, Mapbox)"]
+        BobPlan --> BobReact["💻 React 19 + Vite Admin<br/>(Live Telemetry, Bed Tracking)"]
+        BobPlan --> BobPHP["🐘 Hostinger PHP 8.2+ REST API<br/>(16 Endpoints, PDO Singleton)"]
+        BobPlan --> BobDB["🗄️ MariaDB Relational Database<br/>(16 Normalized Tables, Indexes)"]
+    end
+
+    subgraph Phase3["3. Debugging & AI Integration"]
+        BobFlutter & BobPHP --> BobDebug["🔍 IBM Bob Refactoring & QA Engine<br/>• Real-time Audio Energy VAD Auto-Cut<br/>• Sarvam STT & NVIDIA NIM Prompting<br/>• WebRTC Local PiP Video Stream Fix"]
+    end
+
+    subgraph Phase4["4. Dual Build & CI/CD Deployment"]
+        BobDebug --> BobShell["💻 IBM Bob Shell Automation<br/>(flutter analyze lib -> 0 errors)"]
+        BobShell --> Deploy["🚀 Dual Deployment to GitHub Pages<br/>(App: / | Admin: /admin/)"]
+    end
+
+    style Phase1 fill:#E0F2FE,stroke:#0284C7,stroke-width:2px
+    style Phase2 fill:#EDE9FE,stroke:#7C3AED,stroke-width:2px
+    style Phase3 fill:#FEF3C7,stroke:#D97706,stroke-width:2px
+    style Phase4 fill:#DCFCE7,stroke:#16A34A,stroke-width:2px
+```
+
+* Explore the official [IBM Bob website](https://bob.ibm.com/?utm_source=chatgpt.com) and [IBM Bob Documentation](https://bob.ibm.com/docs/ide/tutorials/introduction?utm_source=chatgpt.com) for more details.
+
+---
+
 ## 📑 Table of Contents
 
-- [1. User Interface & Screen Gallery](#1-user-interface--screen-gallery)
-- [2. System Architecture](#2-system-architecture)
-- [3. Core Workflows & Detailed Flowcharts](#3-core-workflows--detailed-flowcharts)
-  - [A. The "Golden 15-Minute" Care Loop](#a-the-golden-15-minute-care-loop)
-  - [B. Multilingual Voice AI Triage & Clinical Intake Engine](#b-multilingual-voice-ai-triage--clinical-intake-engine)
-  - [C. Doctor Teleconsultation & Live E-Prescription Workflow](#c-doctor-teleconsultation--live-e-prescription-workflow)
-  - [D. 15-Minute Hyperlocal Dark Store Medicine Dispatch](#d-15-minute-hyperlocal-dark-store-medicine-dispatch)
-  - [E. ABDM QR Consent & Aarogyasri Health Pass Verification](#e-abdm-qr-consent--aarogyasri-health-pass-verification)
-- [4. Role-Wise Capabilities & Feature Matrix](#4-role-wise-capabilities--feature-matrix)
-- [5. Authoritative Production Relational Database Schema](#5-authoritative-production-relational-database-schema)
-- [6. Complete REST API Endpoint Directory](#6-complete-rest-api-endpoint-directory)
-- [7. Technology Stack & Directory Structure](#7-technology-stack--directory-structure)
-- [8. Setup, Local Development & Deployment Guide](#8-setup-local-development--deployment-guide)
+1. [User Interface & Screen Gallery](#1-user-interface--screen-gallery)
+2. [System Architecture](#2-system-architecture)
+3. [Venn Diagram: HealthExpress Convergence](#3-venn-diagram-healthexpress-convergence)
+4. [Core Workflows & Detailed Flowcharts](#4-core-workflows--detailed-flowcharts)
+   - [A. The "Golden 15-Minute" Care Loop](#a-the-golden-15-minute-care-loop)
+   - [B. Multilingual Voice AI Triage & Intake Engine](#b-multilingual-voice-ai-triage--intake-engine)
+   - [C. Doctor Teleconsultation & Live E-Prescription Workflow](#c-doctor-teleconsultation--live-e-prescription-workflow)
+   - [D. 15-Minute Hyperlocal Dark Store Medicine Dispatch](#d-15-minute-hyperlocal-dark-store-medicine-dispatch)
+   - [E. ABDM QR Consent & Aarogyasri Health Pass Verification](#e-abdm-qr-consent--aarogyasri-health-pass-verification)
+5. [State Diagrams & Lifecycle State Machines](#5-state-diagrams--lifecycle-state-machines)
+   - [A. Multilingual Clinical AI Triage State Machine](#a-multilingual-clinical-ai-triage-state-machine)
+   - [B. 15-Minute Medicine Order Lifecycle](#b-15-minute-medicine-order-lifecycle)
+   - [C. Video Teleconsultation State Machine](#c-video-teleconsultation-state-machine)
+6. [Role-Wise Capabilities & Feature Matrix](#6-role-wise-capabilities--feature-matrix)
+7. [Production Relational Database Schema & ER Diagram](#7-production-relational-database-schema--er-diagram)
+8. [Complete REST API Endpoint Directory](#8-complete-rest-api-endpoint-directory)
+9. [Technology Stack & Directory Structure](#9-technology-stack--directory-structure)
+10. [Setup, Local Development & Deployment Guide](#10-setup-local-development--deployment-guide)
+11. [Compliance & Clinical Standards](#11-compliance--clinical-standards)
 
 ---
 
@@ -64,27 +123,26 @@
 
 ```mermaid
 graph TD
-    subgraph Client Applications
+    subgraph ClientLayer["1. Client Applications Layer"]
         PatientApp["📱 Flutter Patient Web/Mobile Super-App<br/>(Voice AI Triage, 15-Min Cart, Mapbox GPS)"]
         DoctorApp["🩺 Flutter Doctor Telehealth Portal<br/>(Agora Video Room, ABDM QR Scan, Rx Builder)"]
         AdminApp["💻 React 19 + Vite Super Admin Dashboard<br/>(3D Metrics, Dark Store KYC, Bed Allocations)"]
     end
 
-    subgraph API Gateway & Backend Layer
+    subgraph APILayer["2. API Gateway & Microservices Layer"]
         PHPBackend["🐘 Hostinger PHP 8.2+ REST API<br/>(Apache Mod_Rewrite / PDO Singleton / JWT Auth)"]
     end
 
-    subgraph Live Production Database Layer
+    subgraph DatabaseLayer["3. Persistent Relational Data Layer"]
         LiveDB[("🗄️ Hostinger MariaDB Database<br/>u170253497_healthexpress (Port 3306)<br/>16 Relational Tables & Immutable Audit Trail")]
     end
 
-    subgraph External Microservices & AI Engines
-        SarvamAI["🎙️ Sarvam AI (saaras:v3)<br/>Multilingual Regional STT (Telugu, Hindi, Eng)"]
+    subgraph CloudServices["4. External Engines & Cloud APIs"]
+        SarvamAI["🎙️ Sarvam AI (saaras:v3 / bulbul:v3)<br/>Multilingual Regional STT & TTS (Telugu, Hindi, Eng)"]
         NvidiaNIM["🧠 NVIDIA NIM (GPT-OSS-20B)<br/>Clinical SOAP Reasoning & Triage Engine"]
         AgoraRTC["🎥 Agora RTC Engine<br/>Encrypted HD WebRTC Video & Audio"]
         MapboxGL["🗺️ Mapbox GL Vector Maps<br/>Hyperlocal GPS Delivery Route Calculation"]
         RazorpayGW["💳 Razorpay Live Payment Gateway<br/>UPI, Cards, NetBanking & HMAC-SHA256"]
-        Firebase["🔥 Firebase Auth & Cloud Messaging"]
     end
 
     PatientApp -->|HTTPS REST| PHPBackend
@@ -92,26 +150,63 @@ graph TD
     AdminApp -->|Axios REST| PHPBackend
 
     PatientApp -.->|16kHz Audio Stream| SarvamAI
-    PatientApp -.->|WebRTC Video| AgoraRTC
-    PatientApp -.->|Vector Tiles| MapboxGL
-    PatientApp -.->|Checkout SDK| RazorpayGW
+    PatientApp -.->|WebRTC Video & Audio| AgoraRTC
+    PatientApp -.->|Vector GPS Tiles| MapboxGL
+    PatientApp -.->|Payment SDK| RazorpayGW
+
+    DoctorApp -.->|WebRTC Video Call| AgoraRTC
 
     PHPBackend -->|PDO Prepared Statements| LiveDB
-    PHPBackend -->|OpenAI-Compatible API| NvidiaNIM
+    PHPBackend -->|Clinical Prompts| NvidiaNIM
     PHPBackend -->|Token Generation| AgoraRTC
-    PHPBackend -->|Payment Verification| RazorpayGW
+    PHPBackend -->|Signature Verification| RazorpayGW
+
+    style ClientLayer fill:#F8FAFC,stroke:#64748B,stroke-width:2px
+    style APILayer fill:#EFF6FF,stroke:#3B82F6,stroke-width:2px
+    style DatabaseLayer fill:#ECFDF5,stroke:#10B981,stroke-width:2px
+    style CloudServices fill:#FFF7ED,stroke:#F97316,stroke-width:2px
 ```
 
 ---
 
-## 3. Core Workflows & Detailed Flowcharts
+## 3. Venn Diagram: HealthExpress Convergence
+
+HealthExpress AI unites four traditionally disconnected healthcare silos into an integrated patient experience:
+
+```mermaid
+flowchart TD
+    subgraph HealthExpressSuperApp["🏥 HealthExpress AI Super-App Synergy"]
+        A["🧠 Multilingual Clinical AI<br/>• Real-time Voice Triage<br/>• Auto-Detect Telugu/Hindi/English<br/>• Differential SOAP Diagnosis"]
+        B["🏬 Hyperlocal Dark-Store Logistics<br/>• 15-Minute Emergency Drop<br/>• 3-5 km Radius Dark Stores<br/>• Live Mapbox GPS Tracking"]
+        C["🏛️ Government Health Schemes<br/>• ABDM 15-Min Dynamic QR Consent<br/>• Aarogyasri 5L Cashless Pass<br/>• Empaneled Hospital Directory"]
+        D["🎥 Real-Time Teleconsultation<br/>• Agora HD Video Calls<br/>• Real-time Volume Metering<br/>• Digital Signed E-Prescriptions"]
+    end
+
+    A --- B
+    B --- C
+    C --- D
+    D --- A
+
+    A -.-> Core(["⭐ 15-Minute Unified Golden Care Loop"])
+    B -.-> Core
+    C -.-> Core
+    D -.-> Core
+
+    style HealthExpressSuperApp fill:#F0FDF4,stroke:#16A34A,stroke-width:2px
+    style Core fill:#1E60F6,color:#FFFFFF,stroke:#0B42BA,stroke-width:3px
+```
+
+---
+
+## 4. Core Workflows & Detailed Flowcharts
 
 ### A. The "Golden 15-Minute" Care Loop
 
 ```mermaid
 flowchart TD
     Start([👤 Patient Feels Unwell]) --> VoiceIntake["🎙️ Speak Symptoms in Mother Tongue<br/>(Telugu / Hindi / English)"]
-    VoiceIntake --> AITriage["🧠 Sarvam STT + NVIDIA NIM Reasoning<br/>(Urgency Rating, Red Flag Check & Home Care)"]
+    VoiceIntake --> AutoDetect["🌐 AI Auto-Detects Language & Dialect<br/>(Native Script, Tanglish, Hinglish)"]
+    AutoDetect --> AITriage["🧠 Sarvam STT + NVIDIA NIM Reasoning<br/>(Urgency Rating, Red Flag Check & Home Care)"]
     AITriage --> Decision{Emergency or Doctor Needed?}
     
     Decision -- Immediate Emergency --> SOS["🚨 1-Tap 108 Emergency Ambulance Dispatch<br/>+ Hospital Trauma Bed Reserve"]
@@ -125,35 +220,41 @@ flowchart TD
     
     DigitalRx --> ABDMVault["🔒 Prescriptions & Records Synced to<br/>ABDM Health Vault & Aarogyasri Profile"]
     Dispatch --> Delivered([✅ Patient Healed & Relieved in <15 Mins])
+
+    style Start fill:#EF4444,color:#FFFFFF,stroke:#B91C1C,stroke-width:2px
+    style Delivered fill:#10B981,color:#FFFFFF,stroke:#047857,stroke-width:2px
+    style Decision fill:#FEF08A,stroke:#CA8A04,stroke-width:2px
 ```
 
 ---
 
-### B. Multilingual Voice AI Triage & Clinical Intake Engine
+### B. Multilingual Voice AI Triage & Intake Engine
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor User as 👤 Patient
-    participant Mic as 🎙️ Browser Audio
-    participant Sarvam as 🔊 Sarvam AI (saaras:v3)
-    participant NIM as 🧠 NVIDIA NIM (GPT-OSS-20B)
+    participant Mic as 🎙️ Browser Audio & VAD
+    participant Sarvam as 🔊 Sarvam AI (saaras:v3 / bulbul:v3)
+    participant Provider as ⚡ AiAssistantProvider
+    participant NIM as 🧠 NVIDIA NIM / Sarvam LLM
     participant PHP as 🐘 Hostinger API
     participant DB as 🗄️ MariaDB Database
 
-    User->>Mic: Speaks audio in native regional language
+    User->>Mic: Speaks audio in native language (Telugu / Hindi / English)
     Mic->>Sarvam: 16kHz Mono WAV Audio Stream
-    Sarvam-->>User: Transcribed Text in Native Script and English Translation
+    Sarvam-->>Provider: Real-Time Transcript & Detected Language
     
-    User->>PHP: POST /api/ai/triage (User Transcript and Stage)
-    PHP->>NIM: Structured Prompt (Sequential Step Assessment)
-    NIM-->>PHP: JSON (Next Question or Final Clinical Assessment)
-    
-    Note over PHP,NIM: Sequential Flow: Name -> Age -> Symptoms -> Duration -> SOAP Note
+    Provider->>Provider: detectLanguage() -> Auto-switch language mode
+    Provider->>PHP: POST /api/ai/triage (User Transcript, Language, Stage)
+    PHP->>NIM: Structured Clinical Intake Prompt (Strict Target Language Output)
+    NIM-->>PHP: JSON (Assessment, Next 2 Questions, Matched Remedies)
     
     PHP->>DB: INSERT into ai_triage_sessions (Session ID: SESS-XXXX)
-    DB-->>PHP: Session Persisted
-    PHP-->>User: Next Question or Triage Report + Matched Specialists
+    DB-->>PHP: Persisted
+    PHP-->>Provider: Triage Report + Dynamic Action Cards
+    Provider->>Sarvam: speakText(ResponseText, targetLang)
+    Sarvam-->>User: HD Regional Female Voice (Kavitha / Kavya / Priya)
 ```
 
 ---
@@ -175,20 +276,21 @@ sequenceDiagram
     API->>DB: INSERT appointments (Status: confirmed, Room: HEAL-XXXX)
     DB-->>API: Confirmed (APT-1001)
     API-->>App: Booking Ready
-
-    Patient->>App: Join Call
-    Doctor->>App: Join Call
+    
+    Patient->>App: Joins Call
+    Doctor->>App: Joins Call
     App->>API: POST /api/telehealth/generate-agora-token
     API->>Agora: Generate 24h RTC Token for Channel HEAL-XXXX
     Agora-->>API: Encrypted Channel Token
     API-->>App: Tokens Delivered
 
-    Patient->>Doctor: 2-Way HD Video & Audio Stream (Agora RTC)
-    Doctor->>App: Fills E-Prescription with Medicines and Dosages
+    Patient->>Doctor: 2-Way HD Video & Live Audio Stream
+    Doctor->>App: Inspects AI Pre-Consultation SOAP Notes
+    Doctor->>App: Adds Medicines, Dosages & Diagnostic Tests
     Doctor->>App: Digitally Signs and Submits Prescription
     App->>API: PUT /api/appointments/APT-1001/prescription
     API->>DB: INSERT prescriptions and UPDATE health_records
-    API-->>Patient: Prescription Displayed and Order in 15 Mins Button
+    API-->>Patient: Prescription Displayed + 1-Tap "Order in 15 Mins" Button
 ```
 
 ---
@@ -197,21 +299,25 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
-    subgraph Order Placement
-        Prescription["📄 E-Prescription / Manual Search"] --> StockCheck["🔍 Real-Time Shelf Stock Verification"]
-        StockCheck --> Payment["💳 Instant Razorpay / Cashless Payment"]
+    subgraph OrderPlacement["1. Order Placement"]
+        Prescription["📄 E-Prescription / Search"] --> StockCheck["🔍 Real-Time Shelf Stock Verification"]
+        StockCheck --> Payment["💳 Instant Razorpay / Aarogyasri Cashless"]
     end
 
-    subgraph Dark Store Processing
+    subgraph DarkStoreProcessing["2. Dark Store Processing"]
         Payment --> DarkStoreQueue["🏬 Nearest Verified Dark Store<br/>(3-5 km Radius SLA)"]
-        DarkStoreQueue --> PickPack["📦 Phlebotomist / Pharmacist Packs Order"]
+        DarkStoreQueue --> PickPack["📦 Pharmacist Picks & Packs Order"]
         PickPack --> RiderAssign["🛵 Delivery Partner Assigned"]
     end
 
-    subgraph Live Navigation
-        RiderAssign --> MapboxGPS["🗺️ Mapbox GL Real-Time GPS Tracking"]
+    subgraph LiveNavigation["3. Live GPS Drop"]
+        RiderAssign --> MapboxGPS["🗺️ Mapbox GL Live Vector GPS Tracking"]
         MapboxGPS --> Doorstep["🚪 Doorstep Drop in < 15 Mins"]
     end
+
+    style OrderPlacement fill:#EFF6FF,stroke:#3B82F6,stroke-width:1px
+    style DarkStoreProcessing fill:#FEF3C7,stroke:#D97706,stroke-width:1px
+    style LiveNavigation fill:#DCFCE7,stroke:#16A34A,stroke-width:1px
 ```
 
 ---
@@ -235,12 +341,12 @@ sequenceDiagram
 
     Doctor->>App: Scans Patient QR Code
     App->>API: POST /api/consent/doctor-scan (Token, Doctor ID)
-    API->>DB: Validate Token & Fetch health profiles and health records
+    API->>DB: Validate Token & Fetch health profiles and records
     DB-->>API: Unlocks Medical History, Allergies, Surgeries and Past Reports
     API-->>Doctor: Complete EHR Timeline Displayed
 
-    Patient->>App: Enter Aarogyasri Pass ID (AROG12345678)
-    App->>API: GET /api/aarogyasri/lookup?code=AROG12345678
+    Patient->>App: Enter Aarogyasri Pass ID (AROG-TG-44910)
+    App->>API: GET /api/aarogyasri/lookup?code=AROG-TG-44910
     API->>DB: Query users, health profiles, user addresses
     DB-->>API: 5 Lakh INR Cashless Balance & Active Eligibility
     API-->>App: Empaneled Hospitals & Cashless Coverage Confirmed
@@ -248,7 +354,84 @@ sequenceDiagram
 
 ---
 
-## 4. Role-Wise Capabilities & Feature Matrix
+## 5. State Diagrams & Lifecycle State Machines
+
+### A. Multilingual Clinical AI Triage State Machine
+
+```mermaid
+stateDiagram-v2
+    [*] --> Idle_Greeting: App Opened / Welcome Screen
+    Idle_Greeting --> Stage1_ChiefComplaint: User speaks/types symptoms
+    
+    state Stage1_ChiefComplaint {
+        [*] --> DetectLanguage
+        DetectLanguage --> LockLanguage: Telugu / Hindi / English Identified
+        LockLanguage --> AskDurationAndChills: 2 Focused Questions
+    }
+
+    Stage1_ChiefComplaint --> Stage2_SymptomDetails: Duration provided
+    
+    state Stage2_SymptomDetails {
+        [*] --> RecordSeverity
+        RecordSeverity --> AskAssociatedSymptoms: Pain scale, nausea, fever temp
+    }
+
+    Stage2_SymptomDetails --> Stage3_HistoryMeds: Severity detailed
+    
+    state Stage3_HistoryMeds {
+        [*] --> CheckPastConditions
+        CheckPastConditions --> CheckExistingMedications: Allergies, BP, Diabetes
+    }
+
+    Stage3_HistoryMeds --> Stage4_CarePlanAndRx: Intake completed (Turn >= 3)
+    
+    state Stage4_CarePlanAndRx {
+        [*] --> GenerateSOAPSummary
+        GenerateSOAPSummary --> RecommendMedicines
+        RecommendMedicines --> DisplayActionCards: Match Doctors, Labs & 108 SOS
+    }
+
+    Stage4_CarePlanAndRx --> [*]: Care Plan Delivered
+```
+
+---
+
+### B. 15-Minute Medicine Order Lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> OrderCreated: User confirms cart
+    OrderCreated --> PaymentVerified: Razorpay / Cashless Confirmed
+    PaymentVerified --> StoreAllocated: Geofence matched to nearest dark store (3-5km)
+    StoreAllocated --> PackingInProgress: Pharmacist scans & packages items
+    PackingInProgress --> RiderAssigned: Delivery partner arrives at dark store
+    RiderAssigned --> OutForDelivery: Rider departs with package
+    OutForDelivery --> Delivered: Live Mapbox GPS Drop (<15 mins)
+    Delivered --> [*]
+
+    OrderCreated --> Cancelled: Payment Failed / Out of Stock
+    StoreAllocated --> Cancelled: Store Capacity Exceeded
+```
+
+---
+
+### C. Video Teleconsultation State Machine
+
+```mermaid
+stateDiagram-v2
+    [*] --> SlotBooked: Patient reserves doctor slot
+    SlotBooked --> PreConsultationAI: AI Triage notes attached to appointment
+    PreConsultationAI --> TokenGenerated: Agora RTC channel token issued
+    TokenGenerated --> WaitingRoom: Patient & Doctor enter room
+    WaitingRoom --> InConsultation: 2-Way HD Video & Volume Metering active
+    InConsultation --> PrescriptionDrafting: Doctor creates E-Prescription
+    PrescriptionDrafting --> Completed: Prescription Digitally Signed & Synced
+    Completed --> [*]
+```
+
+---
+
+## 6. Role-Wise Capabilities & Feature Matrix
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -271,9 +454,97 @@ sequenceDiagram
 
 ---
 
-## 5. Authoritative Production Relational Database Schema
+## 7. Production Relational Database Schema & ER Diagram
 
-The production MariaDB database (`u170253497_healthexpress`) contains **16 normalized relational tables**:
+```mermaid
+erDiagram
+    users ||--o{ health_profiles : has
+    users ||--o{ user_addresses : resides_at
+    users ||--o{ appointments : books
+    users ||--o{ qr_consent_tokens : generates
+    users ||--o{ health_records : owns
+    users ||--o{ tickets : files
+    
+    hospitals ||--o{ departments : contains
+    hospitals ||--o{ doctor_hospitals : employs
+    hospitals ||--o{ appointments : hosts
+    
+    doctors ||--o{ doctor_hospitals : belongs_to
+    doctors ||--o{ doctor_schedules : defines
+    doctors ||--o{ appointments : conducts
+    
+    appointments ||--o| prescriptions : produces
+    appointments ||--o| payments : settles
+    
+    users {
+        string id PK
+        string name
+        string phone
+        string email
+        string role
+        string aarogyasri_id
+        date dob
+        string gender
+    }
+
+    health_profiles {
+        string user_id PK,FK
+        string blood_group
+        text allergies
+        text chronic_conditions
+        text past_surgeries
+    }
+
+    hospitals {
+        string id PK
+        string name
+        string hospital_type
+        string license_number
+        int total_beds
+        int icu_beds
+        float lat
+        float lng
+    }
+
+    doctors {
+        string id PK
+        string user_id FK
+        string name
+        string specialty
+        string registration_number
+        float consultation_fee
+    }
+
+    appointments {
+        string id PK
+        string user_id FK
+        string doctor_id FK
+        string hospital_id FK
+        date appointment_date
+        string time_slot
+        string status
+        float fee
+    }
+
+    prescriptions {
+        string id PK
+        string appointment_id FK
+        text medicines
+        text clinical_notes
+        text diagnostic_tests
+    }
+
+    medicines {
+        string id PK
+        string name
+        string category
+        float price
+        int stock_quantity
+        boolean requires_prescription
+    }
+```
+
+### Authoritative MariaDB Tables (`u170253497_healthexpress`):
 
 | # | Table Name | Key Columns | Purpose |
 | :---: | :--- | :--- | :--- |
@@ -296,7 +567,7 @@ The production MariaDB database (`u170253497_healthexpress`) contains **16 norma
 
 ---
 
-## 6. Complete REST API Endpoint Directory
+## 8. Complete REST API Endpoint Directory
 
 All endpoints are hosted live on Hostinger at `https://vedvaidyam.com/healthexpress/api`:
 
@@ -323,7 +594,7 @@ All endpoints are hosted live on Hostinger at `https://vedvaidyam.com/healthexpr
 
 ---
 
-## 7. Technology Stack & Directory Structure
+## 9. Technology Stack & Directory Structure
 
 ```
 healthyxpress_medha/
@@ -350,7 +621,7 @@ healthyxpress_medha/
 │   │   ├── providers/            # Riverpod & Provider state managers (AI, Auth, Pharmacy)
 │   │   ├── services/             # REST client, Agora WebRTC, Sarvam STT, NVIDIA NIM
 │   │   └── screens/              # Patient & Doctor multi-role responsive screens
-│   └── web/                      # PWA shell, Mapbox GL JS, Firebase Auth popup
+│   └── web/                      # PWA shell, Mapbox GL JS, Web Audio API VAD, CanvasKit
 │
 ├── admin_panel/                  # 💻 React 19 + Vite Super Admin Dashboard
 │   ├── src/
@@ -371,7 +642,7 @@ healthyxpress_medha/
 
 ---
 
-## 8. Setup, Local Development & Deployment Guide
+## 10. Setup, Local Development & Deployment Guide
 
 ### A. Flutter Mobile & Web Super-App
 ```bash
@@ -410,7 +681,7 @@ powershell -ExecutionPolicy Bypass -File .\deploy.ps1
 
 ---
 
-## 📜 Compliance & Clinical Standards
+## 11. Compliance & Clinical Standards
 
 * **ABDM (Ayushman Bharat Digital Mission)**: Complete 15-minute tokenized consent architecture with instant QR EHR unlocks.
 * **Aarogyasri Health Scheme**: Native lookup and 100% cashless pre-authorization workflows for empaneled procedures.
@@ -420,5 +691,5 @@ powershell -ExecutionPolicy Bypass -File .\deploy.ps1
 ---
 
 <div align="center">
-  <sub>Built with ❤️ by the HealthExpress Engineering Team. Powered by Google DeepMind Antigravity, Sarvam AI & NVIDIA NIM.</sub>
+  <sub>Implemented with ❤️ using <strong><a href="https://bob.ibm.com/">IBM Bob</a></strong>, <strong>Sarvam AI</strong>, and <strong>NVIDIA NIM</strong>.</sub>
 </div>
