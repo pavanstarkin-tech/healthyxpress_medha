@@ -105,19 +105,34 @@ flowchart TD
 
 ## 1. User Interface & Screen Gallery
 
-### 💻 Super Admin & Hospital Operations Command Center
-| Hospital & Bed Operations | Super Admin Telemetry & Metrics | Inventory & Store Verifications |
-| :---: | :---: | :---: |
-| <img src="ui/admin-1.png" width="350" alt="Hospital Bed Operations" /> | <img src="ui/admin-2.png" width="350" alt="Super Admin Telemetry" /> | <img src="ui/admin-3.png" width="350" alt="Store Verifications" /> |
+### 📱 A. Patient Super-App — Home, Hospital Beds & Live Mapbox GPS
+| Splash & Welcome | Patient Super-App Home | Nearby Hospitals & Beds | Mapbox GL GPS Map | Hospital Facility Details |
+| :---: | :---: | :---: | :---: | :---: |
+| <img src="ui/splash.png" width="180" alt="Splash Screen" /> | <img src="ui/home.png" width="180" alt="Patient Home Dashboard" /> | <img src="ui/nearbyhospitals.png" width="180" alt="Nearby Hospital Beds" /> | <img src="ui/hospitals-map.png" width="180" alt="Mapbox GPS Map" /> | <img src="ui/hospital.png" width="180" alt="Hospital Facility Details" /> |
 
-### 📱 Patient Super-App & Doctor Telehealth Console
-| Home Care & Quick Actions | Voice AI Clinical Intake | Doctor Discovery & Booking |
-| :---: | :---: | :---: |
-| <img src="ui/app-ui-1.png" width="260" alt="Patient Home Dashboard" /> | <img src="ui/app-ui-2.png" width="260" alt="Voice AI Triage" /> | <img src="ui/app-ui-3.png" width="260" alt="Doctor Booking" /> |
+### 🧠 B. Multilingual Voice AI Triage & Groq AI Vision Scanner
+| Multilingual AI Chat | Live AI Voice Call | Auto-Language Selection | AI Lens Scanner | Live Camera Capture | Instant AI Vision Diagnosis |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| <img src="ui/ai-chat.png" width="180" alt="Multilingual AI Chat" /> | <img src="ui/ai-call.png" width="180" alt="Live AI Voice Call" /> | <img src="ui/ai-call-lang.png" width="180" alt="Auto-Language Selection" /> | <img src="ui/ai-vision.png" width="180" alt="AI Lens Scanner" /> | <img src="ui/ai-capture.png" width="180" alt="Live Camera Capture" /> | <img src="ui/ai vision responses.png" width="180" alt="Instant AI Diagnosis" /> |
 
-| 15-Min Pharmacy & Lab Tests | ABDM Health Locker & Aarogyasri |
-| :---: | :---: |
-| <img src="ui/app-ui-4.png" width="260" alt="Pharmacy & Tests" /> | <img src="ui/app-ui-5.png" width="260" alt="ABDM & Aarogyasri" /> |
+### 🩺 C. Doctor Discovery, Teleconsultation & Digital E-Prescriptions
+| Doctor Discovery | Slot Selection & Booking | Booking Confirmation | Patient Appointments | Agora HD Video Call | Live Audio Telehealth | Doctor-Patient Chat | Digital E-Prescription |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| <img src="ui/docters.png" width="180" alt="Doctor Discovery" /> | <img src="ui/docters-book.png" width="180" alt="Doctor Slot Booking" /> | <img src="ui/boking-confirm.png" width="180" alt="Booking Confirmation" /> | <img src="ui/appintments.png" width="180" alt="Patient Appointments" /> | <img src="ui/videocall.png" width="180" alt="Agora Video Call" /> | <img src="ui/call.png" width="180" alt="Audio Telehealth Call" /> | <img src="ui/doc chat.png" width="180" alt="Doctor-Patient Chat" /> | <img src="ui/medicene-suggestion by docter.png" width="180" alt="Digital E-Prescription" /> |
+
+### 👨‍⚕️ D. Doctor Telehealth Console, ABDM EHR Vault & Aarogyasri Health Pass
+| Doctor Portal Home | Doctor Appointment Queue | AI Clinical Analysis | Doctor Practice Profile | ABDM Patient EHR Records | Aarogyasri 5L Health Pass | ABDM Health Locker |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| <img src="ui/doc-home.png" width="180" alt="Doctor Portal Home" /> | <img src="ui/doc-appoinbtsmnts.png" width="180" alt="Doctor Appointment Queue" /> | <img src="ui/doc-analysis.png" width="180" alt="AI Clinical Analysis" /> | <img src="ui/doc profile.png" width="180" alt="Doctor Profile" /> | <img src="ui/patint records.png" width="180" alt="ABDM Patient Records" /> | <img src="ui/arogyasree card.png" width="180" alt="Aarogyasri Health Pass" /> | <img src="ui/more info.png" width="180" alt="ABDM Health Locker" /> |
+
+### 💻 E. Super Admin & Hospital Operations Command Center (React 19 Dashboard)
+| 1. Platform Telemetry & KPIs | 2. Hospital Beds & ICU Tracking | 3. Doctor Credentials Verification | 4. Pharmacy Dark Store KYC Queue |
+| :---: | :---: | :---: | :---: |
+| <img src="ui/admin-panal-tabs (1).png" width="280" alt="Super Admin Telemetry" /> | <img src="ui/admin-panal-tabs (2).png" width="280" alt="Hospital Bed Tracking" /> | <img src="ui/admin-panal-tabs (3).png" width="280" alt="Doctor Verification" /> | <img src="ui/admin-panal-tabs (4).png" width="280" alt="Store KYC Queue" /> |
+
+| 5. 15-Min Pharmacy Inventory | 6. Emergency 108 GPS Dispatch | 7. Diagnostic Lab Test Orders | 8. Revenue Ledger & Settlements |
+| :---: | :---: | :---: | :---: |
+| <img src="ui/admin-panal-tabs (5).png" width="280" alt="Pharmacy Inventory" /> | <img src="ui/admin-panal-tabs (6).png" width="280" alt="Emergency 108 Dispatch" /> | <img src="ui/admin-panal-tabs (7).png" width="280" alt="Lab Test Orders" /> | <img src="ui/admin-panal-tabs (8).png" width="280" alt="Revenue Ledger" /> |
 
 ---
 
@@ -605,15 +620,14 @@ healthyxpress_medha/
 │   ├── illustratuions/           # High-resolution hero assets (health-ai.png)
 │   └── user-home-quickactions/   # Patient dashboard action assets (1.png - 7.png)
 │
-├── ui/                           # 📸 Production screenshots for README & docs
-│   ├── admin-1.png               # Hospital bed & ward operations view
-│   ├── admin-2.png               # Super admin telemetry & KPI dashboard
-│   ├── admin-3.png               # Dark store KYC & verification queue
-│   ├── app-ui-1.png              # Patient home dashboard & quick actions
-│   ├── app-ui-2.png              # Multilingual voice AI clinical triage
-│   ├── app-ui-3.png              # Doctor discovery & appointment booking
-│   ├── app-ui-4.png              # 15-minute pharmacy & lab tests catalog
-│   └── app-ui-5.png              # ABDM digital health locker & Aarogyasri
+├── ui/                           # 📸 35 Production screenshots for README & docs
+│   ├── admin-panal-tabs (1-8).png# Super Admin workspaces (Beds, Stores, Doctors, Revenue)
+│   ├── ai-chat, ai-call, lang.png# Multilingual Voice AI triage & auto-language detection
+│   ├── ai-vision, ai-capture.png # Groq AI Vision prescription & symptom detection
+│   ├── docters, book, confirm.png# Doctor discovery, slot booking & appointment queue
+│   ├── videocall, call, doc-chat # Agora HD video & audio teleconsultations
+│   ├── arogyasree, more-info.png # Aarogyasri 5L pass & ABDM digital health locker
+│   └── home, nearby, map, etc.   # Patient home, hospital bed tracker & Mapbox GPS map
 │
 ├── healthexpress/                # 📱 Flutter Web & Mobile Super-App
 │   ├── lib/
