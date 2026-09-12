@@ -265,8 +265,6 @@ flowchart LR
     style Delivered fill:#10B981,color:#FFFFFF,stroke:#047857,stroke-width:2px
     style Decision fill:#FEF08A,stroke:#CA8A04,stroke-width:2px
 ```
-    style Decision fill:#FEF08A,stroke:#CA8A04,stroke-width:2px
-```
 
 ---
 
