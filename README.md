@@ -103,6 +103,7 @@ flowchart LR
 9. [Technology Stack & Directory Structure](#9-technology-stack--directory-structure)
 10. [Setup, Local Development & Deployment Guide](#10-setup-local-development--deployment-guide)
 11. [Compliance & Clinical Standards](#11-compliance--clinical-standards)
+12. [Core Engineering Team](#12-core-engineering-team)
 
 ---
 
@@ -733,6 +734,16 @@ powershell -ExecutionPolicy Bypass -File .\deploy.ps1
 
 ---
 
+## 12. Core Engineering Team
+
+| Team Member | Role & Responsibilities | Contact & Profiles |
+| :--- | :--- | :--- |
+| **S Pavan Kumar Swamy** | Full-Stack Architecture, Multimodal AI & Mobile Engineering | 📧 [`shesettipavankumarswamy@gmail.com`](mailto:shesettipavankumarswamy@gmail.com)<br/>📞 `+91 8639122823`<br/>🐙 **GitHub**: [@pavanstarkin-tech](https://github.com/pavanstarkin-tech) |
+| **Malla Venkat** | Cloud Infrastructure, Telehealth WebRTC & Backend Engineering | 📧 [`venkatmallacs@gmail.com`](mailto:venkatmallacs@gmail.com)<br/>📞 `+91 63031 48893`<br/>🐙 **GitHub**: [@venkatmalla6](https://github.com/venkatmalla6) |
+
+---
+
 <div align="center">
   <sub>Implemented with ❤️ using <strong><a href="https://bob.ibm.com/">IBM Bob</a></strong>, <strong>Sarvam AI</strong>, and <strong>NVIDIA NIM</strong>.</sub>
 </div>
+
