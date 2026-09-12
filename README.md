@@ -30,27 +30,30 @@
 **HealthExpress AI** was architected, built, debugged, and deployed end-to-end utilizing **[IBM Bob](https://bob.ibm.com/)** as our AI software development partner across every layer of the technology stack.
 
 ```mermaid
-flowchart TD
-    subgraph BobArchitecture["1. Architecture & Schema Synthesis with IBM Bob"]
-        Spec["💡 Clinical & Logistics Requirements<br/>(15-Min Care Loop, ABDM, Aarogyasri)"] --> BobArch["🤖 IBM Bob System Architect<br/>• 16-Table Normalized MariaDB Schema<br/>• Multi-Role Super-App Topology<br/>• ABDM 15-Min Dynamic QR Token Protocol"]
+flowchart LR
+    subgraph BobArchitecture["1. Architecture & Schema Synthesis"]
+        Spec["💡 Requirements<br/>(15-Min Care, ABDM, Aarogyasri)"] --> BobArch["🤖 IBM Bob Architect<br/>• 16-Table Schema<br/>• Super-App Topology<br/>• ABDM QR Protocol"]
     end
 
-    subgraph BobCodeGen["2. Polyglot Full-Stack Code Generation"]
-        BobArch --> BobFlutter["📱 Flutter Web & Mobile Super-App<br/>(Voice AI, Mapbox GPS, Glassmorphic UI)"]
-        BobArch --> BobReact["💻 React 19 + Vite Super Admin<br/>(Hospital Beds, Dark Store KYC, 3D Telemetry)"]
-        BobArch --> BobPHP["🐘 Hostinger PHP 8.2+ REST API<br/>(16 Endpoints, PDO Singleton, JWT, HMAC)"]
-        BobArch --> BobSQL["🗄️ MariaDB Relational Database<br/>(Foreign Keys, Indexes, Audit Logs)"]
+    subgraph BobCodeGen["2. Full-Stack Generation"]
+        BobFlutter["📱 Flutter Super-App<br/>(Voice AI, Mapbox GPS)"]
+        BobReact["💻 React 19 Admin<br/>(Live Telemetry, KYC)"]
+        BobPHP["🐘 PHP 8.2+ REST API<br/>(16 Endpoints, PDO)"]
+        BobSQL["🗄️ MariaDB Database<br/>(16 Tables, Audit Logs)"]
     end
 
-    subgraph BobAIIntegration["3. Multimodal AI & Real-Time Engine Engineering"]
-        BobFlutter & BobPHP --> BobVoice["🎙️ Multilingual Voice Engine<br/>• Sarvam AI STT & TTS Integration<br/>• Auto-Detection for Telugu, Hindi & English<br/>• Web Audio API Silence VAD Auto-Cut"]
-        BobFlutter & BobPHP --> BobWebRTC["🎥 Agora HD Video Telehealth<br/>• WebRTC Token Generation & Room Mapping<br/>• Live Microphone Volume Level Metering"]
+    subgraph BobAIIntegration["3. AI & Real-Time Engineering"]
+        BobVoice["🎙️ Multilingual Voice Engine<br/>• Sarvam STT/TTS Auto-Detect<br/>• Web Audio API Silence VAD"]
+        BobWebRTC["🎥 Agora HD Video<br/>• WebRTC Token & Room<br/>• Live Volume Metering"]
     end
 
-    subgraph BobQA["4. Autonomous Debugging & Bob Shell CI/CD"]
-        BobVoice & BobWebRTC --> BobFix["🔍 IBM Bob Refactoring & Bug Fixing<br/>• Fixed Flutter Web JS Interop (@JS Bindings)<br/>• Eliminated Mic Echo with Silent GainNodes<br/>• Optimized SQL Queries & Latency Benchmarks"]
-        BobFix --> BobDeploy["🚀 Bob Shell Automated Dual Deployment<br/>(PowerShell deploy.ps1 -> GitHub Pages)"]
+    subgraph BobQA["4. Debugging & Bob Shell CI/CD"]
+        BobFix["🔍 Refactoring & Fixes<br/>• Flutter @JS Interop<br/>• Silent GainNode Echo Fix"] --> BobDeploy["🚀 Bob Shell Dual Deploy<br/>(deploy.ps1 -> GitHub Pages)"]
     end
+
+    BobArch --> BobFlutter & BobReact & BobPHP & BobSQL
+    BobFlutter & BobPHP --> BobVoice & BobWebRTC
+    BobVoice & BobWebRTC --> BobFix
 
     style BobArchitecture fill:#E0F2FE,stroke:#0284C7,stroke-width:2px
     style BobCodeGen fill:#EDE9FE,stroke:#7C3AED,stroke-width:2px
@@ -157,41 +160,41 @@ flowchart TD
 ## 2. System Architecture
 
 ```mermaid
-graph TD
-    subgraph ClientLayer["1. Client Applications Layer"]
-        PatientApp["📱 Flutter Patient Web/Mobile Super-App<br/>(Voice AI Triage, 15-Min Cart, Mapbox GPS)"]
-        DoctorApp["🩺 Flutter Doctor Telehealth Portal<br/>(Agora Video Room, ABDM QR Scan, Rx Builder)"]
-        AdminApp["💻 React 19 + Vite Super Admin Dashboard<br/>(3D Metrics, Dark Store KYC, Bed Allocations)"]
+graph LR
+    subgraph ClientLayer["1. Client Applications"]
+        PatientApp["📱 Flutter Patient App<br/>(Voice AI, 15-Min Cart, Mapbox)"]
+        DoctorApp["🩺 Flutter Doctor Portal<br/>(Agora Video, ABDM QR, Rx)"]
+        AdminApp["💻 React 19 Admin Dashboard<br/>(Telemetry, Bed Tracking)"]
     end
 
-    subgraph APILayer["2. API Gateway & Microservices Layer"]
-        PHPBackend["🐘 Hostinger PHP 8.2+ REST API<br/>(Apache Mod_Rewrite / PDO Singleton / JWT Auth)"]
+    subgraph APILayer["2. API Gateway"]
+        PHPBackend["🐘 Hostinger PHP 8.2+ REST API<br/>(Mod_Rewrite / PDO / JWT)"]
     end
 
-    subgraph DatabaseLayer["3. Persistent Relational Data Layer"]
-        LiveDB[("🗄️ Hostinger MariaDB Database<br/>u170253497_healthexpress (Port 3306)<br/>16 Relational Tables & Immutable Audit Trail")]
+    subgraph DatabaseLayer["3. Database Layer"]
+        LiveDB[("🗄️ MariaDB Database<br/>16 Relational Tables & Audit")]
     end
 
     subgraph CloudServices["4. External Engines & Cloud APIs"]
-        SarvamAI["🎙️ Sarvam AI (saaras:v3 / bulbul:v3)<br/>Multilingual Regional STT & TTS (Telugu, Hindi, Eng)"]
-        NvidiaNIM["🧠 NVIDIA NIM (GPT-OSS-20B)<br/>Clinical SOAP Reasoning & Triage Engine"]
-        AgoraRTC["🎥 Agora RTC Engine<br/>Encrypted HD WebRTC Video & Audio"]
-        MapboxGL["🗺️ Mapbox GL Vector Maps<br/>Hyperlocal GPS Delivery Route Calculation"]
-        RazorpayGW["💳 Razorpay Live Payment Gateway<br/>UPI, Cards, NetBanking & HMAC-SHA256"]
+        SarvamAI["🎙️ Sarvam AI (saaras:v3 / bulbul:v3)<br/>Regional STT & TTS"]
+        NvidiaNIM["🧠 NVIDIA NIM (GPT-OSS-20B)<br/>Clinical SOAP Triage"]
+        AgoraRTC["🎥 Agora RTC Engine<br/>HD WebRTC Video & Audio"]
+        MapboxGL["🗺️ Mapbox GL Vector Maps<br/>Hyperlocal GPS Routing"]
+        RazorpayGW["💳 Razorpay Live Payment Gateway<br/>UPI & HMAC Verification"]
     end
 
     PatientApp -->|HTTPS REST| PHPBackend
     DoctorApp -->|HTTPS REST| PHPBackend
     AdminApp -->|Axios REST| PHPBackend
 
-    PatientApp -.->|16kHz Audio Stream| SarvamAI
-    PatientApp -.->|WebRTC Video & Audio| AgoraRTC
-    PatientApp -.->|Vector GPS Tiles| MapboxGL
+    PatientApp -.->|16kHz Audio| SarvamAI
+    PatientApp -.->|WebRTC Video| AgoraRTC
+    PatientApp -.->|GPS Tiles| MapboxGL
     PatientApp -.->|Payment SDK| RazorpayGW
 
-    DoctorApp -.->|WebRTC Video Call| AgoraRTC
+    DoctorApp -.->|WebRTC Video| AgoraRTC
 
-    PHPBackend -->|PDO Prepared Statements| LiveDB
+    PHPBackend -->|PDO Prepared Queries| LiveDB
     PHPBackend -->|Clinical Prompts| NvidiaNIM
     PHPBackend -->|Token Generation| AgoraRTC
     PHPBackend -->|Signature Verification| RazorpayGW
@@ -209,12 +212,12 @@ graph TD
 HealthExpress AI unites four traditionally disconnected healthcare silos into an integrated patient experience:
 
 ```mermaid
-flowchart TD
+flowchart LR
     subgraph HealthExpressSuperApp["🏥 HealthExpress AI Super-App Synergy"]
-        A["🧠 Multilingual Clinical AI<br/>• Real-time Voice Triage<br/>• Auto-Detect Telugu/Hindi/English<br/>• Differential SOAP Diagnosis"]
-        B["🏬 Hyperlocal Dark-Store Logistics<br/>• 15-Minute Emergency Drop<br/>• 3-5 km Radius Dark Stores<br/>• Live Mapbox GPS Tracking"]
-        C["🏛️ Government Health Schemes<br/>• ABDM 15-Min Dynamic QR Consent<br/>• Aarogyasri 5L Cashless Pass<br/>• Empaneled Hospital Directory"]
-        D["🎥 Real-Time Teleconsultation<br/>• Agora HD Video Calls<br/>• Real-time Volume Metering<br/>• Digital Signed E-Prescriptions"]
+        A["🧠 Multilingual Clinical AI<br/>• Voice Triage (Telugu/Hindi/Eng)<br/>• Differential SOAP Diagnosis"]
+        B["🏬 Hyperlocal Logistics<br/>• 15-Min Emergency Drop<br/>• 3-5 km Dark Stores & GPS"]
+        C["🏛️ Government Health Schemes<br/>• ABDM Dynamic QR Consent<br/>• Aarogyasri 5L Cashless Pass"]
+        D["🎥 Real-Time Teleconsultation<br/>• Agora HD Video Calls<br/>• Digital E-Prescriptions"]
     end
 
     A --- B
@@ -222,10 +225,10 @@ flowchart TD
     C --- D
     D --- A
 
-    A -.-> Core(["⭐ 15-Minute Unified Golden Care Loop"])
-    B -.-> Core
-    C -.-> Core
-    D -.-> Core
+    A --> Core(["⭐ 15-Min Golden Care Loop"])
+    B --> Core
+    C --> Core
+    D --> Core
 
     style HealthExpressSuperApp fill:#F0FDF4,stroke:#16A34A,stroke-width:2px
     style Core fill:#1E60F6,color:#FFFFFF,stroke:#0B42BA,stroke-width:3px
@@ -238,26 +241,29 @@ flowchart TD
 ### A. The "Golden 15-Minute" Care Loop
 
 ```mermaid
-flowchart TD
-    Start([👤 Patient Feels Unwell]) --> VoiceIntake["🎙️ Speak Symptoms in Mother Tongue<br/>(Telugu / Hindi / English)"]
-    VoiceIntake --> AutoDetect["🌐 AI Auto-Detects Language & Dialect<br/>(Native Script, Tanglish, Hinglish)"]
-    AutoDetect --> AITriage["🧠 Sarvam STT + NVIDIA NIM Reasoning<br/>(Urgency Rating, Red Flag Check & Home Care)"]
-    AITriage --> Decision{Emergency or Doctor Needed?}
+flowchart LR
+    Start([👤 Patient Unwell]) --> VoiceIntake["🎙️ Speak Symptoms<br/>(Telugu/Hindi/Eng)"]
+    VoiceIntake --> AutoDetect["🌐 Auto-Detect Language<br/>(Native / Tanglish / Hinglish)"]
+    AutoDetect --> AITriage["🧠 Sarvam STT + NVIDIA NIM<br/>(Urgency Rating & SOAP)"]
+    AITriage --> Decision{Emergency or Doctor?}
     
-    Decision -- Immediate Emergency --> SOS["🚨 1-Tap 108 Emergency Ambulance Dispatch<br/>+ Hospital Trauma Bed Reserve"]
-    Decision -- Telehealth Consult --> VideoDoc["🎥 1-Click Agora HD Video Consultation<br/>(Doctor views Pre-Loaded AI SOAP Notes)"]
+    Decision -- Emergency --> SOS["🚨 1-Tap 108 Ambulance<br/>+ Hospital Bed Reserve"]
+    Decision -- Telehealth --> VideoDoc["🎥 Agora HD Video Consult<br/>(AI SOAP Notes Pre-loaded)"]
     
-    VideoDoc --> DigitalRx["✍️ Doctor Signs Digital E-Prescription"]
-    DigitalRx --> AutoCart["🛒 Auto-Populates 15-Min Pharmacy Cart"]
+    VideoDoc --> DigitalRx["✍️ Sign Digital E-Prescription"]
+    DigitalRx --> AutoCart["🛒 Auto-Populates 15-Min Cart"]
     
-    AutoCart --> DarkStore["🏬 Nearest Dark Store (3-5km) Packs Order"]
-    DarkStore --> Dispatch["🛵 Mapbox GPS Tracked 15-Min Doorstep Drop"]
+    AutoCart --> DarkStore["🏬 Dark Store Packs Order"]
+    DarkStore --> Dispatch["🛵 Mapbox GPS 15-Min Drop"]
     
-    DigitalRx --> ABDMVault["🔒 Prescriptions & Records Synced to<br/>ABDM Health Vault & Aarogyasri Profile"]
-    Dispatch --> Delivered([✅ Patient Healed & Relieved in <15 Mins])
+    DigitalRx --> ABDMVault["🔒 Sync to ABDM Health Vault<br/>& Aarogyasri Profile"]
+    Dispatch --> Delivered([✅ Healed in <15 Mins])
+    SOS --> Delivered
 
     style Start fill:#EF4444,color:#FFFFFF,stroke:#B91C1C,stroke-width:2px
     style Delivered fill:#10B981,color:#FFFFFF,stroke:#047857,stroke-width:2px
+    style Decision fill:#FEF08A,stroke:#CA8A04,stroke-width:2px
+```
     style Decision fill:#FEF08A,stroke:#CA8A04,stroke-width:2px
 ```
 
@@ -395,35 +401,36 @@ sequenceDiagram
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Idle_Greeting: App Opened / Welcome Screen
-    Idle_Greeting --> Stage1_ChiefComplaint: User speaks/types symptoms
+    direction LR
+    [*] --> Idle_Greeting: Open App
+    Idle_Greeting --> Stage1_ChiefComplaint: Voice / Text Input
     
     state Stage1_ChiefComplaint {
-        [*] --> DetectLanguage
-        DetectLanguage --> LockLanguage: Telugu / Hindi / English Identified
-        LockLanguage --> AskDurationAndChills: 2 Focused Questions
+        direction LR
+        DetectLanguage --> LockLanguage: Telugu / Hindi / Eng
+        LockLanguage --> AskDurationAndChills: 2 Questions
     }
 
-    Stage1_ChiefComplaint --> Stage2_SymptomDetails: Duration provided
+    Stage1_ChiefComplaint --> Stage2_SymptomDetails: Duration given
     
     state Stage2_SymptomDetails {
-        [*] --> RecordSeverity
-        RecordSeverity --> AskAssociatedSymptoms: Pain scale, nausea, fever temp
+        direction LR
+        RecordSeverity --> AskAssociatedSymptoms: Pain scale, nausea, temp
     }
 
     Stage2_SymptomDetails --> Stage3_HistoryMeds: Severity detailed
     
     state Stage3_HistoryMeds {
-        [*] --> CheckPastConditions
+        direction LR
         CheckPastConditions --> CheckExistingMedications: Allergies, BP, Diabetes
     }
 
     Stage3_HistoryMeds --> Stage4_CarePlanAndRx: Intake completed (Turn >= 3)
     
     state Stage4_CarePlanAndRx {
-        [*] --> GenerateSOAPSummary
+        direction LR
         GenerateSOAPSummary --> RecommendMedicines
-        RecommendMedicines --> DisplayActionCards: Match Doctors, Labs & 108 SOS
+        RecommendMedicines --> DisplayActionCards: Doctors, Labs & 108 SOS
     }
 
     Stage4_CarePlanAndRx --> [*]: Care Plan Delivered
@@ -435,17 +442,18 @@ stateDiagram-v2
 
 ```mermaid
 stateDiagram-v2
-    [*] --> OrderCreated: User confirms cart
-    OrderCreated --> PaymentVerified: Razorpay / Cashless Confirmed
-    PaymentVerified --> StoreAllocated: Geofence matched to nearest dark store (3-5km)
-    StoreAllocated --> PackingInProgress: Pharmacist scans & packages items
-    PackingInProgress --> RiderAssigned: Delivery partner arrives at dark store
-    RiderAssigned --> OutForDelivery: Rider departs with package
-    OutForDelivery --> Delivered: Live Mapbox GPS Drop (<15 mins)
+    direction LR
+    [*] --> OrderCreated: Confirm Cart
+    OrderCreated --> PaymentVerified: Razorpay / Cashless
+    PaymentVerified --> StoreAllocated: 3-5km Dark Store
+    StoreAllocated --> PackingInProgress: Pharmacist Packs
+    PackingInProgress --> RiderAssigned: Rider Picks Up
+    RiderAssigned --> OutForDelivery: Out for Delivery
+    OutForDelivery --> Delivered: Mapbox GPS Drop (<15m)
     Delivered --> [*]
 
-    OrderCreated --> Cancelled: Payment Failed / Out of Stock
-    StoreAllocated --> Cancelled: Store Capacity Exceeded
+    OrderCreated --> Cancelled: Payment Failed
+    StoreAllocated --> Cancelled: Out of Stock
 ```
 
 ---
@@ -454,13 +462,14 @@ stateDiagram-v2
 
 ```mermaid
 stateDiagram-v2
-    [*] --> SlotBooked: Patient reserves doctor slot
-    SlotBooked --> PreConsultationAI: AI Triage notes attached to appointment
-    PreConsultationAI --> TokenGenerated: Agora RTC channel token issued
-    TokenGenerated --> WaitingRoom: Patient & Doctor enter room
-    WaitingRoom --> InConsultation: 2-Way HD Video & Volume Metering active
-    InConsultation --> PrescriptionDrafting: Doctor creates E-Prescription
-    PrescriptionDrafting --> Completed: Prescription Digitally Signed & Synced
+    direction LR
+    [*] --> SlotBooked: Book Slot
+    SlotBooked --> PreConsultationAI: AI Triage SOAP Note
+    PreConsultationAI --> TokenGenerated: Agora RTC Token
+    TokenGenerated --> WaitingRoom: Enter Room
+    WaitingRoom --> InConsultation: 2-Way HD Video Call
+    InConsultation --> PrescriptionDrafting: Draft E-Prescription
+    PrescriptionDrafting --> Completed: Digitally Signed & Synced
     Completed --> [*]
 ```
 
