@@ -37,4 +37,7 @@ lerna-debug.log*
 *.sln
 *.sw?
 scratch/
+temp_gh_pages/
+apis.txt
+.env
 
