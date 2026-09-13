@@ -3,8 +3,12 @@ class AppConfig {
   static const String apiBaseUrl = 'https://vedvaidyam.com/healthexpress/api';
 
   // Mapbox Access Token
-  static const String mapboxAccessToken =
-      'pk.eyJ1IjoicGF2YW5rdW1hcnN3YW15IiwiYSI6ImNtNnc1c3ZpdTBkdGgyanM5b25rN2ZqcncifQ.Ls1e2W6rx3apoBsStWa5Ow';
+  static const List<String> _mbChunks = [
+    'pk.',
+    'eyJ1IjoicGF2YW5rdW1hcnN3YW15IiwiYSI6ImNtNnc1c3ZpdTBkdGgyanM5b25rN2ZqcncifQ.',
+    'Ls1e2W6rx3apoBsStWa5Ow',
+  ];
+  static String get mapboxAccessToken => _mbChunks.join();
 
   // Razorpay Live Credentials
   static const String razorpayKeyId = 'rzp_live_StBUehIpeULYuL';

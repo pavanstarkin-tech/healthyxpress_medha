@@ -73,7 +73,7 @@ All API keys are fully configured, tested, and embedded in the codebase ([AppCon
 | **Backend REST API** | `https://vedvaidyam.com/healthexpress/api` | N/A | Production PHP REST API on Hostinger |
 | **MySQL Database** | Host: `147.93.101.73` (port: `3306`)<br>DB: `u170253497_healthexpress`<br>User: `u170253497_healthexpress`<br>Pass: `Healthxpress_1234567` | N/A | Remote MySQL production database |
 | **SSH VPS Access** | `ssh -p 65002 u170253497@147.93.101.73`<br>Pass: `Honey_comb@@#$%^&d1` | N/A | Server administration & PHP backend |
-| **Mapbox GL JS & POI** | `pk.eyJ1IjoicGF2YW5rdW1hcnN3YW15IiwiYSI6ImNtNnc1c3ZpdTBkdGgyanM5b25rN2ZqcncifQ.Ls1e2W6rx3apoBsStWa5Ow` | OpenStreetMap / CartoDB Fallback | Live hospital POIs, reverse geocoding, vector tiles |
+| **Mapbox GL JS & POI** | `Configured in AppConfig.mapboxAccessToken` | OpenStreetMap / CartoDB Fallback | Live hospital POIs, reverse geocoding, vector tiles |
 | **Sarvam AI Voice & STT** | `sk_n4tzuy3c_JIUK6l5ExNHHGoiiAGwvroYh` | `sk_hr3tv6ew_UBzXjEc9RqZLGuMpzyctBUQC` | `saaras:v3` (STT), `bulbul:v3` (TTS), `sarvam-105b` (LLM) |
 | **LiveKit WebRTC Cloud** | URL: `wss://luca-vsv9whhr.livekit.cloud`<br>API Key: `API5veVBN62icXT`<br>API Secret: `0rj6XKM9tbWRfvja4Yo7DVpDk06mPef6XNLQbbdVCgTA` | N/A | Sub-250ms voice streaming WebRTC room |
 | **Agora Video & Audio RTC** | App ID: `7c9641fb497543d2b01fe6fe5fe0af15`<br>Cert: `29afb318421747818086445f230f3c61` | N/A | Real-time doctor-patient teleconsultations |

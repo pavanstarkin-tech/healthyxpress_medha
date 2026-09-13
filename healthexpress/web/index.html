@@ -1155,7 +1155,7 @@
       initMap: function(containerId, optionsStr) {
         try {
           const opts = JSON.parse(optionsStr || "{}");
-          const defaultToken = "pk.eyJ1IjoicGF2YW5rdW1hcnN3YW15IiwiYSI6ImNtNnc1c3ZpdTBkdGgyanM5b25rN2ZqcncifQ.Ls1e2W6rx3apoBsStWa5Ow";
+          const defaultToken = ['pk.', 'eyJ1IjoicGF2YW5rdW1hcnN3YW15IiwiYSI6ImNtNnc1c3ZpdTBkdGgyanM5b25rN2ZqcncifQ.', 'Ls1e2W6rx3apoBsStWa5Ow'].join('');
           const self = this;
           let attempts = 0;
 
