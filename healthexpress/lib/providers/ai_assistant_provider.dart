@@ -4,6 +4,7 @@ import '../core/constants/app_constants.dart';
 import '../data/production_database.dart';
 import '../models/user_model.dart';
 import '../models/doctor_model.dart';
+import '../models/hospital_model.dart';
 import '../models/medicine_model.dart';
 import '../models/appointment_model.dart';
 import '../models/lab_test_model.dart';
@@ -16,7 +17,7 @@ import '../services/api_service.dart';
 class DynamicActionCard {
   final String title;
   final String subtitle;
-  final String type; // 'medicine' | 'doctor' | 'test' | 'emergency' | 'product'
+  final String type; // 'medicine' | 'doctor' | 'hospital' | 'test' | 'emergency' | 'product'
   final IconData icon;
   final Color color;
   final dynamic payload;
@@ -42,6 +43,7 @@ class ChatMessage {
   final List<MedicineModel>? suggestedMedicines;
   final List<BusinessProductModel>? recommendedProducts;
   final List<DoctorModel>? suggestedDoctors;
+  final List<HospitalModel>? suggestedHospitals;
   final List<LabTestModel>? suggestedLabTests;
   final List<DynamicActionCard>? dynamicCards;
   final bool needsMoreData;
@@ -57,6 +59,7 @@ class ChatMessage {
     this.suggestedMedicines,
     this.recommendedProducts,
     this.suggestedDoctors,
+    this.suggestedHospitals,
     this.suggestedLabTests,
     this.dynamicCards,
     this.needsMoreData = false,
@@ -172,8 +175,85 @@ class AiAssistantProvider extends ChangeNotifier {
 
   List<MedicineModel> get suggestedMedicines => _getMedicinesForContext(_activeDiagnosis, _currentSymptoms, '');
   List<DoctorModel> get suggestedDoctors => _getDoctorsForContext(_activeDiagnosis, _currentSymptoms, '');
+  List<HospitalModel> get suggestedHospitals => _getHospitalsForContext(_activeDiagnosis, _currentSymptoms, '');
   List<LabTestModel> get suggestedLabTests => _getLabTestsForContext(_activeDiagnosis, _currentSymptoms, '');
   List<BusinessProductModel> get suggestedBusinessProducts => _getProductsForContext(_activeDiagnosis, _currentSymptoms, '');
+
+  /// Book a direct slot appointment with a Doctor / Hospital
+  Future<AppointmentModel> bookDoctorAppointment(
+    DoctorModel doctor, {
+    String? timeSlot,
+    ConsultationType type = ConsultationType.videoConsult,
+    String? slotDate,
+  }) async {
+    final isTelugu = _selectedLanguage == 'te';
+    final isHindi = _selectedLanguage == 'hi';
+    final chosenSlot = timeSlot ?? '10:30 AM';
+    final chosenDate = slotDate ?? 'Tomorrow';
+
+    final newAppt = AppointmentModel(
+      id: '#BK${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}',
+      userId: 'USR-101',
+      userName: _patientName ?? 'Venkatesh Murthy',
+      userPhone: '9848022338',
+      aarogyasriId: 'AROG-TG-44910',
+      doctorId: doctor.id,
+      doctorName: doctor.name,
+      doctorPhoto: doctor.photoUrl,
+      doctorSpecialty: doctor.specialty,
+      hospitalId: doctor.hospitalId,
+      hospitalName: doctor.hospitalName,
+      hospitalLocation: doctor.location,
+      dateTime: DateTime.now().add(const Duration(days: 1)),
+      timeSlot: chosenSlot,
+      type: type,
+      status: AppointmentStatus.confirmed,
+      paymentStatus: PaymentStatus.paid,
+      consultationFee: type == ConsultationType.clinicVisit ? doctor.clinicFee : doctor.videoFee,
+      platformFee: 49.0,
+      discountAmount: 0.0,
+      totalAmount: (type == ConsultationType.clinicVisit ? doctor.clinicFee : doctor.videoFee) + 49.0,
+      aarogyasriApplied: true,
+      symptomsSummary: _currentSymptoms.isNotEmpty ? _currentSymptoms.join(', ') : 'Clinical Consultation',
+      meetingRoomId: 'room-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}',
+      createdAt: DateTime.now(),
+    );
+
+    CentralDataService.instance.addAppointment(newAppt);
+
+    final String resText = isTelugu
+        ? '${doctor.name} (${doctor.specialty} • ${doctor.hospitalName}) తో అపాయింట్‌మెంట్ బుక్ చేయబడింది.\n\nతేదీ: $chosenDate, సమయం: $chosenSlot (${type == ConsultationType.clinicVisit ? "ఇన్-పర్సన్ హాస్పిటల్ విజిట్" : "లైవ్ వీడియో కన్సల్ట్"}). ఆరోగ్యశ్రీ డిజిటల్ పాస్ లింక్ చేయబడింది.'
+        : (isHindi
+            ? '${doctor.name} (${doctor.specialty} • ${doctor.hospitalName}) के साथ अपॉइंटमेंट सफलतापूर्वक बुक हो गया है।\n\nसमय: $chosenDate $chosenSlot (${type == ConsultationType.clinicVisit ? "अस्पताल में व्यक्तिगत परामर्श" : "वीडियो परामर्श"}).'
+            : 'Appointment Confirmed with ${doctor.name} (${doctor.specialty})\nat ${doctor.hospitalName}.\n\nSchedule: $chosenDate at $chosenSlot (${type == ConsultationType.clinicVisit ? "In-Person Hospital Visit" : "Video Teleconsult"}). Aarogyasri Card applied.');
+
+    final dynamicCards = [
+      DynamicActionCard(
+        title: 'Confirmed: ${doctor.name}',
+        subtitle: '${doctor.hospitalName} • $chosenDate $chosenSlot • ${type == ConsultationType.clinicVisit ? "In-Person Visit" : "Video Consult"}',
+        type: 'doctor',
+        icon: Icons.calendar_month_rounded,
+        color: const Color(0xFF10B981),
+        payload: newAppt,
+      ),
+    ];
+
+    final botMsg = ChatMessage(
+      id: 'msg-bot-${DateTime.now().millisecondsSinceEpoch}',
+      text: resText,
+      isUser: false,
+      timestamp: DateTime.now(),
+      dynamicCards: dynamicCards,
+      suggestedDoctors: [doctor],
+    );
+
+    _messages.add(botMsg);
+    if (_isLiveVoiceMode || _isSpeaking) {
+      speakText(resText);
+    }
+    notifyListeners();
+    return newAppt;
+  }
 
   void selectCondition(String condition) {
     _activeDiagnosis = condition;
@@ -661,6 +741,62 @@ class AiAssistantProvider extends ChangeNotifier {
         return;
       }
 
+      // -------------------------------------------------------------
+      // 5. Direct Intent: Find Nearby Hospitals & Doctors
+      // -------------------------------------------------------------
+      final bool isFindHospitalIntent = lower.contains('hospital') ||
+          lower.contains('hospitals') ||
+          lower.contains('nearby hospital') ||
+          lower.contains('find hospital') ||
+          lower.contains('suggest hospital') ||
+          lower.contains('best hospital') ||
+          lower.contains('clinic') ||
+          lower.contains('ఆసుపత్రి') ||
+          lower.contains('హాస్పిటల్') ||
+          lower.contains('అస్పత్రులు') ||
+          lower.contains('अस्पताल');
+
+      if (isFindHospitalIntent) {
+        final hospitals = _getHospitalsForContext(_activeDiagnosis, _currentSymptoms, trimmed);
+        final doctors = _getDoctorsForContext(_activeDiagnosis, _currentSymptoms, trimmed);
+        final topHospital = hospitals.first;
+        final int etaMins = (topHospital.distanceKm * 3.5).round().clamp(3, 45);
+
+        final String resText = isTelugu
+            ? 'మీ సమీపంలో ఉన్న ఆసుపత్రులు మరియు ప్రత్యేక వైద్యులు:\n\nఅత్యంత సమీప ఆసుపత్రి: **${topHospital.name}** (${topHospital.distanceKm.toStringAsFixed(1)} km దూరం, సుమారు $etaMins నిమిషాల ప్రయాణం).\n\nప్రత్యేక వైద్యుల జాబితా మరియు 1-ట్యాప్ అపాయింట్‌మెంట్ బుకింగ్ క్రింద సిద్ధంగా ఉంది.'
+            : (isHindi
+                ? 'आपके निकटतम अस्पताल और विशेषज्ञ डॉक्टरों की सूची:\n\nनिकटतम अस्पताल: **${topHospital.name}** (${topHospital.distanceKm.toStringAsFixed(1)} km, आगमन समय: ~$etaMins मिनट)।\n\nआप सीधे नीचे से डॉक्टर बुक कर सकते हैं।'
+                : 'Here are the recommended nearby hospitals and available doctors based on your location:\n\nClosest Facility: **${topHospital.name}** (${topHospital.distanceKm.toStringAsFixed(1)} km away • Estimated travel time: ~$etaMins mins).\n\nYou can view doctors and book a confirmed slot directly below.');
+
+        final dynamicCards = [
+          DynamicActionCard(
+            title: 'Nearby Hospital: ${topHospital.name}',
+            subtitle: '${topHospital.location} • ${topHospital.distanceKm.toStringAsFixed(1)} km • Live ETA ~$etaMins mins',
+            type: 'hospital',
+            icon: Icons.local_hospital_rounded,
+            color: const Color(0xFF0284C7),
+            payload: topHospital,
+          ),
+        ];
+
+        final botMsg = ChatMessage(
+          id: 'msg-bot-${DateTime.now().millisecondsSinceEpoch}',
+          text: resText,
+          isUser: false,
+          timestamp: DateTime.now(),
+          dynamicCards: dynamicCards,
+          suggestedHospitals: hospitals,
+          suggestedDoctors: doctors,
+          actionSuggestions: isTelugu
+              ? ['డాక్టర్ అపాయింట్‌మెంట్ బుక్ చేయండి', 'మందులు ఆర్డర్ చేయండి']
+              : (isHindi ? ['डॉक्टर अपॉइंटमेंट बुक करें', 'दवाइयां ऑर्डर करें'] : ['Book Doctor Slot', 'Order Medicines']),
+        );
+
+        _messages.add(botMsg);
+        if (isVoice || _isLiveVoiceMode) speakText(resText);
+        return;
+      }
+
       if (isBookDoctorIntent) {
         final doctors = _getDoctorsForContext(_activeDiagnosis, _currentSymptoms, trimmed);
         final doctor = doctors.first;
@@ -823,7 +959,7 @@ class AiAssistantProvider extends ChangeNotifier {
       }
 
       // -------------------------------------------------------------
-      // 5. Clinical Triage & Comprehensive Recommendation Pipeline
+      // 6. Clinical Triage & Comprehensive Recommendation Pipeline
       // -------------------------------------------------------------
       final history = _messages.take(_messages.length - 1).map((m) => {
         'role': m.isUser ? 'user' : 'assistant',
@@ -855,11 +991,12 @@ class AiAssistantProvider extends ChangeNotifier {
         }
       }
 
-      // Display rich contextual cards (Medicines, Doctors, Tests) once intake is complete (turn >= 3) or requested
+      // Display rich contextual cards (Medicines, Doctors, Hospitals, Tests) once intake is complete (turn >= 3) or requested
       final bool isIntakeComplete = _intakeTurnCount >= 3 || aiRes.wantsMedicines || _activeDiagnosis.contains('Emergency');
 
       final matchedMedicines = isIntakeComplete ? _getMedicinesForContext(_activeDiagnosis, _currentSymptoms, trimmed) : null;
       final matchedDoctors = isIntakeComplete ? _getDoctorsForContext(_activeDiagnosis, _currentSymptoms, trimmed) : null;
+      final matchedHospitals = isIntakeComplete ? _getHospitalsForContext(_activeDiagnosis, _currentSymptoms, trimmed) : null;
       final matchedTests = isIntakeComplete ? _getLabTestsForContext(_activeDiagnosis, _currentSymptoms, trimmed) : null;
       final matchedProducts = isIntakeComplete ? _getProductsForContext(_activeDiagnosis, _currentSymptoms, trimmed) : null;
       final dynamicCards = _generateDynamicCards(_activeDiagnosis, trimmed);
@@ -874,6 +1011,7 @@ class AiAssistantProvider extends ChangeNotifier {
         suggestedMedicines: matchedMedicines,
         recommendedProducts: matchedProducts,
         suggestedDoctors: matchedDoctors,
+        suggestedHospitals: matchedHospitals,
         suggestedLabTests: matchedTests,
         dynamicCards: dynamicCards.isNotEmpty ? dynamicCards : null,
       );
@@ -994,6 +1132,47 @@ class AiAssistantProvider extends ChangeNotifier {
       ProductionDatabase.doctors.firstWhere((d) => d.id == 'DOC-06', orElse: () => ProductionDatabase.doctors[5]), // Dr. Priya Nair
       ProductionDatabase.doctors.firstWhere((d) => d.id == 'DOC-08', orElse: () => ProductionDatabase.doctors[7]), // Dr. Suresh RMP Doorstep
     ];
+  }
+
+  List<HospitalModel> _getHospitalsForContext(String category, List<String> symptoms, String query) {
+    final sympText = '${symptoms.join(' ')} $category $query'.toLowerCase();
+
+    // 1. Cardiac / Emergency / Chest Pain
+    if (sympText.contains('cardio') || sympText.contains('heart') || sympText.contains('chest') || sympText.contains('bp')) {
+      return ProductionDatabase.hospitals
+          .where((h) => h.departments.any((d) => d.toLowerCase().contains('cardio')))
+          .take(3)
+          .toList();
+    }
+
+    // 2. Stomach / Gastroenterology / Liver
+    if (sympText.contains('stomach') || sympText.contains('acidity') || sympText.contains('gastro') || sympText.contains('vomit') || sympText.contains('liver')) {
+      return ProductionDatabase.hospitals
+          .where((h) => h.departments.any((d) => d.toLowerCase().contains('gastro') || d.toLowerCase().contains('surgery')) || h.id == 'HOSP-05')
+          .take(3)
+          .toList();
+    }
+
+    // 3. Orthopedics / Joint / Knee / Spine
+    if (sympText.contains('knee') || sympText.contains('joint') || sympText.contains('ortho') || sympText.contains('back') || sympText.contains('bone')) {
+      return ProductionDatabase.hospitals
+          .where((h) => h.departments.any((d) => d.toLowerCase().contains('ortho') || d.toLowerCase().contains('joint')) || h.id == 'HOSP-09')
+          .take(3)
+          .toList();
+    }
+
+    // 4. Children & Pediatric
+    if (sympText.contains('child') || sympText.contains('baby') || sympText.contains('pediatric') || sympText.contains('kid')) {
+      return ProductionDatabase.hospitals
+          .where((h) => h.id == 'HOSP-10' || h.name.toLowerCase().contains('rainbow'))
+          .take(3)
+          .toList();
+    }
+
+    // Default: Sort by closest distance to user
+    final sorted = List<HospitalModel>.from(ProductionDatabase.hospitals)
+      ..sort((a, b) => a.distanceKm.compareTo(b.distanceKm));
+    return sorted.take(3).toList();
   }
 
   List<LabTestModel> _getLabTestsForContext(String category, List<String> symptoms, String query) {

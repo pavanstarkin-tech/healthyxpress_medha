@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/app_illustrations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../models/vision_analysis_model.dart';
 import 'user_home_screen.dart';
@@ -39,7 +40,7 @@ class _UserMainNavState extends State<UserMainNav> {
       context: context,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (ctx) {
         return SafeArea(
@@ -51,19 +52,19 @@ class _UserMainNavState extends State<UserMainNav> {
               children: [
                 Center(
                   child: Container(
-                    width: 40,
-                    height: 4,
+                    width: 44,
+                    height: 4.5,
                     decoration: BoxDecoration(
                       color: Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 16),
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(9),
                       decoration: const BoxDecoration(
                         gradient: AppColors.aiAssistantGradient,
                         shape: BoxShape.circle,
@@ -76,11 +77,11 @@ class _UserMainNavState extends State<UserMainNav> {
                       children: [
                         Text(
                           'HealthExpress AI Suite',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                         ),
                         Text(
-                          'Select AI Service or Camera Vision Scanner',
-                          style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                          'Select AI Chat Assistant or Camera Vision Scanner',
+                          style: TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
                         ),
                       ],
                     ),
@@ -88,13 +89,33 @@ class _UserMainNavState extends State<UserMainNav> {
                 ),
                 const Divider(height: 24),
 
-                // Option 1: AI Lens Food & Calories
-                _ActionTile(
-                  icon: Icons.camera_alt_rounded,
-                  iconColor: const Color(0xFFD97706),
-                  iconBg: const Color(0xFFFEF3C7),
-                  title: 'AI Lens: Snap Food & Calories',
-                  subtitle: 'Groq Vision calculates calories, nutrients, glycemic index & dishes',
+                // Option 1: AI Chat & Voice Assistant (Chat Mode)
+                _AiSelectionCard(
+                  title: 'AI Chat & Voice Assistant',
+                  subtitle: 'Multilingual symptom checker, Sarvam live voice, nearby doctor & hospital booking',
+                  illustrationAsset: AppIllustrations.aiChat3d,
+                  badgeLabel: 'Live AI Call & Triage',
+                  badgeColor: const Color(0xFF2563EB),
+                  cardBgColor: const Color(0xFFF8FAFC),
+                  borderColor: const Color(0xFF3B82F6),
+                  isImageOnLeft: true,
+                  onTap: () {
+                    Navigator.of(ctx).pop();
+                    setState(() => _currentIndex = 2);
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // Option 2: AI Vision & Lens Scanner (Vision Mode)
+                _AiSelectionCard(
+                  title: 'AI Vision & Lens Scanner',
+                  subtitle: 'Camera detection to analyze medicines, count food calories & skin conditions',
+                  illustrationAsset: AppIllustrations.aiVision3d,
+                  badgeLabel: 'Groq Vision 360°',
+                  badgeColor: const Color(0xFF059669),
+                  cardBgColor: const Color(0xFFF8FAFC),
+                  borderColor: const Color(0xFF10B981),
+                  isImageOnLeft: false,
                   onTap: () {
                     Navigator.of(ctx).pop();
                     Navigator.of(context).push(
@@ -102,38 +123,6 @@ class _UserMainNavState extends State<UserMainNav> {
                         builder: (_) => const AiLensScannerScreen(initialScope: VisionScope.food),
                       ),
                     );
-                  },
-                ),
-                const SizedBox(height: 10),
-
-                // Option 2: AI Lens Medicine & Tablet Scanner
-                _ActionTile(
-                  icon: Icons.medication_rounded,
-                  iconColor: const Color(0xFF2563EB),
-                  iconBg: const Color(0xFFDBEAFE),
-                  title: 'AI Lens: Snap Tablets / Medicines',
-                  subtitle: 'Strict Medical Scope: Chemical molecule, clinical uses & precautions',
-                  onTap: () {
-                    Navigator.of(ctx).pop();
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const AiLensScannerScreen(initialScope: VisionScope.medicine),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 10),
-
-                // Option 3: Full AI Health Assistant
-                _ActionTile(
-                  icon: Icons.chat_bubble_outline_rounded,
-                  iconColor: const Color(0xFF0D9488),
-                  iconBg: const Color(0xFFCCFBF1),
-                  title: 'Full AI Health Assistant & Voice',
-                  subtitle: 'Multilingual symptom checker, Sarvam voice & health Q&A',
-                  onTap: () {
-                    Navigator.of(ctx).pop();
-                    setState(() => _currentIndex = 2);
                   },
                 ),
                 const SizedBox(height: 14),
@@ -344,56 +333,147 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-class _ActionTile extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final Color iconBg;
+class _AiSelectionCard extends StatefulWidget {
   final String title;
   final String subtitle;
+  final String illustrationAsset;
+  final String badgeLabel;
+  final Color badgeColor;
+  final Color cardBgColor;
+  final Color borderColor;
+  final bool isImageOnLeft;
   final VoidCallback onTap;
 
-  const _ActionTile({
-    required this.icon,
-    required this.iconColor,
-    required this.iconBg,
+  const _AiSelectionCard({
     required this.title,
     required this.subtitle,
+    required this.illustrationAsset,
+    required this.badgeLabel,
+    required this.badgeColor,
+    required this.cardBgColor,
+    required this.borderColor,
+    required this.isImageOnLeft,
     required this.onTap,
   });
 
   @override
+  State<_AiSelectionCard> createState() => _AiSelectionCardState();
+}
+
+class _AiSelectionCardState extends State<_AiSelectionCard> {
+  bool _isHovered = false;
+
+  @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
-              child: Icon(icon, color: iconColor, size: 22),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
+    const double imageWidth = 84.0;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // Main Card Container (Tappable)
+          InkWell(
+            onTap: widget.onTap,
+            borderRadius: BorderRadius.circular(20),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: EdgeInsets.only(
+                left: widget.isImageOnLeft ? (imageWidth + 14) : 16,
+                right: widget.isImageOnLeft ? 16 : (imageWidth + 14),
+                top: 14,
+                bottom: 14,
+              ),
+              decoration: BoxDecoration(
+                color: _isHovered ? widget.badgeColor.withValues(alpha: 0.05) : widget.cardBgColor,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: _isHovered ? widget.borderColor : const Color(0xFFE2E8F0),
+                  width: _isHovered ? 2 : 1.2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: _isHovered
+                        ? widget.borderColor.withValues(alpha: 0.18)
+                        : Colors.black.withValues(alpha: 0.04),
+                    blurRadius: _isHovered ? 14 : 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.textPrimary)),
-                  const SizedBox(height: 2),
-                  Text(subtitle, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                  // Badge Tag
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: widget.badgeColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: widget.badgeColor.withValues(alpha: 0.3)),
+                    ),
+                    child: Text(
+                      widget.badgeLabel,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: widget.badgeColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+
+                  // Title
+                  Text(
+                    widget.title,
+                    style: const TextStyle(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+
+                  // Subtitle
+                  Text(
+                    widget.subtitle,
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      color: AppColors.textSecondary,
+                      height: 1.3,
+                    ),
+                  ),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textMuted),
-          ],
-        ),
+          ),
+
+          // 3D Avatar Illustration
+          Positioned(
+            left: widget.isImageOnLeft ? 8 : null,
+            right: widget.isImageOnLeft ? null : 8,
+            top: -12,
+            bottom: -12,
+            child: IgnorePointer(
+              child: Image.asset(
+                widget.illustrationAsset,
+                width: imageWidth,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: imageWidth,
+                  color: Colors.transparent,
+                  child: Icon(
+                    widget.isImageOnLeft ? Icons.smart_toy_rounded : Icons.document_scanner_rounded,
+                    size: 40,
+                    color: widget.badgeColor,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

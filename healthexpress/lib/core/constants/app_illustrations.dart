@@ -20,6 +20,8 @@ class AppIllustrations {
   // 5. Clinical AI & Medical Mascot (Hero Section)
   static const String heroHealthAi = '$_base/health_ai.png';
   static const String aiTriageBot = '$_base/health_ai.png';
+  static const String aiChat3d = '$_base/ai_chat_3d.png';
+  static const String aiVision3d = '$_base/ai_vision_3d.png';
 
   // 6. Pharmacy & Prescriptions
   static const String emptyPrescriptions = '$_base/empty_prescriptions.png';

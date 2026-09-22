@@ -7,6 +7,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/pharmacy_provider.dart';
 import 'cart_checkout_screen.dart';
 import 'book_appointment_screen.dart';
+import 'hospital_detail_screen.dart';
 
 class AiVoiceCallScreen extends StatefulWidget {
   const AiVoiceCallScreen({super.key});
@@ -320,6 +321,63 @@ class _AiVoiceCallScreenState extends State<AiVoiceCallScreen> {
                   ),
                 ],
 
+                // Suggested Hospital Pill (Distance & Travel ETA)
+                if (latestAiMsg.suggestedHospitals != null && latestAiMsg.suggestedHospitals!.isNotEmpty) ...[
+                  Builder(builder: (context) {
+                    final hosp = latestAiMsg.suggestedHospitals!.first;
+                    final int etaMins = (hosp.distanceKm * 3.5).round().clamp(3, 45);
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0C4A6E),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: const Color(0xFF38BDF8).withValues(alpha: 0.4)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.local_hospital_rounded, color: Color(0xFF38BDF8), size: 18),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    hosp.name,
+                                    style: const TextStyle(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.bold),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    '${hosp.distanceKm.toStringAsFixed(1)} km • Live ETA ~$etaMins mins',
+                                    style: const TextStyle(color: Color(0xFF7DD3FC), fontSize: 10),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => HospitalDetailScreen(hospital: hosp),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF0284C7),
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: const Text('View Doctors', style: TextStyle(color: Colors.white, fontSize: 10.5, fontWeight: FontWeight.bold)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+
                 // Suggested Medicines Pill
                 if (latestAiMsg.suggestedMedicines != null && latestAiMsg.suggestedMedicines!.isNotEmpty) ...[
                   Padding(
@@ -377,10 +435,20 @@ class _AiVoiceCallScreenState extends State<AiVoiceCallScreen> {
                           const Icon(Icons.medical_services_rounded, color: Color(0xFF34D399), size: 18),
                           const SizedBox(width: 8),
                           Expanded(
-                            child: Text(
-                              'Doctor: ${latestAiMsg.suggestedDoctors!.first.name}',
-                              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
-                              overflow: TextOverflow.ellipsis,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Doctor: ${latestAiMsg.suggestedDoctors!.first.name}',
+                                  style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  '${latestAiMsg.suggestedDoctors!.first.specialty} • ${latestAiMsg.suggestedDoctors!.first.hospitalName}',
+                                  style: const TextStyle(color: Color(0xFFA7F3D0), fontSize: 10),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
                           ),
                           ElevatedButton(

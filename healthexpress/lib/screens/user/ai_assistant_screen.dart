@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
+import '../../data/production_database.dart';
 import '../../models/doctor_model.dart';
+import '../../models/hospital_model.dart';
 import '../../models/medicine_model.dart';
 import '../../models/lab_test_model.dart';
 import '../../providers/ai_assistant_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/pharmacy_provider.dart';
 import 'book_appointment_screen.dart';
+import 'hospital_detail_screen.dart';
 import 'lab_tests_screen.dart';
 import 'cart_checkout_screen.dart';
 import 'emergency_sos_screen.dart';
@@ -74,184 +77,6 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> with TickerProvid
     });
   }
 
-  void _showLiveVoiceModal() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: const Color(0xFF0F172A),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (ctx) {
-        return Consumer<AiAssistantProvider>(
-          builder: (context, aiProv, _) {
-            final isTelugu = aiProv.selectedLanguage == 'te';
-            final isHindi = aiProv.selectedLanguage == 'hi';
-
-            return Container(
-              height: MediaQuery.of(context).size.height * 0.65,
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(color: Colors.white30, borderRadius: BorderRadius.circular(2)),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.success.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.success.withValues(alpha: 0.4)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(width: 8, height: 8, decoration: const BoxDecoration(color: AppColors.success, shape: BoxShape.circle)),
-                            const SizedBox(width: 6),
-                            Text(
-                              isTelugu ? 'ప్రత్యక్ష వాయిస్ మోడ్' : (isHindi ? 'लाइव वॉयस मोड' : 'Live Voice Mode (Sarvam AI)'),
-                              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-
-                  // Glowing Animated Voice Orb
-                  GestureDetector(
-                    onTap: () {
-                      final wasListening = aiProv.isListening;
-                      aiProv.toggleVoiceListening();
-                      if (wasListening && Navigator.of(ctx).canPop()) {
-                        Navigator.of(ctx).pop();
-                      }
-                    },
-                    child: ScaleTransition(
-                      scale: aiProv.isListening ? _pulseAnimation : const AlwaysStoppedAnimation(1.0),
-                      child: Container(
-                        width: 140,
-                        height: 140,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: aiProv.isListening
-                              ? const LinearGradient(
-                                  colors: [Color(0xFFEF4444), Color(0xFFDC2626), Color(0xFF991B1B)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                )
-                              : const LinearGradient(
-                                  colors: [Color(0xFF3B82F6), Color(0xFF8B5CF6), Color(0xFFEC4899)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: (aiProv.isListening ? const Color(0xFFEF4444) : const Color(0xFF3B82F6)).withValues(alpha: 0.6),
-                              blurRadius: 36,
-                              spreadRadius: 10,
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Icon(
-                            aiProv.isListening ? Icons.stop_rounded : Icons.mic_rounded,
-                            color: Colors.white,
-                            size: 56,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const Spacer(),
-
-                  Text(
-                    aiProv.isListening
-                        ? (isTelugu ? 'వినబడుతోంది... మాట్లాడండి' : (isHindi ? 'सुन रहा हूँ... बोलिए' : 'Listening... Tap orb to send'))
-                        : (isTelugu
-                            ? 'మీరు ఏ అనారోగ్య సమస్యతో బాధపడుతున్నారు?'
-                            : (isHindi ? 'आप किस समस्या से पीड़ित हैं? बताएं' : 'What health symptoms are you experiencing?')),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    aiProv.liveTranscription.isNotEmpty
-                        ? '“${aiProv.liveTranscription}”'
-                        : (aiProv.isListening
-                            ? (isTelugu ? 'మైక్రోఫోన్ యాక్టివ్‌గా ఉంది...' : 'Sarvam Live STT active... speak now')
-                            : (isTelugu ? 'మాట్లాడటానికి మైక్ ఆర్బ్‌ను నొక్కండి' : (isHindi ? 'बोलने के लिए माइक पर टैप करें' : 'Tap the glowing orb to speak'))),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.85), fontSize: 13, fontStyle: FontStyle.italic),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Quick Voice Starters (Natural Prompts, No Fake Patient Presets)
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    alignment: WrapAlignment.center,
-                    children: [
-                      _LiveVoiceChip(
-                        label: isTelugu ? '👋 హలో, నాకు లక్షణాలు ఉన్నాయి' : (isHindi ? '👋 नमस्ते, मुझे लक्षण बताने हैं' : '👋 Hello, I have health symptoms'),
-                        onTap: () {
-                          Navigator.of(ctx).pop();
-                          _sendMessage('Hi');
-                        },
-                      ),
-                      _LiveVoiceChip(
-                        label: isTelugu ? '🩺 దగ్గు మరియు గొంతు నొప్పి' : (isHindi ? '🩺 खांसी और गले में दर्द' : '🩺 Cough & sore throat'),
-                        onTap: () {
-                          Navigator.of(ctx).pop();
-                          _sendMessage(isTelugu ? 'నాకు దగ్గు మరియు గొంతు నొప్పి ఉన్నాయి.' : 'I am experiencing a cough and sore throat.');
-                        },
-                      ),
-                      _LiveVoiceChip(
-                        label: isTelugu ? '🤒 జ్వరం & తలనొప్పి' : (isHindi ? '🤒 बुखार और सिरदर्द' : '🤒 Fever & headache guidance'),
-                        onTap: () {
-                          Navigator.of(ctx).pop();
-                          _sendMessage(isTelugu ? 'నాకు జ్వరం మరియు తలనొప్పి ఉంది.' : 'I am experiencing fever and body aches.');
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.of(ctx).pop();
-                      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AiVoiceCallScreen()));
-                    },
-                    icon: const Icon(Icons.phone_in_talk_rounded, color: Colors.white, size: 18),
-                    label: Text(
-                      isTelugu ? 'పూర్తి స్క్రీన్ లైవ్ కాల్ ప్రారంభించండి' : (isHindi ? 'फुल स्क्रीन लाइव कॉल शुरू करें' : 'Open Full-Screen Live AI Call'),
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF10B981),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
   void _handleOrderMedicine(MedicineModel med) {
     context.read<PharmacyProvider>().addToCart(med);
     ScaffoldMessenger.of(context).showSnackBar(
@@ -278,6 +103,12 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> with TickerProvid
   void _handleBookDoctor(DoctorModel doc) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => BookAppointmentScreen(doctor: doc)),
+    );
+  }
+
+  void _handleViewHospital(HospitalModel hosp) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => HospitalDetailScreen(hospital: hosp)),
     );
   }
 
@@ -320,20 +151,12 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> with TickerProvid
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('HealthExpress AI Assistant', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-                  Row(
-                    children: [
-                      Container(
-                        width: 7,
-                        height: 7,
-                        decoration: const BoxDecoration(
-                          color: AppColors.success,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 5),
-                      const Text('Online • AI Clinical Assistant', style: TextStyle(fontSize: 11, color: AppColors.success, fontWeight: FontWeight.w600)),
-                    ],
+                  const Text('HealthExpress AI Doctor', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                  Text(
+                    aiProv.isLiveVoiceMode
+                        ? 'LiveKit Live Audio Call Active'
+                        : (aiProv.selectedLanguage == 'te' ? 'క్లినికల్ ట్రయేజ్ & సంరక్షణ' : (aiProv.selectedLanguage == 'hi' ? 'क्लीनिकल ट्राइएज और देखभाल' : 'Multilingual Clinical Triage')),
+                    style: TextStyle(fontSize: 11, color: aiProv.isLiveVoiceMode ? const Color(0xFF10B981) : AppColors.textSecondary, fontWeight: aiProv.isLiveVoiceMode ? FontWeight.bold : FontWeight.normal),
                   ),
                 ],
               ),
@@ -341,32 +164,22 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> with TickerProvid
           ],
         ),
         actions: [
-          // Live Voice Assistant Mode Modal Shortcut
+          // Live Voice Call Mode Button
           IconButton(
+            tooltip: 'Live Voice Call (Doctor)',
             icon: Container(
-              padding: const EdgeInsets.all(6),
+              padding: const EdgeInsets.all(7),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
+                color: const Color(0xFF10B981).withValues(alpha: 0.12),
                 shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.3)),
               ),
-              child: const Icon(Icons.mic_none_rounded, color: AppColors.primary, size: 20),
+              child: const Icon(Icons.phone_in_talk_rounded, color: Color(0xFF10B981), size: 18),
             ),
-            tooltip: 'Live Voice Assistant Mode',
-            onPressed: _showLiveVoiceModal,
-          ),
-          // Full-Screen Live AI Call Launcher
-          IconButton(
-            icon: Container(
-              padding: const EdgeInsets.all(6),
-              decoration: const BoxDecoration(
-                color: Color(0xFF10B981),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.phone_in_talk_rounded, color: Colors.white, size: 18),
-            ),
-            tooltip: 'Live Full-Screen AI Voice Call',
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AiVoiceCallScreen()));
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const AiVoiceCallScreen()),
+              );
             },
           ),
           const SizedBox(width: 6),
@@ -374,7 +187,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> with TickerProvid
       ),
       body: Column(
         children: [
-          // Language Switcher Banner
+          // Top Language Selection Bar
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
@@ -425,6 +238,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> with TickerProvid
                   onSuggestionTap: (sugg) => _sendMessage(sugg),
                   onOrderMedicine: _handleOrderMedicine,
                   onBookDoctor: _handleBookDoctor,
+                  onViewHospital: _handleViewHospital,
                   onBookLabTest: _handleBookLabTest,
                   onEmergencySos: () {
                     Navigator.of(context).push(MaterialPageRoute(builder: (_) => const EmergencySosScreen()));
@@ -643,29 +457,12 @@ class _LanguageChip extends StatelessWidget {
   }
 }
 
-class _LiveVoiceChip extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-
-  const _LiveVoiceChip({required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return ActionChip(
-      label: Text(label, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
-      backgroundColor: Colors.white.withValues(alpha: 0.15),
-      side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      onPressed: onTap,
-    );
-  }
-}
-
 class _MessageBubble extends StatelessWidget {
   final ChatMessage message;
   final Function(String) onSuggestionTap;
   final Function(MedicineModel) onOrderMedicine;
   final Function(DoctorModel) onBookDoctor;
+  final Function(HospitalModel) onViewHospital;
   final Function(LabTestModel) onBookLabTest;
   final VoidCallback onEmergencySos;
 
@@ -674,6 +471,7 @@ class _MessageBubble extends StatelessWidget {
     required this.onSuggestionTap,
     required this.onOrderMedicine,
     required this.onBookDoctor,
+    required this.onViewHospital,
     required this.onBookLabTest,
     required this.onEmergencySos,
   });
@@ -741,7 +539,7 @@ class _MessageBubble extends StatelessWidget {
           Container(
             width: 34,
             height: 34,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: AppColors.aiAssistantGradient,
               shape: BoxShape.circle,
             ),
@@ -859,7 +657,177 @@ class _MessageBubble extends StatelessWidget {
                     }),
                   ],
 
-                  // 1. CLICKABLE SUGGESTED MEDICINES SECTION
+                  // 1. CLICKABLE SUGGESTED HOSPITALS SECTION (With Distance & Travel ETA)
+                  if (message.suggestedHospitals != null && message.suggestedHospitals!.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    const Row(
+                      children: [
+                        Icon(Icons.local_hospital_rounded, size: 16, color: Color(0xFF0284C7)),
+                        SizedBox(width: 6),
+                        Text(
+                          'Nearby Hospitals & Facilities',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    ...message.suggestedHospitals!.map((hosp) {
+                      final int etaMins = (hosp.distanceKm * 3.5).round().clamp(3, 45);
+                      final hospDocs = ProductionDatabase.doctors.where((d) => d.hospitalId == hosp.id).toList();
+
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF0F9FF),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: const Color(0xFFBAE6FD)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.network(
+                                    hosp.logoUrl,
+                                    width: 44,
+                                    height: 44,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Container(
+                                      width: 44,
+                                      height: 44,
+                                      color: const Color(0xFFE0F2FE),
+                                      child: const Icon(Icons.local_hospital_rounded, color: Color(0xFF0284C7)),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        hosp.name,
+                                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        hosp.location,
+                                        style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFF0284C7).withValues(alpha: 0.12),
+                                              borderRadius: BorderRadius.circular(6),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const Icon(Icons.near_me_rounded, size: 10, color: Color(0xFF0284C7)),
+                                                const SizedBox(width: 3),
+                                                Text(
+                                                  '${hosp.distanceKm.toStringAsFixed(1)} km',
+                                                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF0284C7)),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFF059669).withValues(alpha: 0.12),
+                                              borderRadius: BorderRadius.circular(6),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const Icon(Icons.directions_car_rounded, size: 10, color: Color(0xFF059669)),
+                                                const SizedBox(width: 3),
+                                                Text(
+                                                  'ETA: ~$etaMins mins',
+                                                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF059669)),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (hospDocs.isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              const Divider(height: 12, color: Color(0xFFBAE6FD)),
+                              Text(
+                                'Available Specialists at ${hosp.name.split(" ").first}:',
+                                style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                              ),
+                              const SizedBox(height: 4),
+                              ...hospDocs.take(2).map((doc) => Padding(
+                                padding: const EdgeInsets.only(bottom: 4),
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 10,
+                                      backgroundImage: NetworkImage(doc.photoUrl),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Expanded(
+                                      child: Text(
+                                        '${doc.name} • ${doc.specialty}',
+                                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: AppColors.textPrimary),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () => onBookDoctor(doc),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primary,
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: const Text('Book Slot', style: TextStyle(color: Colors.white, fontSize: 9.5, fontWeight: FontWeight.bold)),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )),
+                            ],
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                OutlinedButton.icon(
+                                  onPressed: () => onViewHospital(hosp),
+                                  icon: const Icon(Icons.apartment_rounded, size: 13),
+                                  label: const Text('View Hospital & Doctors', style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold)),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: const Color(0xFF0284C7),
+                                    side: const BorderSide(color: Color(0xFF0284C7), width: 1),
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                  ],
+
+                  // 2. CLICKABLE SUGGESTED MEDICINES SECTION
                   if (message.suggestedMedicines != null && message.suggestedMedicines!.isNotEmpty) ...[
                     const SizedBox(height: 16),
                     const Row(
@@ -914,7 +882,7 @@ class _MessageBubble extends StatelessWidget {
                     }),
                   ],
 
-                  // 2. CLICKABLE SUGGESTED DOCTORS SECTION
+                  // 3. CLICKABLE SUGGESTED DOCTORS SECTION
                   if (message.suggestedDoctors != null && message.suggestedDoctors!.isNotEmpty) ...[
                     const SizedBox(height: 14),
                     const Row(
@@ -949,7 +917,8 @@ class _MessageBubble extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(doc.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-                                  Text('${doc.specialty} • ₹${doc.videoFee.toStringAsFixed(0)}', style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                                  Text('${doc.specialty} • ${doc.hospitalName}', style: const TextStyle(fontSize: 11, color: AppColors.textMuted), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                  Text('Fee: ₹${doc.videoFee.toStringAsFixed(0)} • In-Clinic: ₹${doc.clinicFee.toStringAsFixed(0)}', style: const TextStyle(fontSize: 10, color: AppColors.primary, fontWeight: FontWeight.w600)),
                                 ],
                               ),
                             ),

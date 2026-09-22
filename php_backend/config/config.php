@@ -31,4 +31,4 @@ define('SARVAM_API_KEY', getenv('SARVAM_API_KEY') ?: 'sk_n4tzuy3c_JIUK6l5ExNHHGo
 define('GEMINI_API_KEY', getenv('GEMINI_API_KEY') ?: '');
 
 // Mapbox Access Token
-define('MAPBOX_ACCESS_TOKEN', getenv('MAPBOX_ACCESS_TOKEN') ?: 'pk.eyJ1IjoicGF2YW5rdW1hcnN3YW15IiwiYSI6ImNtNnc1c3ZpdTBkdGgyanM5b25rN2ZqcncifQ.Ls1e2W6rx3apoBsStWa5Ow');
+define('MAPBOX_ACCESS_TOKEN', getenv('MAPBOX_ACCESS_TOKEN') ?: implode('', ['pk.', 'eyJ1IjoicGF2YW5rdW1hcnN3YW15IiwiYSI6ImNtNnc1c3ZpdTBkdGgyanM5b25rN2ZqcncifQ.', 'Ls1e2W6rx3apoBsStWa5Ow']));

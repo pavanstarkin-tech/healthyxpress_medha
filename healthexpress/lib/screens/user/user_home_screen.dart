@@ -5,13 +5,10 @@ import '../../core/constants/app_illustrations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/appointment_provider.dart';
-import '../../providers/ai_assistant_provider.dart';
 import '../../providers/pharmacy_provider.dart';
 import '../common/address_selection_modal.dart';
 import 'ai_assistant_screen.dart';
-import 'ai_lens_scanner_screen.dart';
 import 'ai_voice_call_screen.dart';
-import '../../models/vision_analysis_model.dart';
 import 'doctor_search_screen.dart';
 import 'nearby_hospitals_map_screen.dart';
 import 'pharmacy_screen.dart';
@@ -46,7 +43,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
-    final ai = context.watch<AiAssistantProvider>();
     final pharmacyProv = context.watch<PharmacyProvider>();
     final appointmentProv = context.watch<AppointmentProvider>();
     final nextAppointment = appointmentProv.getNextUpcomingForUser(auth.currentUser.id);
@@ -395,105 +391,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 14),
-
-              // AI Vision Lens Scanner Banner (Groq Cloud AI for Food Calories & Tablets)
-              InkWell(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const AiLensScannerScreen(initialScope: VisionScope.food),
-                    ),
-                  );
-                },
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFF38BDF8).withValues(alpha: 0.5)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF0284C7).withValues(alpha: 0.18),
-                        blurRadius: 14,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(14),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.cyanAccent.withValues(alpha: 0.35),
-                              blurRadius: 10,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(14),
-                          child: Image.asset(
-                            'assets/images/ai_lens_card.png',
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFF0284C7), Color(0xFF38BDF8)],
-                                ),
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 22),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Text(
-                                  'AI Lens: Snap Food & Medicine',
-                                  style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.bold, color: Colors.white),
-                                ),
-                                const SizedBox(width: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-                                  decoration: BoxDecoration(
-                                    color: Colors.cyanAccent.withValues(alpha: 0.2),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: const Text('GROQ AI', style: TextStyle(color: Colors.cyanAccent, fontSize: 8.5, fontWeight: FontWeight.bold)),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 3),
-                            const Text(
-                              'Instant calorie counter, nutrition, GI index & tablet medical scope',
-                              style: TextStyle(fontSize: 11, color: Colors.white70),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Colors.cyanAccent),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 6),
 
               // Quick Actions Grid Header
               const Text(
@@ -635,52 +533,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               ),
               const SizedBox(height: 24),
 
-              // Dynamic Disease Category Chips
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'AI Symptom Filter',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
-                  ),
-                  Text(
-                    'Current: ${ai.activeDiagnosis}',
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.primary),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _ConditionChip(
-                      label: 'Fever',
-                      isSelected: ai.activeDiagnosis.contains('Fever'),
-                      onTap: () => ai.selectCondition('Fever'),
-                    ),
-                    const SizedBox(width: 8),
-                    _ConditionChip(
-                      label: 'Cold & Cough',
-                      isSelected: ai.activeDiagnosis.contains('Cold') || ai.activeDiagnosis.contains('Cough'),
-                      onTap: () => ai.selectCondition('Cold & Cough'),
-                    ),
-                    const SizedBox(width: 8),
-                    _ConditionChip(
-                      label: 'Migraine',
-                      isSelected: ai.activeDiagnosis.contains('Migraine'),
-                      onTap: () => ai.selectCondition('Migraine'),
-                    ),
-                    const SizedBox(width: 8),
-                    _ConditionChip(
-                      label: 'Cardiology',
-                      isSelected: ai.activeDiagnosis.contains('Cardiac'),
-                      onTap: () => ai.selectCondition('Cardiac Alert / Emergency'),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 22),
+
 
               // Health Summary Header & Cards
               Row(
@@ -952,38 +805,4 @@ class _QuickActionButton extends StatelessWidget {
   }
 }
 
-class _ConditionChip extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
 
-  const _ConditionChip({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isSelected ? AppColors.primary : AppColors.border),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-            color: isSelected ? Colors.white : AppColors.textSecondary,
-          ),
-        ),
-      ),
-    );
-  }
-}
