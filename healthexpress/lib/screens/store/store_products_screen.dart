@@ -84,7 +84,7 @@ class _StoreProductsScreenState extends State<StoreProductsScreen> {
 
                   // Category Dropdown
                   DropdownButtonFormField<String>(
-                    value: selectedCat,
+                    initialValue: selectedCat,
                     decoration: InputDecoration(
                       labelText: 'Category',
                       filled: true,
