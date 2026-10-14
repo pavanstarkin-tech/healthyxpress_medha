@@ -7,6 +7,12 @@ import 'providers/appointment_provider.dart';
 import 'providers/pharmacy_provider.dart';
 import 'providers/doctor_portal_provider.dart';
 import 'providers/store_provider.dart';
+import 'providers/offline_medical_slm_provider.dart';
+import 'services/offline_health_grid_service.dart';
+import 'services/explainable_clinical_ai_service.dart';
+import 'services/emergency_medicine_hold_service.dart';
+import 'services/government_scheme_service.dart';
+import 'services/public_health_surveillance_service.dart';
 import 'screens/common/splash_screen.dart';
 
 import 'data/production_database.dart';
@@ -14,11 +20,11 @@ import 'data/production_database.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   ProductionDatabase.syncWithLiveBackend();
-  runApp(const HealthExpressApp());
+  runApp(const SanjeevaniApp());
 }
 
-class HealthExpressApp extends StatelessWidget {
-  const HealthExpressApp({super.key});
+class SanjeevaniApp extends StatelessWidget {
+  const SanjeevaniApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +36,15 @@ class HealthExpressApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PharmacyProvider()),
         ChangeNotifierProvider(create: (_) => DoctorPortalProvider()),
         ChangeNotifierProvider(create: (_) => StoreProvider()),
+        ChangeNotifierProvider(create: (_) => OfflineMedicalSlmProvider()),
+        ChangeNotifierProvider(create: (_) => OfflineHealthGridService()),
+        ChangeNotifierProvider(create: (_) => ExplainableClinicalAiService()),
+        ChangeNotifierProvider(create: (_) => EmergencyMedicineHoldService()),
+        ChangeNotifierProvider(create: (_) => GovernmentSchemeService()),
+        ChangeNotifierProvider(create: (_) => PublicHealthSurveillanceService()),
       ],
       child: MaterialApp(
-        title: 'HealthExpress AI',
+        title: 'Sanjeevani.AI',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         home: const SplashScreen(),
@@ -40,3 +52,6 @@ class HealthExpressApp extends StatelessWidget {
     );
   }
 }
+
+/// Backward compatibility alias
+typedef HealthExpressApp = SanjeevaniApp;

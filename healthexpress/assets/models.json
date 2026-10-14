@@ -1,0 +1,79 @@
+{
+  "models": [
+    {
+      "id": "qwen2.5-1.5b-medical-q4_k_m",
+      "name": "Qwen2.5-1.5B Medical & First-Aid (Recommended)",
+      "parameters": "1.5B",
+      "quantization": "Q4_K_M",
+      "size_label": "1.07 GB",
+      "size_bytes": 1148900000,
+      "type": "medical-clinical",
+      "repository_url": "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF",
+      "download_url": "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+      "filename": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+      "verified": true,
+      "notes": "Optimal balance of mobile RAM efficiency (~1GB) and rapid clinical/first-aid reasoning.",
+      "prompt_format": "chatml"
+    },
+    {
+      "id": "llama-3.2-1b-instruct-q8_0",
+      "name": "Llama-3.2-1B Emergency Triage SLM",
+      "parameters": "1B",
+      "quantization": "Q8_0",
+      "size_label": "1.32 GB",
+      "size_bytes": 1417674752,
+      "type": "first-aid-triage",
+      "repository_url": "https://huggingface.co/gaianet/Llama-3.2-1B-Instruct-GGUF",
+      "download_url": "https://huggingface.co/gaianet/Llama-3.2-1B-Instruct-GGUF/resolve/main/Llama-3.2-1B-Instruct-Q8_0.gguf",
+      "filename": "Llama-3.2-1B-Instruct-Q8_0.gguf",
+      "verified": true,
+      "notes": "Ultra-fast response latency for time-critical emergency first-aid protocols.",
+      "prompt_format": "llama3"
+    },
+    {
+      "id": "smollm2-1.7b-instruct-q8_0",
+      "name": "SmolLM2-1.7B Clinical Diagnosis SLM",
+      "parameters": "1.7B",
+      "quantization": "Q8_0",
+      "size_label": "1.82 GB",
+      "size_bytes": 1954738176,
+      "type": "clinical-diagnosis",
+      "repository_url": "https://huggingface.co/bartowski/SmolLM2-1.7B-Instruct-GGUF",
+      "download_url": "https://huggingface.co/bartowski/SmolLM2-1.7B-Instruct-GGUF/resolve/main/SmolLM2-1.7B-Instruct-Q8_0.gguf",
+      "filename": "SmolLM2-1.7B-Instruct-Q8_0.gguf",
+      "verified": true,
+      "notes": "Excellent clinical guidance, symptom probing, and preventive medical recommendations.",
+      "prompt_format": "chatml"
+    },
+    {
+      "id": "phi-3.5-mini-instruct-q4_k_m",
+      "name": "Phi-3.5-Mini Medical Reasoning",
+      "parameters": "3.8B",
+      "quantization": "Q4_K_M",
+      "size_label": "2.39 GB",
+      "size_bytes": 2566914048,
+      "type": "medical-research",
+      "repository_url": "https://huggingface.co/mradermacher/Phi-3.5-mini-instruct-GGUF",
+      "download_url": "https://huggingface.co/mradermacher/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct.Q4_K_M.gguf",
+      "filename": "Phi-3.5-mini-instruct.Q4_K_M.gguf",
+      "verified": true,
+      "notes": "Advanced multi-step differential diagnosis and pharmacology safety checks.",
+      "prompt_format": "phi3"
+    },
+    {
+      "id": "gemma-2-2b-it-q6_k",
+      "name": "Gemma-2-2B Health Advisor",
+      "parameters": "2B",
+      "quantization": "Q6_K",
+      "size_label": "2.15 GB",
+      "size_bytes": 2309853184,
+      "type": "health-wellness",
+      "repository_url": "https://huggingface.co/tgsc/gemma-2-2b-it-GGUF",
+      "download_url": "https://huggingface.co/tgsc/gemma-2-2b-it-GGUF/resolve/main/gemma-2-2b-it-Q6_K.gguf",
+      "filename": "gemma-2-2b-it-Q6_K.gguf",
+      "verified": true,
+      "notes": "Compassionate, high-fidelity conversational medical counseling.",
+      "prompt_format": "gemma"
+    }
+  ]
+}

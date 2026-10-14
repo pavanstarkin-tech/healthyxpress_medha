@@ -20,8 +20,16 @@
 ## Executive Presentation Slide Slider
 
 <div align="center">
-  <p><strong>12-Slide Strategic & Technical Presentation Slider (Auto-Playing)</strong></p>
+  <p><strong>10-Slide Strategic & Technical Presentation Slider (Auto-Playing)</strong></p>
   <img src="ppt/presentation_slider.gif" width="100%" alt="HealthExpress AI Executive Presentation Slider" />
+  <br/><br/>
+  <a href="ppt/HealthExpress_Presentation.pptx">
+    <img src="https://img.shields.io/badge/Download-PowerPoint_Presentation_(.pptx)-D04423?style=for-the-badge&logo=microsoftpowerpoint&logoColor=white" alt="Download PPTX" />
+  </a>
+  &nbsp;&nbsp;
+  <a href="ppt/HealthExpress_Presentation.pdf">
+    <img src="https://img.shields.io/badge/Download-Executive_Deck_(.pdf)-EC1C24?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="Download PDF" />
+  </a>
 </div>
 
 <details>
@@ -29,63 +37,53 @@
   <br/>
 
   <details open>
-    <summary><strong>Slide 01: Platform Overview & Strategic Vision</strong></summary>
-    <p align="center"><img src="ppt/slides%20(1).png" width="100%" alt="Slide 01" /></p>
+    <summary><strong>Slide 01</strong></summary>
+    <p align="center"><img src="ppt/slides1.png" width="100%" alt="Slide 01" /></p>
   </details>
 
   <details>
-    <summary><strong>Slide 02: Healthcare Crisis vs. HealthExpress Solution</strong></summary>
-    <p align="center"><img src="ppt/slides%20(2).png" width="100%" alt="Slide 02" /></p>
+    <summary><strong>Slide 02</strong></summary>
+    <p align="center"><img src="ppt/slides2.png" width="100%" alt="Slide 02" /></p>
   </details>
 
   <details>
-    <summary><strong>Slide 03: The Golden 15-Minute Care Loop Workflow</strong></summary>
-    <p align="center"><img src="ppt/slides%20(3).png" width="100%" alt="Slide 03" /></p>
+    <summary><strong>Slide 03</strong></summary>
+    <p align="center"><img src="ppt/slides3.png" width="100%" alt="Slide 03" /></p>
   </details>
 
   <details>
-    <summary><strong>Slide 04: Multi-Role Platform Ecosystem & Architecture</strong></summary>
-    <p align="center"><img src="ppt/slides%20(4).png" width="100%" alt="Slide 04" /></p>
+    <summary><strong>Slide 04</strong></summary>
+    <p align="center"><img src="ppt/slides4.png" width="100%" alt="Slide 04" /></p>
   </details>
 
   <details>
-    <summary><strong>Slide 05: Multilingual Voice AI & Clinical Triage Engine</strong></summary>
-    <p align="center"><img src="ppt/slides%20(5).png" width="100%" alt="Slide 05" /></p>
+    <summary><strong>Slide 05</strong></summary>
+    <p align="center"><img src="ppt/slides5.png" width="100%" alt="Slide 05" /></p>
   </details>
 
   <details>
-    <summary><strong>Slide 06: AI Vision Lens & Prescription Scanner</strong></summary>
-    <p align="center"><img src="ppt/slides%20(6).png" width="100%" alt="Slide 06" /></p>
+    <summary><strong>Slide 06</strong></summary>
+    <p align="center"><img src="ppt/slides6.png" width="100%" alt="Slide 06" /></p>
   </details>
 
   <details>
-    <summary><strong>Slide 07: Real-Time Telehealth & Agora WebRTC Engine</strong></summary>
-    <p align="center"><img src="ppt/slides%20(7).png" width="100%" alt="Slide 07" /></p>
+    <summary><strong>Slide 07</strong></summary>
+    <p align="center"><img src="ppt/slides7.png" width="100%" alt="Slide 07" /></p>
   </details>
 
   <details>
-    <summary><strong>Slide 08: Hyperlocal 15-Minute Dark Store Logistics</strong></summary>
-    <p align="center"><img src="ppt/slides%20(8).png" width="100%" alt="Slide 08" /></p>
+    <summary><strong>Slide 08</strong></summary>
+    <p align="center"><img src="ppt/slides8.png" width="100%" alt="Slide 08" /></p>
   </details>
 
   <details>
-    <summary><strong>Slide 09: Government Health Schemes (ABDM & Aarogyasri)</strong></summary>
-    <p align="center"><img src="ppt/slides%20(9).png" width="100%" alt="Slide 09" /></p>
+    <summary><strong>Slide 09</strong></summary>
+    <p align="center"><img src="ppt/slides9.png" width="100%" alt="Slide 09" /></p>
   </details>
 
   <details>
-    <summary><strong>Slide 10: Full-Stack Technology Matrix</strong></summary>
-    <p align="center"><img src="ppt/slides%20(10).png" width="100%" alt="Slide 10" /></p>
-  </details>
-
-  <details>
-    <summary><strong>Slide 11: Engineered with IBM Bob</strong></summary>
-    <p align="center"><img src="ppt/slides%20(11).png" width="100%" alt="Slide 11" /></p>
-  </details>
-
-  <details>
-    <summary><strong>Slide 12: Platform Summary & Future Horizons</strong></summary>
-    <p align="center"><img src="ppt/slides%20(12).png" width="100%" alt="Slide 12" /></p>
+    <summary><strong>Slide 10</strong></summary>
+    <p align="center"><img src="ppt/slides10.png" width="100%" alt="Slide 10" /></p>
   </details>
 </details>
 
@@ -817,8 +815,64 @@ powershell -ExecutionPolicy Bypass -File .\deploy.ps1
 
 ---
 
+## 12. Sanjeevani.AI — Edge-First Emergency Response, Predictive Offline Health Grid & Multimodal Platform
+
+> **Problem Statement Focus**: Bridging critical emergency healthcare, clinical, and medical logistics gaps in rural, semi-urban, and highway corridors across underserved India where internet connectivity is low or nonexistent.
+
+```mermaid
+flowchart TD
+    subgraph EdgeDevice["On-Device Edge Intelligence (Zero Internet)"]
+        SLM["Offline Medical SLM Engine<br/>• Qwen2.5-0.5B / SmolLM2-360M GGUF<br/>• Native ARM64 llama.cpp C-API"]
+        Avatar["Offline AI Doctor Avatar (Dr. Medha)<br/>• On-Device TTS & STT (Telugu, Hindi, English)<br/>• Lip-sync & Clinical Pulse Metronome (110 BPM)"]
+        Protocols["10 Validated Emergency Protocols<br/>(AHA/WHO: CPR, Stroke FAST, Snakebite, Hemorrhage)"]
+        CacheGrid["Edge-First 5km & Highway Corridor Grid<br/>• Pre-cached Offline Facilities, Beds, Blood Units"]
+    end
+
+    subgraph ClinicalIntelligence["Multimodal & Safety Algorithms"]
+        Explainable["Explainable Multimodal Clinical AI<br/>• Plain-Language Lab Reports (HbA1c, CBC, Dengue)<br/>• Step-by-Step Diagnostic Confidence Reasoning<br/>• Standardized Coding: ICD-10 & SNOMED CT"]
+        DDI["Drug-Drug Interaction (DDI) Safety Engine<br/>• Real-time alerts for lethal drug pairings"]
+    end
+
+    subgraph LogisticsAndAffordability["Medical Logistics & Affordability"]
+        Generic["Jan Aushadhi Generic Price Comparator<br/>• Up to 75%+ Savings on Essential Drugs"]
+        Hold["30-Minute Emergency Stock Lock<br/>• Guaranteed Reservation Token + OTP"]
+    end
+
+    subgraph PublicHealthAndSchemes["Sovereign Schemes & Surveillance"]
+        Schemes["Govt Schemes Explorer<br/>• Ayushman Bharat PM-JAY (₹5L)<br/>• Dr. YSR Aarogyasri (₹25L Cashless)"]
+        Surveillance["Syndromic Outbreak Surveillance<br/>• Dengue, Malaria & Gastroenteritis Hotspots"]
+        Privacy["Time-Bound Dynamic EHR Consent QR<br/>• Privacy-Preserving Temporary Doctor Access"]
+    end
+
+    SLM --> Avatar
+    SLM --> Protocols
+    CacheGrid --> Hold
+    Explainable --> DDI
+    Schemes --> Generic
+    Surveillance --> Privacy
+
+    style EdgeDevice fill:#EFF6FF,stroke:#2563EB,stroke-width:2px
+    style ClinicalIntelligence fill:#F5F3FF,stroke:#7C3AED,stroke-width:2px
+    style LogisticsAndAffordability fill:#ECFDF5,stroke:#059669,stroke-width:2px
+    style PublicHealthAndSchemes fill:#FFFBEB,stroke:#D97706,stroke-width:2px
+```
+
+### Key Sanjeevani.AI Modules & Implementations
+
+| Module | Core Features & Implementation Details | Key Files |
+| :--- | :--- | :--- |
+| **Offline Medical SLM & Avatar** | • Native ARM64 `libllama.so` and `llama_cpp_dart` integration with prompt formatting (ChatML, Llama3, Gemma).<br>• Fully interactive Dr. Medha AI avatar with pulse ring and on-device STT/TTS in Telugu, Hindi, and English.<br>• 10 offline validated protocols with animated CPR 110 BPM audio metronome. | [`offline_medical_models.dart`](file:///c:/Users/shese/Desktop/healthyxpress_medha/healthexpress/lib/models/offline_medical_models.dart)<br>[`medical_slm_engine_service.dart`](file:///c:/Users/shese/Desktop/healthyxpress_medha/healthexpress/lib/services/medical_slm_engine_service.dart)<br>[`offline_ai_doctor_screen.dart`](file:///c:/Users/shese/Desktop/healthyxpress_medha/healthexpress/lib/screens/user/offline_ai_doctor_screen.dart) |
+| **Offline Health Grid** | • Proactive 5 km radius & Highway Corridor facility caching (PHCs, CHCs, Trauma Centers).<br>• Live offline trackers for ICU beds, Oxygen beds, Ventilators, and Blood Group units (A+, B+, O+, O-). | [`offline_health_grid_service.dart`](file:///c:/Users/shese/Desktop/healthyxpress_medha/healthexpress/lib/services/offline_health_grid_service.dart)<br>[`offline_health_grid_screen.dart`](file:///c:/Users/shese/Desktop/healthyxpress_medha/healthexpress/lib/screens/user/offline_health_grid_screen.dart) |
+| **Explainable Multimodal AI** | • Plain-language decoding of complex diagnostic labs (HbA1c, Creatinine, Platelets, CBC) into English & Telugu.<br>• Diagnostic confidence score (%) with step-by-step clinical rationale.<br>• ICD-10 and SNOMED CT automated coding.<br>• Real-time Drug-Drug Interaction (DDI) alert matrix (e.g. Warfarin + Aspirin hemorrhage warning). | [`explainable_clinical_ai_service.dart`](file:///c:/Users/shese/Desktop/healthyxpress_medha/healthexpress/lib/services/explainable_clinical_ai_service.dart)<br>[`explainable_lab_report_screen.dart`](file:///c:/Users/shese/Desktop/healthyxpress_medha/healthexpress/lib/screens/user/explainable_lab_report_screen.dart) |
+| **Jan Aushadhi & 30-Min Hold** | • Direct branded vs. Pradhan Mantri Bhartiya Janaushadhi Pariyojana (PMBJP) generic comparison.<br>• Live price savings calculator (50% to 80% reduction).<br>• 30-minute guaranteed medicine stock lock token with 4-digit verification OTP. | [`emergency_medicine_hold_service.dart`](file:///c:/Users/shese/Desktop/healthyxpress_medha/healthexpress/lib/services/emergency_medicine_hold_service.dart)<br>[`jan_aushadhi_finder_screen.dart`](file:///c:/Users/shese/Desktop/healthyxpress_medha/healthexpress/lib/screens/user/jan_aushadhi_finder_screen.dart) |
+| **Government Schemes Explorer** | • Comprehensive package rate and document checker for Ayushman Bharat PM-JAY (₹5 Lakh) and Dr. YSR Aarogyasri (₹25 Lakh).<br>• Socioeconomic criteria & white ration card eligibility engine.<br>• Emergency fast-track pre-authorization guidelines. | [`government_scheme_service.dart`](file:///c:/Users/shese/Desktop/healthyxpress_medha/healthexpress/lib/services/government_scheme_service.dart)<br>[`government_scheme_explorer_screen.dart`](file:///c:/Users/shese/Desktop/healthyxpress_medha/healthexpress/lib/screens/user/government_scheme_explorer_screen.dart) |
+| **Surveillance & Consent QR** | • Real-time syndromic outbreak monitoring for Dengue (NS1), Malaria, and Waterborne Gastroenteritis.<br>• Threat level indicators ('LOW', 'MODERATE', 'HIGH_OUTBREAK_ALERT') and supply requirements.<br>• Dynamic time-bound (15-min to 120-min) granular EHR consent QR token generator with instant revocation. | [`public_health_surveillance_service.dart`](file:///c:/Users/shese/Desktop/healthyxpress_medha/healthexpress/lib/services/public_health_surveillance_service.dart)<br>[`public_health_outbreak_heatmap_screen.dart`](file:///c:/Users/shese/Desktop/healthyxpress_medha/healthexpress/lib/screens/user/public_health_outbreak_heatmap_screen.dart) |
+
+---
+
 <div align="center">
-  <sub>Implemented with <strong><a href="https://bob.ibm.com/">IBM Bob</a></strong>, <strong>Sarvam AI</strong>, and <strong>NVIDIA NIM</strong>.</sub>
+  <sub>Implemented with <strong><a href="https://bob.ibm.com/">IBM Bob</a></strong>, <strong>Sarvam AI</strong>, <strong>NVIDIA NIM</strong>, and <strong>Sanjeevani.AI Edge Engine</strong>.</sub>
 </div>
+
 
 

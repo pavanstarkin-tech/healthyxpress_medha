@@ -20,7 +20,7 @@ class GroqVisionService {
     }
 
     final systemPrompt = '''
-You are HealthExpress AI Vision Diagnostic System, a world-class Clinical Diagnostic Physician, Nutritionist, and Pharmacist AI.
+You are Sanjeevani.AI Vision Diagnostic System, a world-class Clinical Diagnostic Physician, Nutritionist, and Pharmacist AI.
 Analyze the user's captured image carefully.
 
 Determine if the image represents:
@@ -170,7 +170,7 @@ Return ONLY a valid JSON object matching this schema with NO extra commentary or
     List<Map<String, String>> conversationHistory = const [],
   }) async {
     final systemPrompt = '''
-You are HealthExpress Clinical AI. The user is asking an interactive follow-up question about an item they just scanned.
+You are Sanjeevani.AI Clinical Assistant. The user is asking an interactive follow-up question about an item they just scanned.
 Item Details:
 - Name: ${previousResult.name}
 - Scope: ${previousResult.isFood ? 'Food & Nutrition' : (previousResult.isInfection ? 'Disease & Infection Diagnosis' : 'Medicine / Clinical Tablet')}

@@ -341,7 +341,7 @@ class NvidiaAiService {
 
     if (isVoiceMode) {
       return '''
-You are HealthExpress AI, a caring, expert clinical voice assistant on a live real-time voice call.
+You are Sanjeevani.AI, a caring, expert clinical voice assistant on a live real-time voice call.
 $languageDirective
 
 VOICE CALL RULES:
@@ -366,7 +366,7 @@ Patient Profile Known So Far:
 ''';
 
     return '''
-You are HealthExpress AI, a caring, empathetic, and knowledgeable clinical doctor assistant.
+You are Sanjeevani.AI, a caring, empathetic, and knowledgeable clinical doctor assistant.
 $languageDirective
 
 STRICT RULES:
@@ -637,11 +637,11 @@ STAGE-BY-STAGE GUIDELINES:
     switch (intakeStage) {
       case 'STAGE_1_CHIEF_COMPLAINT':
         if (lang == 'te') {
-          reply = 'నమస్కారం $name గారు. నేను మీ HealthExpress క్లినికల్ సహాయకుడిని.\n\nమీ సమస్యను సరిగ్గా అర్థం చేసుకోవడానికి, మీరు ప్రస్తుతం ఎదుర్కొంటున్న సమస్య లేదా లక్షణాలు ఏమిటో మరియు ఈ సమస్య ఎన్ని రోజుల నుండి ఉందో దయచేసి చెప్పగలరా?';
+          reply = 'నమస్కారం $name గారు. నేను మీ Sanjeevani.AI క్లినికల్ సహాయకుడిని.\n\nమీ సమస్యను సరిగ్గా అర్థం చేసుకోవడానికి, మీరు ప్రస్తుతం ఎదుర్కొంటున్న సమస్య లేదా లక్షణాలు ఏమిటో మరియు ఈ సమస్య ఎన్ని రోజుల నుండి ఉందో దయచేసి చెప్పగలరా?';
         } else if (lang == 'hi') {
-          reply = 'नमस्ते $name जी। मैं आपका HealthExpress क्लिनिकल सहायक हूँ।\n\nआपकी सही मदद करने के लिए, क्या आप बता सकते हैं कि आपको मुख्य रूप से क्या तकलीफ है और यह परेशानी कितने दिनों से हो रही है?';
+          reply = 'नमस्ते $name जी। मैं आपका Sanjeevani.AI क्लिनिकल सहायक हूँ।\n\nआपकी सही मदद करने के लिए, क्या आप बता सकते हैं कि आपको मुख्य रूप से क्या तकलीफ है और यह परेशानी कितने दिनों से हो रही है?';
         } else {
-          reply = 'Hello $name, I am your HealthExpress Clinical AI assistant.\n\nTo understand your condition properly, could you tell me what specific symptoms you are experiencing, and how many days or hours you have been having this discomfort?';
+          reply = 'Hello $name, I am your Sanjeevani.AI Clinical Assistant.\n\nTo understand your condition properly, could you tell me what specific symptoms you are experiencing, and how many days or hours you have been having this discomfort?';
         }
         break;
 

@@ -76,7 +76,7 @@ class _UserMainNavState extends State<UserMainNav> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'HealthExpress AI Suite',
+                          'Sanjeevani.AI Suite',
                           style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                         ),
                         Text(

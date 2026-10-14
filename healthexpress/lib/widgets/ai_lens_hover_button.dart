@@ -63,7 +63,7 @@ class _AiLensHoverButtonState extends State<AiLensHoverButton> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'HealthExpress AI Lens',
+                          'Sanjeevani AI Lens',
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                         ),
                         Text(

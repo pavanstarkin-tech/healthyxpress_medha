@@ -15,6 +15,7 @@ import 'lab_tests_screen.dart';
 import 'cart_checkout_screen.dart';
 import 'emergency_sos_screen.dart';
 import 'ai_voice_call_screen.dart';
+import 'offline_ai_doctor_screen.dart';
 
 class AiAssistantScreen extends StatefulWidget {
   const AiAssistantScreen({super.key});
@@ -151,7 +152,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> with TickerProvid
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('HealthExpress AI Doctor', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                  const Text('Sanjeevani.AI Doctor', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                   Text(
                     aiProv.isLiveVoiceMode
                         ? 'LiveKit Live Audio Call Active'
@@ -164,6 +165,24 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> with TickerProvid
           ],
         ),
         actions: [
+          // Offline SLM Mode Button
+          IconButton(
+            tooltip: 'Offline Medical SLM (Zero Internet)',
+            icon: Container(
+              padding: const EdgeInsets.all(7),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E60F6).withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFF1E60F6).withValues(alpha: 0.3)),
+              ),
+              child: const Icon(Icons.wifi_off_rounded, color: Color(0xFF1E60F6), size: 18),
+            ),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const OfflineAiDoctorScreen()),
+              );
+            },
+          ),
           // Live Voice Call Mode Button
           IconButton(
             tooltip: 'Live Voice Call (Doctor)',

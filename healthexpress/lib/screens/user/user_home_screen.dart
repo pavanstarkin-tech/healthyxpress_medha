@@ -23,6 +23,12 @@ import 'medication_reminders_screen.dart';
 import 'user_profile_screen.dart';
 import '../common/basic_registration_screen.dart';
 import '../../services/location_service.dart';
+import 'offline_ai_doctor_screen.dart';
+import 'offline_health_grid_screen.dart';
+import 'explainable_lab_report_screen.dart';
+import 'jan_aushadhi_finder_screen.dart';
+import 'government_scheme_explorer_screen.dart';
+import 'public_health_outbreak_heatmap_screen.dart';
 
 class UserHomeScreen extends StatefulWidget {
   const UserHomeScreen({super.key});
@@ -80,7 +86,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                       ),
                       const SizedBox(width: 8),
                       const Text(
-                        'HealthExpress AI',
+                        'Sanjeevani.AI',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
@@ -391,7 +397,140 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 12),
+
+              // Offline Medical SLM & AI Doctor Avatar Banner (100% Offline / Zero-Internet)
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const OfflineAiDoctorScreen()),
+                  );
+                },
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFF38BDF8).withOpacity(0.4), width: 1.2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF0F172A).withOpacity(0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      // Avatar Graphic with Pulse Ring
+                      Container(
+                        width: 54,
+                        height: 54,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: const RadialGradient(
+                            colors: [Color(0xFF38BDF8), Color(0xFF1E60F6), Color(0xFF0F172A)],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF38BDF8).withOpacity(0.4),
+                              blurRadius: 10,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Icon(Icons.psychology_rounded, color: Colors.white, size: 30),
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF10B981).withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: const Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.wifi_off_rounded, color: Color(0xFF10B981), size: 11),
+                                      SizedBox(width: 3),
+                                      Text(
+                                        'ZERO INTERNET',
+                                        style: TextStyle(
+                                          color: Color(0xFF10B981),
+                                          fontSize: 9.5,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF38BDF8).withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: const Text(
+                                    'ON-DEVICE SLM',
+                                    style: TextStyle(
+                                      color: Color(0xFF38BDF8),
+                                      fontSize: 9.5,
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            const Text(
+                              'Offline AI Doctor & First-Aid SLM',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.5,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Voice-guided CPR, triage & first-aid protocols running 100% locally on CPU.',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.7),
+                                fontSize: 11,
+                                height: 1.25,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF1E60F6),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 16),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
 
               // Quick Actions Grid Header
               const Text(
@@ -531,11 +670,124 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                   ],
                 ),
               ),
+              const SizedBox(height: 20),
+
+              // Sanjeevani.AI — Edge-First Emergency Response & Health Grid Suite
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Sanjeevani.AI Grid & Intelligence',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Text(
+                      'EDGE-FIRST',
+                      style: TextStyle(color: Color(0xFF10B981), fontSize: 9.5, fontWeight: FontWeight.w900),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // 5 Feature Cards Grid / Horizontal Scroll
+              SizedBox(
+                height: 128,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  clipBehavior: Clip.none,
+                  children: [
+                    // Card 1: 5km Offline Health Grid
+                    _buildSanjeevaniFeatureCard(
+                      context,
+                      title: '5 km Offline Grid',
+                      subtitle: 'Live ICU/O2 beds & highway trauma corridors',
+                      badge: 'ZERO NETWORK',
+                      badgeColor: const Color(0xFF10B981),
+                      icon: Icons.hub_rounded,
+                      gradientColors: const [Color(0xFF0F172A), Color(0xFF1E293B)],
+                      accentColor: const Color(0xFF38BDF8),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const OfflineHealthGridScreen()),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+
+                    // Card 2: Explainable Lab AI & DDI Safety
+                    _buildSanjeevaniFeatureCard(
+                      context,
+                      title: 'Explainable Lab AI',
+                      subtitle: 'Plain-language labs, ICD-10 & drug conflicts',
+                      badge: 'AI REASONING',
+                      badgeColor: const Color(0xFF8B5CF6),
+                      icon: Icons.psychology_alt_rounded,
+                      gradientColors: const [Color(0xFF1E1B4B), Color(0xFF312E81)],
+                      accentColor: const Color(0xFFA78BFA),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const ExplainableLabReportScreen()),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+
+                    // Card 3: Jan Aushadhi & 30-Min Hold
+                    _buildSanjeevaniFeatureCard(
+                      context,
+                      title: 'Jan Aushadhi Grid',
+                      subtitle: 'Save up to 75% & 30-min emergency stock lock',
+                      badge: '75% CHEAPER',
+                      badgeColor: const Color(0xFFF59E0B),
+                      icon: Icons.price_check_rounded,
+                      gradientColors: const [Color(0xFF064E3B), Color(0xFF065F46)],
+                      accentColor: const Color(0xFF34D399),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const JanAushadhiFinderScreen()),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+
+                    // Card 4: Govt Schemes (PM-JAY & Aarogyasri)
+                    _buildSanjeevaniFeatureCard(
+                      context,
+                      title: 'Govt Schemes ₹25L',
+                      subtitle: 'PM-JAY & Aarogyasri cashless packages',
+                      badge: '100% FREE',
+                      badgeColor: const Color(0xFF10B981),
+                      icon: Icons.shield_rounded,
+                      gradientColors: const [Color(0xFF1E293B), Color(0xFF0F172A)],
+                      accentColor: const Color(0xFFFBBF24),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const GovernmentSchemeExplorerScreen()),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+
+                    // Card 5: Public Health Outbreak Surveillance
+                    _buildSanjeevaniFeatureCard(
+                      context,
+                      title: 'Outbreak Surveillance',
+                      subtitle: 'Dengue/Malaria clusters & privacy QR pass',
+                      badge: 'EARLY WARNING',
+                      badgeColor: const Color(0xFFEF4444),
+                      icon: Icons.emergency_share_rounded,
+                      gradientColors: const [Color(0xFF450A0A), Color(0xFF7F1D1D)],
+                      accentColor: const Color(0xFFF87171),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const PublicHealthOutbreakHeatmapScreen()),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 24),
-
-
-
-              // Health Summary Header & Cards
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -751,6 +1003,92 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               const SizedBox(height: 24),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSanjeevaniFeatureCard(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required String badge,
+    required Color badgeColor,
+    required IconData icon,
+    required List<Color> gradientColors,
+    required Color accentColor,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        width: 175,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: gradientColors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: accentColor.withValues(alpha: 0.35), width: 1.2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: accentColor.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: accentColor, size: 16),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: badgeColor.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: badgeColor.withValues(alpha: 0.5)),
+                  ),
+                  child: Text(
+                    badge,
+                    style: TextStyle(color: badgeColor, fontSize: 8.5, fontWeight: FontWeight.w900),
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 10),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

@@ -21,7 +21,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late AnimationController _progressController;
   late Animation<double> _progressAnimation;
-  String _loadingStatus = 'Initializing HealthExpress AI...';
+  String _loadingStatus = 'Initializing Sanjeevani.AI...';
   bool _hasStartedPrecache = false;
 
   final List<String> _assetImagesToPrecache = [
@@ -209,7 +209,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       .shimmer(duration: 1800.ms, color: Colors.blue.shade100),
                   const SizedBox(height: 28),
                   const Text(
-                    'HealthExpress AI',
+                    'Sanjeevani.AI',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -223,7 +223,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
-                        'AI-Powered • Personalized • 24/7 Healthcare',
+                        'Edge-First Emergency Response & Healthcare Grid',
                         maxLines: 1,
                         softWrap: false,
                         style: TextStyle(

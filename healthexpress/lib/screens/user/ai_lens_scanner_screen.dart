@@ -282,7 +282,7 @@ class _AiLensScannerScreenState extends State<AiLensScannerScreen>
             ),
             const SizedBox(width: 8),
             const Text(
-              'HealthExpress AI Lens',
+              'Sanjeevani AI Lens',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ],

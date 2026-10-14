@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:web/web.dart' as web;
 import '../../core/theme/app_colors.dart';
 import '../../data/production_database.dart';
 import '../../models/hospital_model.dart';
@@ -373,7 +375,11 @@ class _NearbyHospitalsMapScreenState extends State<NearbyHospitalsMapScreen> {
 
   Future<void> _makePhoneCall(String phone) async {
     final cleanPhone = phone.replaceAll(RegExp(r'[^0-9+]'), '');
-    debugPrint('Calling phone: $cleanPhone');
+    if (kIsWeb) {
+      try {
+        web.window.open('tel:$cleanPhone', '_self');
+      } catch (_) {}
+    }
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
